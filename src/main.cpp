@@ -12,15 +12,48 @@
 #include <cstdlib>
 #include <boost/dll/runtime_symbol_info.hpp>
 
-#include <glm/vec3.hpp> // glm::vec3
-#include <glm/vec4.hpp> // glm::vec4
-#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtx/transform.hpp>
 #include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 #include <glm/ext/scalar_constants.hpp> // glm::pi
+#include <glm/gtx/string_cast.hpp> // glm::to_string
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
+glm::vec3 camera_pos(0.0f, 0.0f, -1.0f);
+glm::vec3 camera_dir(0.0f, 0.0f, -1.0f);
+// glm::vec3 camera_dir(0.0f, 0.0f, 1.0f);
+
+bool checkGLError(const char* file, int line)
+{
+	bool wasError = false;
+
+	for(GLenum glErr = glGetError(); glErr != GL_NO_ERROR; glErr = glGetError())
+    {
+      wasError = true;
+      // const GLubyte* sError = gluErrorString(glErr);
+
+      // if(!sError)
+      //   {
+      //     sError = reinterpret_cast<const GLubyte*>(" (no message available)");
+      //   }
+
+      std::cerr << "GL Error #" << glErr << " "
+                << " in File " << file << " at line: " << line << std::endl;
+
+    }
+	return wasError;
+}
+
+
+#define CHECK_GL_ERROR()                                      \
+	{                                                          \
+		checkGLError(__FILE__, __LINE__);  \
+	}
 
 glm::mat4 camera(float Translate, glm::vec2 const& Rotate)
 {
@@ -204,6 +237,77 @@ GLuint load_texture(const char* img_path, int index) {
   return texture;
 }
 
+void on_key([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, [[maybe_unused]] int action, [[maybe_unused]] int mods) {
+  if (key == GLFW_KEY_W) {
+    camera_pos += camera_dir;
+    std::cout << "Forward, now at: " << glm::to_string(camera_pos) << std::endl;
+  }
+  if (key == GLFW_KEY_S) {
+    camera_pos -= camera_dir;
+    std::cout << "Backward, now at: " << glm::to_string(camera_pos) << std::endl;
+  }
+
+  glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+  glm::vec3 right = glm::normalize(glm::cross(camera_dir, worldUp));
+
+  if (key == GLFW_KEY_D) {
+    camera_pos += right;
+    std::cout << "Right, now at: " << glm::to_string(camera_pos) << std::endl;
+  }
+  if (key == GLFW_KEY_A) {
+    camera_pos -= right;
+    std::cout << "Left, now at: " << glm::to_string(camera_pos) << std::endl;
+  }
+
+  if (key == GLFW_KEY_E) {
+    camera_dir = glm::normalize(camera_dir + 0.1f * right);
+    std::cout << "Rot Right, now looking at: " << glm::to_string(camera_dir) << std::endl;
+  }
+
+  if (key == GLFW_KEY_Q) {
+    camera_dir = glm::normalize(camera_dir - 0.1f * right);
+    std::cout << "Rot Right, now looking at: " << glm::to_string(camera_dir) << std::endl;
+  }
+}
+
+bool firstMouse = true;
+double lastX;
+double lastY;
+double yaw = -90.0f;
+double pitch = 0.0f;
+
+void on_mouse([[maybe_unused]] GLFWwindow* window, double xpos, double ypos) {
+  if (firstMouse)
+    {
+      lastX = xpos;
+      lastY = ypos;
+      firstMouse = false;
+    }
+
+  float xoffset = xpos - lastX;
+  float yoffset = lastY - ypos;
+  lastX = xpos;
+  lastY = ypos;
+
+  float sensitivity = 0.1f;
+  xoffset *= sensitivity;
+  yoffset *= sensitivity;
+
+  yaw   += xoffset;
+  pitch += yoffset;
+
+  if(pitch > 89.0f)
+    pitch = 89.0f;
+  if(pitch < -89.0f)
+    pitch = -89.0f;
+
+  glm::vec3 direction;
+  direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+  direction.y = sin(glm::radians(pitch));
+  direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+  camera_dir = glm::normalize(direction);
+}
+
 int main() {
   auto start = std::chrono::system_clock::now();
   std::time_t start_time = std::chrono::system_clock::to_time_t(start);
@@ -211,7 +315,7 @@ int main() {
   // std::cout << glm::pi<float>() << std::endl;
   // std::cout << boost::dll::program_location().string() << std::endl;
 
-  GLFWwindow *window = create_window(1920, 1080, "OpenPokemonTCG");
+  GLFWwindow *window = create_window(1920/2, 1080, "OpenPokemonTCG");
   if (window == nullptr)
     return -1;
 
@@ -222,13 +326,16 @@ int main() {
     return -1;
   }
 
+  glfwSetKeyCallback(window, on_key);
+  glfwSetCursorPosCallback(window, on_mouse);
+
   print_system_info();
 
   GLuint vao = create_triangle_vao({
         //	 X      Y     Z
-        0.0f,  0.0f, 1.0f, // v0
-        1.0f,  0.0f, 1.0f, // v1
-        1.0f,  1.0f, 1.0f  // v2
+        0.0f,  0.0f, -1.0f, // v0
+        1.0f,  0.0f, -1.0f, // v1
+        1.0f,  1.0f, -1.0f  // v2
     }, {
         0.0f, 1.0f, // (u,v) for v0
         1.0f, 1.0f, // (u,v) for v1
@@ -237,9 +344,20 @@ int main() {
 
   GLuint vao2 = create_triangle_vao({
         //	 X      Y     Z
-        1.0f,  1.0f, 1.0f, // v0
-        0.0f,  1.0f, 1.0f, // v1
-        0.0f,  0.0f, 1.0f  // v2
+        1.0f,  1.0f, -1.0f, // v0
+        0.0f,  1.0f, -1.0f, // v1
+        0.0f,  0.0f, -1.0f  // v2
+    }, {
+        1.0f, 0.0f, // (u,v) for v0
+        0.0f, 0.0f, // (u,v) for v1
+        0.0f, 1.0f, // (u,v) for v2
+    });
+
+  GLuint vao3 = create_triangle_vao({
+        //	 X      Y     Z
+        0.0f,  0.0f,   -5.0f, // v0
+        -1.0f,  0.0f,  -5.0f, // v1
+        -1.0f,  -1.0f, -5.0f  // v2
     }, {
         1.0f, 0.0f, // (u,v) for v0
         0.0f, 0.0f, // (u,v) for v1
@@ -248,6 +366,7 @@ int main() {
 
   GLuint shaderProgram = loadShaderProgram("../res/shaders/simple.vert", "../res/shaders/simple.frag");
   GLuint texture = load_texture("../res/img/test.png", 0);
+  // GLuint texture2 = load_texture("../res/img/cardback.png", 0);
 
   // clamp coords
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -264,13 +383,44 @@ int main() {
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
 
   while (!glfwWindowShouldClose(window)) {
-    // glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.2f, 0.2f, 0.8f, 1.0); // Set clear color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
+
+    // CAMERA
+    glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 right = glm::normalize(glm::cross(camera_dir, worldUp));
+    glm::vec3 up = glm::normalize(glm::cross(right, camera_dir));
+    glm::mat3 cameraBaseVectorsWorldSpace(right, up, -camera_dir);
+    // transpose is the same as invese since the matrix is an orthonormal base
+    glm::mat4 cameraRotation = glm::mat4(glm::transpose(cameraBaseVectorsWorldSpace));
+    glm::mat4 viewMatrix = cameraRotation * glm::translate(-camera_pos);
+
+    struct PerspectiveParams {
+      float fov;
+      float aspect_ratio;
+      float near;
+      float far;
+    };
+    PerspectiveParams pp = { 45.0f, 16.0f / 9.0f, 0.1f, 300.0f };
+
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(pp.fov), pp.aspect_ratio, pp.near, pp.far);
+
+    glm::mat4 cardModelMatrix(1.0f);
+
+    glm::mat4 modelViewProjectionMatrix = projectionMatrix * viewMatrix * cardModelMatrix;
+    // glm::mat4 modelViewProjectionMatrix = projectionMatrix * glm::translate(-camera_pos) * cardModelMatrix;
+
+    CHECK_GL_ERROR();
+    int loc = glGetUniformLocation(shaderProgram, "modelViewProjectionMatrix");
+    CHECK_GL_ERROR();
+    glUniformMatrix4fv(loc, 1, false, &modelViewProjectionMatrix[0].x);
+    CHECK_GL_ERROR();
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -281,6 +431,13 @@ int main() {
     glBindVertexArray(vao2);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
+    // glActiveTexture(GL_TEXTURE1);
+    // glBindTexture(GL_TEXTURE_2D, texture2);
+
+    glBindVertexArray(vao3);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    CHECK_GL_ERROR();
     glUseProgram(0);
 
     glfwSwapBuffers(window);

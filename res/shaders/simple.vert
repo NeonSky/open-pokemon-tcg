@@ -7,10 +7,10 @@ layout(location = 2) in vec2 texCoordIn;
 out vec3 outColor;
 out vec2 texCoord;
 
+uniform mat4 modelViewProjectionMatrix;
+
 void main() {
-  // vec4 pos = vec4(position.xyz - cameraPosition.xyz, 1);
-  // gl_Position = projectionMatrix * pos;
-	gl_Position = vec4(position, 1.0);
+  gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
   outColor = color;
   texCoord = texCoordIn;
 }
