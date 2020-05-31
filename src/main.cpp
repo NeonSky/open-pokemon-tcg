@@ -18,6 +18,9 @@
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 #include <glm/ext/scalar_constants.hpp> // glm::pi
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 glm::mat4 camera(float Translate, glm::vec2 const& Rotate)
 {
 	glm::mat4 Projection = glm::perspective(glm::pi<float>() * 0.25f, 4.0f / 3.0f, 0.1f, 100.f);
@@ -109,8 +112,6 @@ GLuint loadShaderProgram(const std::string& vertexShader, const std::string& fra
 	return shaderProgram;
 }
 
-const std::string ROOT_PATH;
-
 int main() {
   auto start = std::chrono::system_clock::now();
   std::time_t start_time = std::chrono::system_clock::to_time_t(start);
@@ -143,9 +144,9 @@ int main() {
   // Setup 1 colored triangle.
 	const float positions[] = {
     //	 X      Y     Z
-    0.0f,  0.5f,  1.0f, // v0
-    -0.5f, -0.5f, 1.0f, // v1
-    0.5f,  -0.5f, 1.0f  // v2
+    0.0f,  0.0f, 1.0f, // v0
+    1.0f,  0.0f, 1.0f, // v1
+    1.0f,  1.0f, 1.0f  // v2
 	};
 
   unsigned int pos_buffer;
@@ -165,16 +166,33 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
+  const float uv_coords[] = {
+    0.0f, 1.0f, // (u,v) for v0
+    1.0f, 1.0f, // (u,v) for v1
+    1.0f, 0.0f, // (u,v) for v2
+  };
+
+  unsigned int uv_buffer;
+  glGenBuffers(1, &uv_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, uv_buffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(uv_coords), uv_coords, GL_STATIC_DRAW);
+
   GLuint vao; // Vertex Array Object
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
+
 	glBindBuffer(GL_ARRAY_BUFFER, pos_buffer);
 	glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+
 	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
 	glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
 
+	glBindBuffer(GL_ARRAY_BUFFER, uv_buffer);
+	glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
+
 	glEnableVertexAttribArray(0); // Enable the vertex position attribute
 	glEnableVertexAttribArray(1); // Enable the vertex color attribute
+	glEnableVertexAttribArray(2); // Enable the uv coord attribute
 
   GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -225,12 +243,39 @@ int main() {
 
 	glLinkProgram(shaderProgram);
 
-  // GLuint shader_program = glCreateProgram();
+  //////////////////////////
+  /////  TEXTURES      /////
+  //////////////////////////
+  int w, h, comp;
+  unsigned char* image = stbi_load("../res/img/test.png", &w, &h, &comp, STBI_rgb_alpha);
+  if (image == NULL)
+    std::cout << "Cannot load texture" << std::endl;
+  else
+    std::cout << "img size: " << w << " " << h << std::endl;
 
-  // glEnableVertexAttribArray(0);
-  // glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+  float anisotropy = 16.0f;
 
-  // glBindBuffer(GL_ARRAY_BUFFER, 0);
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+  free(image);
+
+  // clamp coords
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  // Texture filtering
+  glGenerateMipmap(GL_TEXTURE_2D);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  // Max samples (EXT stands for extension, and thus not from OpenGL specification)
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
+  //////////////////////////
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   while (!glfwWindowShouldClose(window)) {
     // glClear(GL_COLOR_BUFFER_BIT);
@@ -238,9 +283,13 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
-    // glUseProgram(0);
+    glUseProgram(0);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
