@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include <iostream>
+#include <vector>
 #include <chrono>
 #include <ctime>
 #include <string>
@@ -61,6 +62,11 @@ GLuint loadShaderProgram(const std::string& vertexShader, const std::string& fra
 	const char* vs = vs_src.c_str();
 	const char* fs = fs_src.c_str();
 
+  // std::cout << "# Vertex Shader" << std::endl;
+  // std::cout << vs << std::endl;
+  // std::cout << "# Fragment Shader" << std::endl;
+  // std::cout << fs << std::endl;
+
 	glShaderSource(vShader, 1, &vs, nullptr);
 	glShaderSource(fShader, 1, &fs, nullptr);
 	// text data is not needed beyond this point
@@ -112,49 +118,37 @@ GLuint loadShaderProgram(const std::string& vertexShader, const std::string& fra
 	return shaderProgram;
 }
 
-int main() {
-  auto start = std::chrono::system_clock::now();
-  std::time_t start_time = std::chrono::system_clock::to_time_t(start);
-  std::cout << "### Program started at: " << std::ctime(&start_time);
-  std::cout << glm::pi<float>() << std::endl;
-  std::cout << boost::dll::program_location().string() << std::endl;
+void print_system_info() {
+  std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+  std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
+  std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
+}
 
+GLFWwindow* create_window(int width, int height, const char* title) {
   GLFWwindow* window;
 
-  if (!glfwInit())
-    return -1;
+  if (!glfwInit()) {
+    std::cout << "Failed to init glfw" << std::endl;
+    return nullptr;
+  }
 
-  window = glfwCreateWindow(640, 480, "OpenPokemonTCG", NULL, NULL);
+  window = glfwCreateWindow(width, height, title, NULL, NULL);
   if (!window) {
+    std::cout << "glfw failed to create a window" << std::endl;
     glfwTerminate();
-    return -1;
+    return nullptr;
   }
 
   glfwMakeContextCurrent(window);
 
-  int status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-  if (!status) {
-    std::cout << "Failed to init GLAD" << std::endl;
-    glfwTerminate();
-    return -1;
-  }
+  return window;
+}
 
-  std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
-  std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
-  std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
-
-  // Setup 1 colored triangle.
-	const float positions[] = {
-    //	 X      Y     Z
-    0.0f,  0.0f, 1.0f, // v0
-    1.0f,  0.0f, 1.0f, // v1
-    1.0f,  1.0f, 1.0f  // v2
-	};
-
+GLuint create_triangle_vao(const std::vector<float> positions, const std::vector<float> uv_coords) {
   unsigned int pos_buffer;
   glGenBuffers(1, &pos_buffer); // Gen buffer object and store buffer id
   glBindBuffer(GL_ARRAY_BUFFER, pos_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_STATIC_DRAW);
 
   const float colors[] = {
     //   R     G     B
@@ -168,16 +162,10 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
-  const float uv_coords[] = {
-    0.0f, 1.0f, // (u,v) for v0
-    1.0f, 1.0f, // (u,v) for v1
-    1.0f, 0.0f, // (u,v) for v2
-  };
-
   unsigned int uv_buffer;
   glGenBuffers(1, &uv_buffer);
   glBindBuffer(GL_ARRAY_BUFFER, uv_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(uv_coords), uv_coords, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * uv_coords.size(), uv_coords.data(), GL_STATIC_DRAW);
 
   GLuint vao; // Vertex Array Object
 	glGenVertexArrays(1, &vao);
@@ -196,72 +184,70 @@ int main() {
 	glEnableVertexAttribArray(1); // Enable the vertex color attribute
 	glEnableVertexAttribArray(2); // Enable the uv coord attribute
 
-  GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+  return vao;
+}
 
-	// Load text files for vertex and fragment shaders.
-	std::ifstream vs_file("../res/shaders/simple.vert");
-	std::string vs_src((std::istreambuf_iterator<char>(vs_file)), std::istreambuf_iterator<char>());
-
-	std::ifstream fs_file("../res/shaders/simple.frag");
-	std::string fs_src((std::istreambuf_iterator<char>(fs_file)), std::istreambuf_iterator<char>());
-
-	const char* vs = vs_src.c_str();
-	const char* fs = fs_src.c_str();
-
-  // std::cout << "# Vertex Shader" << std::endl;
-  // std::cout << vs << std::endl;
-  // std::cout << "# Fragment Shader" << std::endl;
-  // std::cout << fs << std::endl;
-
-	glShaderSource(vertexShader, 1, &vs, NULL);
-	glShaderSource(fragmentShader, 1, &fs, NULL);
-
-	glCompileShader(vertexShader);
-	int compileOK;
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &compileOK);
-	if(!compileOK) {
-    std::cout << "Error compiling vertex shader!" << std::endl;
-		// std::string err = labhelper::GetShaderInfoLog(vertexShader);
-		// labhelper::fatal_error(err);
-		// return;
-	}
-
-	glCompileShader(fragmentShader);
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &compileOK);
-	if(!compileOK) {
-    std::cout << "Error compiling fragment shader!" << std::endl;
-		// std::string err = labhelper::GetShaderInfoLog(fragmentShader);
-		// labhelper::fatal_error(err);
-		// return;
-	}
-
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, fragmentShader);
-	glAttachShader(shaderProgram, vertexShader);
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	glLinkProgram(shaderProgram);
-
-  //////////////////////////
-  /////  TEXTURES      /////
-  //////////////////////////
+GLuint load_texture(const char* img_path, int index) {
   int w, h, comp;
-  unsigned char* image = stbi_load("../res/img/test.png", &w, &h, &comp, STBI_rgb_alpha);
+  unsigned char* image = stbi_load(img_path, &w, &h, &comp, STBI_rgb_alpha);
   if (image == NULL)
     std::cout << "Cannot load texture" << std::endl;
   else
     std::cout << "img size: " << w << " " << h << std::endl;
 
-  float anisotropy = 16.0f;
-
   GLuint texture;
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+  glTexImage2D(GL_TEXTURE_2D, index, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
   free(image);
+
+  return texture;
+}
+
+int main() {
+  auto start = std::chrono::system_clock::now();
+  std::time_t start_time = std::chrono::system_clock::to_time_t(start);
+  std::cout << "### Program started at: " << std::ctime(&start_time);
+  // std::cout << glm::pi<float>() << std::endl;
+  // std::cout << boost::dll::program_location().string() << std::endl;
+
+  GLFWwindow *window = create_window(1920, 1080, "OpenPokemonTCG");
+  if (window == nullptr)
+    return -1;
+
+  int status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+  if (!status) {
+    std::cout << "Failed to init GLAD" << std::endl;
+    glfwTerminate();
+    return -1;
+  }
+
+  print_system_info();
+
+  GLuint vao = create_triangle_vao({
+        //	 X      Y     Z
+        0.0f,  0.0f, 1.0f, // v0
+        1.0f,  0.0f, 1.0f, // v1
+        1.0f,  1.0f, 1.0f  // v2
+    }, {
+        0.0f, 1.0f, // (u,v) for v0
+        1.0f, 1.0f, // (u,v) for v1
+        1.0f, 0.0f, // (u,v) for v2
+  });
+
+  GLuint vao2 = create_triangle_vao({
+        //	 X      Y     Z
+        1.0f,  1.0f, 1.0f, // v0
+        0.0f,  1.0f, 1.0f, // v1
+        0.0f,  0.0f, 1.0f  // v2
+    }, {
+        1.0f, 0.0f, // (u,v) for v0
+        0.0f, 0.0f, // (u,v) for v1
+        0.0f, 1.0f, // (u,v) for v2
+    });
+
+  GLuint shaderProgram = loadShaderProgram("../res/shaders/simple.vert", "../res/shaders/simple.frag");
+  GLuint texture = load_texture("../res/img/test.png", 0);
 
   // clamp coords
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -273,8 +259,8 @@ int main() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   // Max samples (EXT stands for extension, and thus not from OpenGL specification)
+  float anisotropy = 16.0f;
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
-  //////////////////////////
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -291,6 +277,10 @@ int main() {
 
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    glBindVertexArray(vao2);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
     glUseProgram(0);
 
     glfwSwapBuffers(window);
