@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
@@ -132,7 +132,9 @@ int main() {
 
   glfwMakeContextCurrent(window);
 
-  if(glewInit() != GLEW_OK) {
+  int status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+  if (!status) {
+    std::cout << "Failed to init GLAD" << std::endl;
     glfwTerminate();
     return -1;
   }
