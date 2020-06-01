@@ -212,19 +212,37 @@ GLuint create_triangle_vao(const std::vector<float> positions, const std::vector
   return vao;
 }
 
-GLuint load_texture(const char* img_path, int index) {
+GLuint load_texture(std::string relative_img_path) {
+  std::string res_path = boost::dll::program_location().parent_path().string() + "/../res/img/";
+  std::string img_path = res_path + relative_img_path;
+
   int w, h, comp;
-  unsigned char* image = stbi_load(img_path, &w, &h, &comp, STBI_rgb_alpha);
+  unsigned char* image = stbi_load(img_path.c_str(), &w, &h, &comp, STBI_rgb_alpha);
   if (image == NULL)
     std::cout << "Cannot load texture" << std::endl;
-  else
+  else {
+    std::cout << "img path: " << img_path << std::endl;
     std::cout << "img size: " << w << " " << h << std::endl;
+  }
 
   GLuint texture;
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
-  glTexImage2D(GL_TEXTURE_2D, index, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
   free(image);
+
+  // clamp coords
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+  // Texture filtering
+  glGenerateMipmap(GL_TEXTURE_2D);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  // Max samples (EXT stands for extension, and thus not from OpenGL specification)
+  float anisotropy = 16.0f;
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
 
   return texture;
 }
@@ -275,8 +293,6 @@ int main() {
   auto start = std::chrono::system_clock::now();
   std::time_t start_time = std::chrono::system_clock::to_time_t(start);
   std::cout << "### Program started at: " << std::ctime(&start_time);
-  // std::cout << glm::pi<float>() << std::endl;
-  // std::cout << boost::dll::program_location().string() << std::endl;
 
   GLFWwindow *window = create_window(1920/2, 1080, "OpenPokemonTCG");
   if (window == nullptr)
@@ -328,24 +344,11 @@ int main() {
     });
 
   GLuint shaderProgram = loadShaderProgram("../res/shaders/simple.vert", "../res/shaders/simple.frag");
-  GLuint texture = load_texture("../res/img/test.png", 0);
-  // GLuint texture2 = load_texture("../res/img/cardback.png", 0);
+  GLuint texture = load_texture("test.png");
+  CHECK_GL_ERROR();
+  GLuint texture2 = load_texture("cardback.png");
+  CHECK_GL_ERROR();
 
-  // clamp coords
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-  // Texture filtering
-  glGenerateMipmap(GL_TEXTURE_2D);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-  // Max samples (EXT stands for extension, and thus not from OpenGL specification)
-  float anisotropy = 16.0f;
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
 
@@ -381,8 +384,8 @@ int main() {
     glBindVertexArray(vao2);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
-    // glActiveTexture(GL_TEXTURE1);
-    // glBindTexture(GL_TEXTURE_2D, texture2);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture2);
 
     glBindVertexArray(vao3);
     glDrawArrays(GL_TRIANGLES, 0, 3);

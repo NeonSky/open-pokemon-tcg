@@ -10,11 +10,11 @@
 using namespace open_pokemon_tcg;
 
 Camera::Camera() : orientation(Orientation()){
-  this->pos = glm::vec3(0.0f, 0.0f, -1.0f);
+  this->pos = glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
 Camera::Camera(Orientation orientation) : orientation(orientation){
-  this->pos = glm::vec3(0.0f, 0.0f, -1.0f);
+  this->pos = glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
 Camera::~Camera() {}
@@ -45,7 +45,7 @@ void Camera::move(Direction move_dir) {
     assert(false); // TODO: change to error
   }
   this->pos += this->movement_speed * displacement_dir;
-  std::cout << "Camera now at: " << glm::to_string(this->pos) << std::endl;
+  // std::cout << "Camera now at: " << glm::to_string(this->pos) << std::endl;
 }
 
 void Camera::look_at(glm::vec3 target) {
