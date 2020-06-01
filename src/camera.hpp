@@ -17,6 +17,11 @@ namespace open_pokemon_tcg{
     DOWN,
   };
 
+  enum ProjectionType {
+    PERSPECTIVE,
+    ORTHOGRAPHIC,
+  };
+
   class Camera {
   public:
     Camera();
@@ -29,11 +34,46 @@ namespace open_pokemon_tcg{
     void lookat_mouse(float mouse_xpos, float mouse_ypos);
 
     // Accessors
-    glm::mat4 view_matrix();
+    glm::mat4 view_matrix() const;
+    glm::mat4 projection_matrix(ProjectionType projection_type) const;
 
   private:
+    struct Perspective {
+      float fov;
+      float aspect_ratio;
+      float near;
+      float far;
+
+      Perspective() {
+        fov = 45.0f;
+        aspect_ratio = 16.0f / 9.0f;
+        near = 0.1f;
+        far = 300.0f;
+      }
+    };
+
+    struct Orthographic {
+      float left;
+      float right;
+      float bot;
+      float top;
+      float near;
+      float far;
+
+      Orthographic() {
+        left = -1.0f;
+        right = 1.0f;
+        bot = -1.0f;
+        top = 1.0f;
+        near = 0.1f;
+        far = 300.0f;
+      }
+    };
+
     glm::vec3 pos;
     Orientation orientation;
+    Perspective perspective;
+    Orthographic orthographic;
     float movement_speed = 0.5f;
     float rotation_speed = 0.1f;
   };

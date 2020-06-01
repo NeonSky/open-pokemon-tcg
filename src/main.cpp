@@ -229,6 +229,8 @@ GLuint load_texture(const char* img_path, int index) {
   return texture;
 }
 
+ProjectionType proj_type = ProjectionType::PERSPECTIVE;
+
 bool debug_mode = false;
 void on_key(GLFWwindow* window, [[maybe_unused]] int key, [[maybe_unused]] int scancode, [[maybe_unused]] int action, [[maybe_unused]] int mods) {
 
@@ -247,6 +249,13 @@ void on_key(GLFWwindow* window, [[maybe_unused]] int key, [[maybe_unused]] int s
     camera.move(Direction::UP);
   if (glfwGetKey(window, GLFW_KEY_Q))
     camera.move(Direction::DOWN);
+
+  if (glfwGetKey(window, GLFW_KEY_P)) {
+    if (proj_type == ProjectionType::PERSPECTIVE)
+      proj_type = ProjectionType::ORTHOGRAPHIC;
+    else
+      proj_type = ProjectionType::PERSPECTIVE;
+  }
 
   if (glfwGetKey(window, GLFW_KEY_T)) {
     debug_mode = !debug_mode;
@@ -351,16 +360,7 @@ int main() {
     glUseProgram(shaderProgram);
 
     glm::mat4 viewMatrix = camera.view_matrix();
-
-    struct PerspectiveParams {
-      float fov;
-      float aspect_ratio;
-      float near;
-      float far;
-    };
-    PerspectiveParams pp = { 45.0f, 16.0f / 9.0f, 0.1f, 300.0f };
-
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(pp.fov), pp.aspect_ratio, pp.near, pp.far);
+    glm::mat4 projectionMatrix = camera.projection_matrix(proj_type);
 
     glm::mat4 cardModelMatrix(1.0f);
 

@@ -91,7 +91,7 @@ void Camera::lookat_mouse(float mouse_xpos, float mouse_ypos) {
   this->orientation = Orientation(glm::normalize(direction));
 }
 
-glm::mat4 Camera::view_matrix() {
+glm::mat4 Camera::view_matrix() const {
   glm::mat3 base_vectors_in_world_space(
     this->orientation.right(),
     this->orientation.up(),
@@ -101,4 +101,28 @@ glm::mat4 Camera::view_matrix() {
   glm::mat3 inverse_base = glm::transpose(base_vectors_in_world_space);
 
   return glm::mat4(inverse_base) * glm::translate(-this->pos);
+}
+
+glm::mat4 Camera::projection_matrix(ProjectionType projection_type) const {
+  switch (projection_type) {
+  case ProjectionType::PERSPECTIVE:
+    return glm::perspective(
+                       glm::radians(this->perspective.fov),
+                       this->perspective.aspect_ratio,
+                       this->perspective.near,
+                       this->perspective.far
+                       );
+  case ProjectionType::ORTHOGRAPHIC:
+    return glm::ortho(
+      this->orthographic.left,
+      this->orthographic.right,
+      this->orthographic.bot,
+      this->orthographic.top,
+      this->orthographic.near,
+      this->orthographic.far
+    );
+  default:
+    // std::cerr << "Projection type not supported" << std::endl;
+    assert(false); // TODO: change to error
+  }
 }
