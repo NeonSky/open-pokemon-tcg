@@ -24,9 +24,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-glm::vec3 camera_pos(0.0f, 0.0f, -1.0f);
-glm::vec3 camera_dir(0.0f, 0.0f, -1.0f);
-// glm::vec3 camera_dir(0.0f, 0.0f, 1.0f);
+#include "camera.hpp"
+
+using namespace open_pokemon_tcg;
+
+Camera camera;
 
 bool checkGLError(const char* file, int line)
 {
@@ -54,16 +56,6 @@ bool checkGLError(const char* file, int line)
 	{                                                          \
 		checkGLError(__FILE__, __LINE__);  \
 	}
-
-glm::mat4 camera(float Translate, glm::vec2 const& Rotate)
-{
-	glm::mat4 Projection = glm::perspective(glm::pi<float>() * 0.25f, 4.0f / 3.0f, 0.1f, 100.f);
-	glm::mat4 View = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Translate));
-	View = glm::rotate(View, Rotate.y, glm::vec3(-1.0f, 0.0f, 0.0f));
-	View = glm::rotate(View, Rotate.x, glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 Model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
-	return Projection * View * Model;
-}
 
 void gui() {
 }
@@ -237,75 +229,37 @@ GLuint load_texture(const char* img_path, int index) {
   return texture;
 }
 
-void on_key([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode, [[maybe_unused]] int action, [[maybe_unused]] int mods) {
-  if (key == GLFW_KEY_W) {
-    camera_pos += camera_dir;
-    std::cout << "Forward, now at: " << glm::to_string(camera_pos) << std::endl;
-  }
-  if (key == GLFW_KEY_S) {
-    camera_pos -= camera_dir;
-    std::cout << "Backward, now at: " << glm::to_string(camera_pos) << std::endl;
-  }
+bool debug_mode = false;
+void on_key(GLFWwindow* window, [[maybe_unused]] int key, [[maybe_unused]] int scancode, [[maybe_unused]] int action, [[maybe_unused]] int mods) {
 
-  glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-  glm::vec3 right = glm::normalize(glm::cross(camera_dir, worldUp));
+  if (glfwGetKey(window, GLFW_KEY_W) && glfwGetKey(window, GLFW_KEY_S))
+    std::cout << "Forward and backward!" << std::endl;
 
-  if (key == GLFW_KEY_D) {
-    camera_pos += right;
-    std::cout << "Right, now at: " << glm::to_string(camera_pos) << std::endl;
-  }
-  if (key == GLFW_KEY_A) {
-    camera_pos -= right;
-    std::cout << "Left, now at: " << glm::to_string(camera_pos) << std::endl;
-  }
+  if (glfwGetKey(window, GLFW_KEY_W))
+    camera.move(Direction::FORWARD);
+  if (glfwGetKey(window, GLFW_KEY_S))
+    camera.move(Direction::BACKWARD);
+  if (glfwGetKey(window, GLFW_KEY_D))
+    camera.move(Direction::RIGHT);
+  if (glfwGetKey(window, GLFW_KEY_A))
+    camera.move(Direction::LEFT);
+  if (glfwGetKey(window, GLFW_KEY_E))
+    camera.move(Direction::UP);
+  if (glfwGetKey(window, GLFW_KEY_Q))
+    camera.move(Direction::DOWN);
 
-  if (key == GLFW_KEY_E) {
-    camera_dir = glm::normalize(camera_dir + 0.1f * right);
-    std::cout << "Rot Right, now looking at: " << glm::to_string(camera_dir) << std::endl;
-  }
-
-  if (key == GLFW_KEY_Q) {
-    camera_dir = glm::normalize(camera_dir - 0.1f * right);
-    std::cout << "Rot Right, now looking at: " << glm::to_string(camera_dir) << std::endl;
+  if (glfwGetKey(window, GLFW_KEY_T)) {
+    debug_mode = !debug_mode;
+    if (debug_mode)
+      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    else
+      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
   }
 }
 
-bool firstMouse = true;
-double lastX;
-double lastY;
-double yaw = -90.0f;
-double pitch = 0.0f;
-
 void on_mouse([[maybe_unused]] GLFWwindow* window, double xpos, double ypos) {
-  if (firstMouse)
-    {
-      lastX = xpos;
-      lastY = ypos;
-      firstMouse = false;
-    }
-
-  float xoffset = xpos - lastX;
-  float yoffset = lastY - ypos;
-  lastX = xpos;
-  lastY = ypos;
-
-  float sensitivity = 0.1f;
-  xoffset *= sensitivity;
-  yoffset *= sensitivity;
-
-  yaw   += xoffset;
-  pitch += yoffset;
-
-  if(pitch > 89.0f)
-    pitch = 89.0f;
-  if(pitch < -89.0f)
-    pitch = -89.0f;
-
-  glm::vec3 direction;
-  direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-  direction.y = sin(glm::radians(pitch));
-  direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-  camera_dir = glm::normalize(direction);
+  if (debug_mode)
+    camera.lookat_mouse(xpos, ypos);
 }
 
 int main() {
@@ -386,20 +340,17 @@ int main() {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
 
+  glm::vec3 fwd = glm::vec3(0.0f, 0.0f, -1.0f);
+  auto t = Orientation(fwd);
+  camera = Camera(Orientation());
+
   while (!glfwWindowShouldClose(window)) {
     glClearColor(0.2f, 0.2f, 0.8f, 1.0); // Set clear color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
 
-    // CAMERA
-    glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 right = glm::normalize(glm::cross(camera_dir, worldUp));
-    glm::vec3 up = glm::normalize(glm::cross(right, camera_dir));
-    glm::mat3 cameraBaseVectorsWorldSpace(right, up, -camera_dir);
-    // transpose is the same as invese since the matrix is an orthonormal base
-    glm::mat4 cameraRotation = glm::mat4(glm::transpose(cameraBaseVectorsWorldSpace));
-    glm::mat4 viewMatrix = cameraRotation * glm::translate(-camera_pos);
+    glm::mat4 viewMatrix = camera.view_matrix();
 
     struct PerspectiveParams {
       float fov;
@@ -414,7 +365,6 @@ int main() {
     glm::mat4 cardModelMatrix(1.0f);
 
     glm::mat4 modelViewProjectionMatrix = projectionMatrix * viewMatrix * cardModelMatrix;
-    // glm::mat4 modelViewProjectionMatrix = projectionMatrix * glm::translate(-camera_pos) * cardModelMatrix;
 
     CHECK_GL_ERROR();
     int loc = glGetUniformLocation(shaderProgram, "modelViewProjectionMatrix");
