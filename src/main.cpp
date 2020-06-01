@@ -169,7 +169,7 @@ GLFWwindow* create_window(int width, int height, const char* title) {
   return window;
 }
 
-GLuint create_triangle_vao(const std::vector<float> positions, const std::vector<float> uv_coords) {
+GLuint create_vao(const std::vector<float> positions, const std::vector<float> uv_coords) {
   unsigned int pos_buffer;
   glGenBuffers(1, &pos_buffer); // Gen buffer object and store buffer id
   glBindBuffer(GL_ARRAY_BUFFER, pos_buffer);
@@ -195,6 +195,17 @@ GLuint create_triangle_vao(const std::vector<float> positions, const std::vector
   GLuint vao; // Vertex Array Object
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
+
+  // INDICES
+  unsigned int index_buffer;
+  const int indices[] = {
+    0, 1, 2, // Triangle 1
+    2, 3, 0  // Triangle 2
+	};
+	glGenBuffers(1, &index_buffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 
 	glBindBuffer(GL_ARRAY_BUFFER, pos_buffer);
 	glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
@@ -289,6 +300,48 @@ void on_mouse([[maybe_unused]] GLFWwindow* window, double xpos, double ypos) {
     camera.lookat_mouse(xpos, ypos);
 }
 
+float zoom = 0.0;
+void on_scroll([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) {
+  zoom += (float)yoffset;
+  if (zoom < 1.0f)
+    zoom = 1.0f;
+  if (zoom > 45.0f)
+    zoom = 45.0f;
+  camera.set_zoom(zoom);
+}
+
+struct Card {
+  GLuint vao;
+  GLuint tex;
+};
+
+#include "orientation.hpp"
+
+Card create_card(glm::vec3 pos, Orientation orientation, std::string relative_img_path) {
+
+  float width = 1.0f;
+  float height = 1.0f;
+  glm::vec3 botleft = pos - (width/2.0f) * orientation.right() - (height/2.0f) * orientation.up();
+  glm::vec3 botright = pos + (width/2.0f) * orientation.right() - (height/2.0f) * orientation.up();
+  glm::vec3 topleft = pos - (width/2.0f) * orientation.right() + (height/2.0f) * orientation.up();
+  glm::vec3 topright = pos + (width/2.0f) * orientation.right() + (height/2.0f) * orientation.up();
+
+  GLuint vao = create_vao({
+      //	 X      Y     Z
+      botleft.x, botleft.y, botleft.z,
+      botright.x, botright.y, botright.z,
+      topright.x, topright.y, topright.z,
+      topleft.x, topleft.y, topleft.z,
+    }, {
+      0.0f, 1.0f, // (u,v) for v0
+      1.0f, 1.0f, // (u,v) for v1
+      1.0f, 0.0f, // (u,v) for v2
+      0.0f, 0.0f, // (u,v) for v3
+    });
+  GLuint tex = load_texture(relative_img_path);
+  return Card{vao, tex};
+}
+
 int main() {
   auto start = std::chrono::system_clock::now();
   std::time_t start_time = std::chrono::system_clock::to_time_t(start);
@@ -307,47 +360,17 @@ int main() {
 
   glfwSetKeyCallback(window, on_key);
   glfwSetCursorPosCallback(window, on_mouse);
+  glfwSetScrollCallback(window, on_scroll);
 
   print_system_info();
 
-  GLuint vao = create_triangle_vao({
-        //	 X      Y     Z
-        0.0f,  0.0f, -1.0f, // v0
-        1.0f,  0.0f, -1.0f, // v1
-        1.0f,  1.0f, -1.0f  // v2
-    }, {
-        0.0f, 1.0f, // (u,v) for v0
-        1.0f, 1.0f, // (u,v) for v1
-        1.0f, 0.0f, // (u,v) for v2
-  });
+  Card card = create_card(glm::vec3(0.0f), Orientation(), "test.png");
+  Card card_back = create_card(glm::vec3(0.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), "cardback.png");
 
-  GLuint vao2 = create_triangle_vao({
-        //	 X      Y     Z
-        1.0f,  1.0f, -1.0f, // v0
-        0.0f,  1.0f, -1.0f, // v1
-        0.0f,  0.0f, -1.0f  // v2
-    }, {
-        1.0f, 0.0f, // (u,v) for v0
-        0.0f, 0.0f, // (u,v) for v1
-        0.0f, 1.0f, // (u,v) for v2
-    });
-
-  GLuint vao3 = create_triangle_vao({
-        //	 X      Y     Z
-        0.0f,  0.0f,   -5.0f, // v0
-        -1.0f,  0.0f,  -5.0f, // v1
-        -1.0f,  -1.0f, -5.0f  // v2
-    }, {
-        1.0f, 0.0f, // (u,v) for v0
-        0.0f, 0.0f, // (u,v) for v1
-        0.0f, 1.0f, // (u,v) for v2
-    });
+  Card card2 = create_card(glm::vec3(1.0f), Orientation(), "test2.png");
+  Card card2_back = create_card(glm::vec3(1.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), "cardback.png");
 
   GLuint shaderProgram = loadShaderProgram("../res/shaders/simple.vert", "../res/shaders/simple.frag");
-  GLuint texture = load_texture("test.png");
-  CHECK_GL_ERROR();
-  GLuint texture2 = load_texture("cardback.png");
-  CHECK_GL_ERROR();
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
@@ -375,20 +398,31 @@ int main() {
     glUniformMatrix4fv(loc, 1, false, &modelViewProjectionMatrix[0].x);
     CHECK_GL_ERROR();
 
+    // CARD 1
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-    glBindVertexArray(vao2);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindTexture(GL_TEXTURE_2D, card.tex);
+    glBindVertexArray(card.vao);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture2);
+    glBindTexture(GL_TEXTURE_2D, card_back.tex);
+    glBindVertexArray(card_back.vao);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-    glBindVertexArray(vao3);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    // CARD 2
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, card2.tex);
+    glBindVertexArray(card2.vao);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, card2_back.tex);
+    glBindVertexArray(card2_back.vao);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Transparency
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     CHECK_GL_ERROR();
     glUseProgram(0);

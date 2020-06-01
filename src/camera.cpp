@@ -52,6 +52,10 @@ void Camera::look_at(glm::vec3 target) {
   this->orientation = Orientation(target - this->pos);
 }
 
+void Camera::set_zoom(float zoom_level) {
+  this->perspective.fov = 45.0f - zoom_level;
+}
+
 bool firstMouse = true;
 double lastX;
 double lastY;

@@ -32,6 +32,7 @@ namespace open_pokemon_tcg{
     void move(Direction dir);
     void look_at(glm::vec3 target);
     void lookat_mouse(float mouse_xpos, float mouse_ypos);
+    void set_zoom(float zoom_level);
 
     // Accessors
     glm::mat4 view_matrix() const;
