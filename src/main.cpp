@@ -25,28 +25,18 @@
 #include <stb_image.h>
 
 #include "camera.hpp"
+#include "window.hpp"
+#include "shader.hpp"
 
 using namespace open_pokemon_tcg;
 
 Camera camera;
 
-bool checkGLError(const char* file, int line)
-{
+bool checkGLError(const char* file, int line) {
 	bool wasError = false;
-
-	for(GLenum glErr = glGetError(); glErr != GL_NO_ERROR; glErr = glGetError())
-    {
+	for (GLenum glErr = glGetError(); glErr != GL_NO_ERROR; glErr = glGetError()) {
+      std::cerr << "GL Error #" << glErr << " in " << file << " at line: " << line << std::endl;
       wasError = true;
-      // const GLubyte* sError = gluErrorString(glErr);
-
-      // if(!sError)
-      //   {
-      //     sError = reinterpret_cast<const GLubyte*>(" (no message available)");
-      //   }
-
-      std::cerr << "GL Error #" << glErr << " "
-                << " in File " << file << " at line: " << line << std::endl;
-
     }
 	return wasError;
 }
@@ -57,116 +47,10 @@ bool checkGLError(const char* file, int line)
 		checkGLError(__FILE__, __LINE__);  \
 	}
 
-void gui() {
-}
-
-bool linkShaderProgram(GLuint shaderProgram)
-{
-	glLinkProgram(shaderProgram);
-	GLint linkOk = 0;
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linkOk);
-	if(!linkOk)
-    {
-      return false;
-    }
-	return true;
-}
-
-
-GLuint loadShaderProgram(const std::string& vertexShader, const std::string& fragmentShader)
-{
-	GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-	std::ifstream vs_file(vertexShader);
-	std::string vs_src((std::istreambuf_iterator<char>(vs_file)), std::istreambuf_iterator<char>());
-
-	std::ifstream fs_file(fragmentShader);
-	std::string fs_src((std::istreambuf_iterator<char>(fs_file)), std::istreambuf_iterator<char>());
-
-	const char* vs = vs_src.c_str();
-	const char* fs = fs_src.c_str();
-
-  // std::cout << "# Vertex Shader" << std::endl;
-  // std::cout << vs << std::endl;
-  // std::cout << "# Fragment Shader" << std::endl;
-  // std::cout << fs << std::endl;
-
-	glShaderSource(vShader, 1, &vs, nullptr);
-	glShaderSource(fShader, 1, &fs, nullptr);
-	// text data is not needed beyond this point
-
-	glCompileShader(vShader);
-	int compileOk = 0;
-	glGetShaderiv(vShader, GL_COMPILE_STATUS, &compileOk);
-	if(!compileOk)
-	{
-		// std::string err = GetShaderInfoLog(vShader);
-		// if(allow_errors)
-		// {
-		// 	non_fatal_error(err, "Vertex Shader");
-		// }
-		// else
-		// {
-		// 	fatal_error(err, "Vertex Shader");
-		// }
-		return 0;
-	}
-
-	glCompileShader(fShader);
-	glGetShaderiv(fShader, GL_COMPILE_STATUS, &compileOk);
-	if(!compileOk)
-	{
-		// std::string err = GetShaderInfoLog(fShader);
-		// if(allow_errors)
-		// {
-		// 	non_fatal_error(err, "Fragment Shader");
-		// }
-		// else
-		// {
-		// 	fatal_error(err, "Fragment Shader");
-		// }
-		return 0;
-	}
-
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, fShader);
-	glDeleteShader(fShader);
-	glAttachShader(shaderProgram, vShader);
-	glDeleteShader(vShader);
-	// if(!allow_errors)
-	// 	CHECK_GL_ERROR();
-
-	if(!linkShaderProgram(shaderProgram))
-		return 0;
-
-	return shaderProgram;
-}
-
 void print_system_info() {
   std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
   std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
   std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
-}
-
-GLFWwindow* create_window(int width, int height, const char* title) {
-  GLFWwindow* window;
-
-  if (!glfwInit()) {
-    std::cout << "Failed to init glfw" << std::endl;
-    return nullptr;
-  }
-
-  window = glfwCreateWindow(width, height, title, NULL, NULL);
-  if (!window) {
-    std::cout << "glfw failed to create a window" << std::endl;
-    glfwTerminate();
-    return nullptr;
-  }
-
-  glfwMakeContextCurrent(window);
-
-  return window;
 }
 
 GLuint create_vao(const std::vector<float> positions, const std::vector<float> uv_coords) {
@@ -347,9 +231,13 @@ int main() {
   std::time_t start_time = std::chrono::system_clock::to_time_t(start);
   std::cout << "### Program started at: " << std::ctime(&start_time);
 
-  GLFWwindow *window = create_window(1920/2, 1080, "OpenPokemonTCG");
-  if (window == nullptr)
+  Window *window;
+  try {
+    window = new Window(1920/2, 1080, "OpenPokemonTCG");
+  } catch(const std::exception& e) {
+    std::cout << e.what() << std::endl;
     return -1;
+  }
 
   int status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
   if (!status) {
@@ -358,9 +246,9 @@ int main() {
     return -1;
   }
 
-  glfwSetKeyCallback(window, on_key);
-  glfwSetCursorPosCallback(window, on_mouse);
-  glfwSetScrollCallback(window, on_scroll);
+  window->add_on_key_callback(on_key);
+  window->add_on_cursor_callback(on_mouse);
+  window->add_on_scroll_callback(on_scroll);
 
   print_system_info();
 
@@ -370,7 +258,7 @@ int main() {
   Card card2 = create_card(glm::vec3(1.0f), Orientation(), "test2.png");
   Card card2_back = create_card(glm::vec3(1.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), "cardback.png");
 
-  GLuint shaderProgram = loadShaderProgram("../res/shaders/simple.vert", "../res/shaders/simple.frag");
+  Shader *shader = new Shader("simple.vert", "simple.frag");
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
@@ -379,24 +267,16 @@ int main() {
   auto t = Orientation(fwd);
   camera = Camera(Orientation());
 
-  while (!glfwWindowShouldClose(window)) {
-    glClearColor(0.2f, 0.2f, 0.8f, 1.0); // Set clear color
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  while (!window->is_closing()) {
+    window->clear_screen();
 
-    glUseProgram(shaderProgram);
-
-    glm::mat4 viewMatrix = camera.view_matrix();
-    glm::mat4 projectionMatrix = camera.projection_matrix(proj_type);
+    shader->use();
 
     glm::mat4 cardModelMatrix(1.0f);
-
+    glm::mat4 viewMatrix = camera.view_matrix();
+    glm::mat4 projectionMatrix = camera.projection_matrix(proj_type);
     glm::mat4 modelViewProjectionMatrix = projectionMatrix * viewMatrix * cardModelMatrix;
-
-    CHECK_GL_ERROR();
-    int loc = glGetUniformLocation(shaderProgram, "modelViewProjectionMatrix");
-    CHECK_GL_ERROR();
-    glUniformMatrix4fv(loc, 1, false, &modelViewProjectionMatrix[0].x);
-    CHECK_GL_ERROR();
+    shader->set_uniform("modelViewProjectionMatrix", &modelViewProjectionMatrix[0].x);
 
     // CARD 1
     glActiveTexture(GL_TEXTURE0);
@@ -427,11 +307,8 @@ int main() {
     CHECK_GL_ERROR();
     glUseProgram(0);
 
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+    window->update();
   }
-
-  glfwTerminate();
 
   auto end = std::chrono::system_clock::now();
   std::chrono::duration<double> elapsed_seconds = end - start;
