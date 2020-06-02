@@ -7,10 +7,7 @@
 #include <chrono>
 #include <ctime>
 #include <string>
-#include <fstream>
-#include <streambuf>
 #include <cstdlib>
-#include <boost/dll/runtime_symbol_info.hpp>
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -21,17 +18,13 @@
 #include <glm/ext/scalar_constants.hpp> // glm::pi
 #include <glm/gtx/string_cast.hpp> // glm::to_string
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
 #include "camera.hpp"
 #include "window.hpp"
 #include "shader.hpp"
 #include "card.hpp"
+#include "texture.hpp"
 
 using namespace open_pokemon_tcg;
-
-Camera camera;
 
 bool checkGLError(const char* file, int line) {
 	bool wasError = false;
@@ -54,37 +47,7 @@ void print_system_info() {
   std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 }
 
-GLuint load_texture(std::string relative_img_path) {
-  std::string res_path = boost::dll::program_location().parent_path().string() + "/../res/img/";
-  std::string img_path = res_path + relative_img_path;
-
-  int w, h, comp;
-  unsigned char* image = stbi_load(img_path.c_str(), &w, &h, &comp, STBI_rgb_alpha);
-  if (image == NULL)
-    std::cout << "Cannot load texture: " << img_path << std::endl;
-
-  GLuint texture;
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-  free(image);
-
-  // clamp coords
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-  // Texture filtering
-  glGenerateMipmap(GL_TEXTURE_2D);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-  // Max samples (EXT stands for extension, and thus not from OpenGL specification)
-  float anisotropy = 16.0f;
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
-
-  return texture;
-}
-
+Camera camera;
 ProjectionType proj_type = ProjectionType::PERSPECTIVE;
 
 bool debug_mode = false;
@@ -163,18 +126,15 @@ int main() {
 
   print_system_info();
 
-  GLuint back_tex = load_texture("cardback.png");
+  GLuint back_tex = Texture("cardback.png").id();
 
-  GLuint tex = load_texture("test.png");
-  Card c = Card(glm::vec3(-1.0f), Orientation(), tex);
+  Card c = Card(glm::vec3(-1.0f), Orientation(), Texture("test.png").id());
   Card c_back = Card(glm::vec3(-1.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), back_tex);
 
-  tex = load_texture("test2.png");
-  Card c2 = Card(glm::vec3(0.0f), Orientation(), tex);
+  Card c2 = Card(glm::vec3(0.0f), Orientation(), Texture("test2.png").id());
   Card c2_back = Card(glm::vec3(0.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), back_tex);
 
-  tex = load_texture("test3.png");
-  Card c3 = Card(glm::vec3(1.0f), Orientation(), tex);
+  Card c3 = Card(glm::vec3(1.0f), Orientation(), Texture("test3.png").id());
   Card c3_back = Card(glm::vec3(1.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), back_tex);
 
   Shader *shader = new Shader("simple.vert", "simple.frag");
@@ -192,7 +152,6 @@ int main() {
 
     shader->use();
 
-    // glm::mat4 cardModelMatrix(1.0f);
     glm::mat4 cardModelMatrix = Card::model_matrix;
     glm::mat4 viewMatrix = camera.view_matrix();
     glm::mat4 projectionMatrix = camera.projection_matrix(proj_type);
