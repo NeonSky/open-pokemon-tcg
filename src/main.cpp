@@ -27,6 +27,7 @@
 #include "camera.hpp"
 #include "window.hpp"
 #include "shader.hpp"
+#include "card.hpp"
 
 using namespace open_pokemon_tcg;
 
@@ -53,60 +54,6 @@ void print_system_info() {
   std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 }
 
-GLuint create_vao(const std::vector<float> positions, const std::vector<float> uv_coords) {
-  unsigned int pos_buffer;
-  glGenBuffers(1, &pos_buffer); // Gen buffer object and store buffer id
-  glBindBuffer(GL_ARRAY_BUFFER, pos_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_STATIC_DRAW);
-
-  const float colors[] = {
-    //   R     G     B
-    1.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-    1.0f, 1.0f, 0.0f
-  };
-
-  unsigned int color_buffer;
-  glGenBuffers(1, &color_buffer); // Gen buffer object and store buffer id
-  glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-
-  unsigned int uv_buffer;
-  glGenBuffers(1, &uv_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, uv_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * uv_coords.size(), uv_coords.data(), GL_STATIC_DRAW);
-
-  GLuint vao; // Vertex Array Object
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-  // INDICES
-  unsigned int index_buffer;
-  const int indices[] = {
-    0, 1, 2, // Triangle 1
-    2, 3, 0  // Triangle 2
-	};
-	glGenBuffers(1, &index_buffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-
-	glBindBuffer(GL_ARRAY_BUFFER, pos_buffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-	glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, uv_buffer);
-	glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
-
-	glEnableVertexAttribArray(0); // Enable the vertex position attribute
-	glEnableVertexAttribArray(1); // Enable the vertex color attribute
-	glEnableVertexAttribArray(2); // Enable the uv coord attribute
-
-  return vao;
-}
-
 GLuint load_texture(std::string relative_img_path) {
   std::string res_path = boost::dll::program_location().parent_path().string() + "/../res/img/";
   std::string img_path = res_path + relative_img_path;
@@ -114,11 +61,7 @@ GLuint load_texture(std::string relative_img_path) {
   int w, h, comp;
   unsigned char* image = stbi_load(img_path.c_str(), &w, &h, &comp, STBI_rgb_alpha);
   if (image == NULL)
-    std::cout << "Cannot load texture" << std::endl;
-  else {
-    std::cout << "img path: " << img_path << std::endl;
-    std::cout << "img size: " << w << " " << h << std::endl;
-  }
+    std::cout << "Cannot load texture: " << img_path << std::endl;
 
   GLuint texture;
   glGenTextures(1, &texture);
@@ -194,38 +137,6 @@ void on_scroll([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoff
   camera.set_zoom(zoom);
 }
 
-struct Card {
-  GLuint vao;
-  GLuint tex;
-};
-
-#include "orientation.hpp"
-
-Card create_card(glm::vec3 pos, Orientation orientation, std::string relative_img_path) {
-
-  float width = 1.0f;
-  float height = 1.0f;
-  glm::vec3 botleft = pos - (width/2.0f) * orientation.right() - (height/2.0f) * orientation.up();
-  glm::vec3 botright = pos + (width/2.0f) * orientation.right() - (height/2.0f) * orientation.up();
-  glm::vec3 topleft = pos - (width/2.0f) * orientation.right() + (height/2.0f) * orientation.up();
-  glm::vec3 topright = pos + (width/2.0f) * orientation.right() + (height/2.0f) * orientation.up();
-
-  GLuint vao = create_vao({
-      //	 X      Y     Z
-      botleft.x, botleft.y, botleft.z,
-      botright.x, botright.y, botright.z,
-      topright.x, topright.y, topright.z,
-      topleft.x, topleft.y, topleft.z,
-    }, {
-      0.0f, 1.0f, // (u,v) for v0
-      1.0f, 1.0f, // (u,v) for v1
-      1.0f, 0.0f, // (u,v) for v2
-      0.0f, 0.0f, // (u,v) for v3
-    });
-  GLuint tex = load_texture(relative_img_path);
-  return Card{vao, tex};
-}
-
 int main() {
   auto start = std::chrono::system_clock::now();
   std::time_t start_time = std::chrono::system_clock::to_time_t(start);
@@ -252,11 +163,19 @@ int main() {
 
   print_system_info();
 
-  Card card = create_card(glm::vec3(0.0f), Orientation(), "test.png");
-  Card card_back = create_card(glm::vec3(0.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), "cardback.png");
+  GLuint back_tex = load_texture("cardback.png");
 
-  Card card2 = create_card(glm::vec3(1.0f), Orientation(), "test2.png");
-  Card card2_back = create_card(glm::vec3(1.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), "cardback.png");
+  GLuint tex = load_texture("test.png");
+  Card c = Card(glm::vec3(-1.0f), Orientation(), tex);
+  Card c_back = Card(glm::vec3(-1.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), back_tex);
+
+  tex = load_texture("test2.png");
+  Card c2 = Card(glm::vec3(0.0f), Orientation(), tex);
+  Card c2_back = Card(glm::vec3(0.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), back_tex);
+
+  tex = load_texture("test3.png");
+  Card c3 = Card(glm::vec3(1.0f), Orientation(), tex);
+  Card c3_back = Card(glm::vec3(1.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), back_tex);
 
   Shader *shader = new Shader("simple.vert", "simple.frag");
 
@@ -267,38 +186,25 @@ int main() {
   auto t = Orientation(fwd);
   camera = Camera(Orientation());
 
+  CHECK_GL_ERROR();
   while (!window->is_closing()) {
     window->clear_screen();
 
     shader->use();
 
-    glm::mat4 cardModelMatrix(1.0f);
+    // glm::mat4 cardModelMatrix(1.0f);
+    glm::mat4 cardModelMatrix = Card::model_matrix;
     glm::mat4 viewMatrix = camera.view_matrix();
     glm::mat4 projectionMatrix = camera.projection_matrix(proj_type);
     glm::mat4 modelViewProjectionMatrix = projectionMatrix * viewMatrix * cardModelMatrix;
     shader->set_uniform("modelViewProjectionMatrix", &modelViewProjectionMatrix[0].x);
 
-    // CARD 1
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, card.tex);
-    glBindVertexArray(card.vao);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, card_back.tex);
-    glBindVertexArray(card_back.vao);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-    // CARD 2
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, card2.tex);
-    glBindVertexArray(card2.vao);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, card2_back.tex);
-    glBindVertexArray(card2_back.vao);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    c.render();
+    c_back.render();
+    c2.render();
+    c2_back.render();
+    c3.render();
+    c3_back.render();
 
     // Transparency
     glEnable(GL_BLEND);
