@@ -126,24 +126,29 @@ int main() {
 
   print_system_info();
 
-  GLuint back_tex = Texture("cardback.png").id();
+  std::vector<Card> cards = {
+    Card(glm::vec3(-1.0f), Orientation(), Texture("test1.png").id()),
+    Card(glm::vec3(0.0f), Orientation(), Texture("test2.png").id()),
+    Card(glm::vec3(1.0f), Orientation(), Texture("test3.png").id()),
+  };
 
-  Card c = Card(glm::vec3(-1.0f), Orientation(), Texture("test.png").id());
-  Card c_back = Card(glm::vec3(-1.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), back_tex);
-
-  Card c2 = Card(glm::vec3(0.0f), Orientation(), Texture("test2.png").id());
-  Card c2_back = Card(glm::vec3(0.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), back_tex);
-
-  Card c3 = Card(glm::vec3(1.0f), Orientation(), Texture("test3.png").id());
-  Card c3_back = Card(glm::vec3(1.0f), Orientation(glm::vec3(0.0f, 0.0f, 1.0f)), back_tex);
+  srand(time(NULL));
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 2; j++) {
+      int ind = (rand() % 3) + 1;
+      float x = (float) i / 2.0f;
+      float z = (float) j / 2.0f;
+      cards.push_back(Card(glm::vec3(x, 0.0f, z), Orientation(glm::vec3(0.01f, -1.0f, 0.0f)), Texture("test" + std::to_string(ind) + ".png").id()));
+      // cards.push_back(Card(glm::vec3(i, 0.0f, j), Orientation(), Texture("test" + std::to_string(ind) + ".png").id()));
+    }
+  }
 
   Shader *shader = new Shader("simple.vert", "simple.frag");
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
 
-  glm::vec3 fwd = glm::vec3(0.0f, 0.0f, -1.0f);
-  auto t = Orientation(fwd);
+  // camera = Camera(Orientation(glm::vec3(1.0f, 0.0f, 1.0f))); // FIXME
   camera = Camera(Orientation());
 
   CHECK_GL_ERROR();
@@ -152,18 +157,16 @@ int main() {
 
     shader->use();
 
-    glm::mat4 cardModelMatrix = Card::model_matrix;
     glm::mat4 viewMatrix = camera.view_matrix();
     glm::mat4 projectionMatrix = camera.projection_matrix(proj_type);
-    glm::mat4 modelViewProjectionMatrix = projectionMatrix * viewMatrix * cardModelMatrix;
-    shader->set_uniform("modelViewProjectionMatrix", &modelViewProjectionMatrix[0].x);
 
-    c.render();
-    c_back.render();
-    c2.render();
-    c2_back.render();
-    c3.render();
-    c3_back.render();
+    for (Card &c : cards) {
+      glm::mat4 cardModelMatrix = c.model_matrix();
+      glm::mat4 modelViewProjectionMatrix = projectionMatrix * viewMatrix * cardModelMatrix;
+      shader->set_uniform("modelViewProjectionMatrix", &modelViewProjectionMatrix[0].x);
+
+      c.render();
+    }
 
     // Transparency
     glEnable(GL_BLEND);

@@ -11,10 +11,12 @@ namespace open_pokemon_tcg{
   public:
     Card(glm::vec3 pos, Orientation orientation, GLuint texture);
     ~Card();
+
+    // Mutators
     void render();
 
     // Accessors
-    static constexpr glm::mat4 model_matrix = glm::mat4(1.0f); // TODO: make this individual
+    glm::mat4 model_matrix();
   private:
     glm::vec3 pos;
     Orientation orientation;

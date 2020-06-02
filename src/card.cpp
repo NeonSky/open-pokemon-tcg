@@ -1,5 +1,6 @@
 #include "card.hpp"
 
+#include "texture.hpp"
 #include <vector>
 
 using namespace open_pokemon_tcg;
@@ -79,8 +80,23 @@ Card::Card(glm::vec3 pos, Orientation orientation, GLuint texture) : pos(pos), o
     1.0f, 0.0f, // (u,v) for v2
     0.0f, 0.0f, // (u,v) for v3
   });
-
   this->front_vao = vao;
+
+  vao = my_create_vao({
+      //	 X      Y     Z
+      topleft.x, topleft.y, topleft.z,
+      topright.x, topright.y, topright.z,
+      botright.x, botright.y, botright.z,
+      botleft.x, botleft.y, botleft.z,
+  }, {
+      0.0f, 0.0f, // (u,v) for v0
+      1.0f, 0.0f, // (u,v) for v1
+      1.0f, 1.0f, // (u,v) for v2
+      0.0f, 1.0f, // (u,v) for v3
+  });
+  this->back_vao = vao;
+
+  this->back_texture = Texture("cardback.png").id();
 }
 
 Card::~Card() {}
@@ -92,8 +108,14 @@ void Card::render() {
   glBindVertexArray(this->front_vao);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-  // glActiveTexture(GL_TEXTURE0);
-  // glBindTexture(GL_TEXTURE_2D, this->back_texture);
-  // glBindVertexArray(this->back_vao);
-  // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, this->back_texture);
+  glBindVertexArray(this->back_vao);
+  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+glm::mat4 Card::model_matrix() {
+  glm::mat4 m = glm::mat4(1.0f);
+  m[3] = glm::vec4(this->pos, 1);
+  return m;
 }

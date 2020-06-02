@@ -4,6 +4,7 @@
 
 using namespace open_pokemon_tcg;
 
+// FIXME: does not handle forward vectors parallel with world_up
 Orientation::Orientation() {
   this->_forward = glm::vec3(0.0f, 0.0f, -1.0f);
   this->_right = glm::normalize(glm::cross(this->_forward, this->world_up));
