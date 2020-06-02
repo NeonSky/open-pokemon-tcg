@@ -10,6 +10,7 @@ namespace open_pokemon_tcg{
     Orientation(glm::vec3 forward);
     ~Orientation();
 
+    // Accessors
     glm::vec3 forward() const { return _forward; }
     glm::vec3 right() const { return _right; }
     glm::vec3 up() const { return _up; }
