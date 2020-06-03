@@ -14,6 +14,7 @@ set(CMAKE_MESSAGE_LOG_LEVEL "DEBUG")
 # Load configuration cmake files from dependencies.
 find_package(glfw3 3.3.2 CONFIG REQUIRED)
 find_package(glm 0.9.9.8 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
@@ -32,6 +33,8 @@ target_compile_options(OpenPokemonTCG PRIVATE -Werror -Wall -Wextra)
 target_link_libraries(OpenPokemonTCG PRIVATE glfw)
 target_link_libraries(OpenPokemonTCG PRIVATE glm)
 target_link_libraries(OpenPokemonTCG PRIVATE glad)
+target_link_libraries(OpenPokemonTCG PRIVATE imgui::imgui)
+target_link_libraries(OpenPokemonTCG PRIVATE imgui_glfw)
 
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
