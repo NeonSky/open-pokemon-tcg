@@ -44,6 +44,9 @@ glm::vec3 Transform::right() const {
   return rotation_matrix() * this->world_right;
 }
 
+// https://www.wikiwand.com/en/Rotation_matrix
+// https://www.wikiwand.com/en/Euler_angles
+// https://www.wikiwand.com/simple/Pitch,_yaw,_and_roll
 glm::mat4 Transform::rotation_matrix() const {
   return glm::eulerAngleYXZ(-this->rotation.y, -this->rotation.x, -this->rotation.z);
 }
