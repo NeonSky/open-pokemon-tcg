@@ -148,8 +148,7 @@ int main() {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
 
-  // camera = Camera(Orientation(glm::vec3(1.0f, 0.0f, 1.0f))); // FIXME
-  camera = Camera(Orientation());
+  camera = Camera(Transform(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
 
   CHECK_GL_ERROR();
   while (!window->is_closing()) {

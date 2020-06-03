@@ -1,6 +1,6 @@
 #pragma once
 
-#include "orientation.hpp"
+#include "transform.hpp"
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
@@ -25,7 +25,7 @@ namespace open_pokemon_tcg{
   class Camera {
   public:
     Camera();
-    Camera(Orientation orientation);
+    Camera(Transform);
     ~Camera();
 
     // Mutators
@@ -71,8 +71,7 @@ namespace open_pokemon_tcg{
       }
     };
 
-    glm::vec3 pos;
-    Orientation orientation;
+    Transform transform;
     Perspective perspective;
     Orthographic orthographic;
     float movement_speed = 0.5f;
