@@ -55,7 +55,11 @@ namespace open_pokemon_tcg {
   }
   CardRotation::~CardRotation() {}
 
-  void CardRotation::update() {}
+  void CardRotation::update() {
+    this->debug_card.transform.position = pos;
+    this->debug_card.transform.rotation = rot;
+    this->debug_card.transform.scale = scale;
+  }
 
   void CardRotation::render() {
     this->shader->use();
@@ -68,9 +72,6 @@ namespace open_pokemon_tcg {
       c.render(view_projection_matrix, this->shader);
     }
 
-    this->debug_card.transform.position = pos;
-    this->debug_card.transform.rotation = rot;
-    this->debug_card.transform.scale = scale;
     this->debug_card.render(view_projection_matrix, shader);
   }
 
