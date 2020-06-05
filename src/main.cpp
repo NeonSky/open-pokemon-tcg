@@ -1,28 +1,20 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
+
+#include <imgui.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_glfw.h>
 
 #include <iostream>
-#include <vector>
 #include <chrono>
 #include <ctime>
 #include <string>
 #include <cstdlib>
 
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
-#include <glm/ext/matrix_clip_space.hpp> // glm::perspective
-#include <glm/ext/scalar_constants.hpp> // glm::pi
-#include <glm/gtx/string_cast.hpp> // glm::to_string
-
-#include "camera.hpp"
 #include "window.hpp"
-#include "shader.hpp"
 #include "card.hpp"
 #include "texture.hpp"
+#include "scenes/debug/card_rotation.hpp"
 
 using namespace open_pokemon_tcg;
 
@@ -35,7 +27,6 @@ bool checkGLError(const char* file, int line) {
 	return wasError;
 }
 
-
 #define CHECK_GL_ERROR()                                      \
 	{                                                          \
 		checkGLError(__FILE__, __LINE__);  \
@@ -47,57 +38,15 @@ void print_system_info() {
   std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
 }
 
-Camera camera;
-ProjectionType proj_type = ProjectionType::PERSPECTIVE;
+void gui(IScene* scene) {
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplGlfw_NewFrame();
+  ImGui::NewFrame();
 
-bool debug_mode = false;
-void on_key(GLFWwindow* window, [[maybe_unused]] int key, [[maybe_unused]] int scancode, [[maybe_unused]] int action, [[maybe_unused]] int mods) {
+  scene->gui();
 
-  if (glfwGetKey(window, GLFW_KEY_W) && glfwGetKey(window, GLFW_KEY_S))
-    std::cout << "Forward and backward!" << std::endl;
-
-  if (glfwGetKey(window, GLFW_KEY_W))
-    camera.move(Direction::FORWARD);
-  if (glfwGetKey(window, GLFW_KEY_S))
-    camera.move(Direction::BACKWARD);
-  if (glfwGetKey(window, GLFW_KEY_D))
-    camera.move(Direction::RIGHT);
-  if (glfwGetKey(window, GLFW_KEY_A))
-    camera.move(Direction::LEFT);
-  if (glfwGetKey(window, GLFW_KEY_E))
-    camera.move(Direction::UP);
-  if (glfwGetKey(window, GLFW_KEY_Q))
-    camera.move(Direction::DOWN);
-
-  if (glfwGetKey(window, GLFW_KEY_P)) {
-    if (proj_type == ProjectionType::PERSPECTIVE)
-      proj_type = ProjectionType::ORTHOGRAPHIC;
-    else
-      proj_type = ProjectionType::PERSPECTIVE;
-  }
-
-  if (glfwGetKey(window, GLFW_KEY_T)) {
-    debug_mode = !debug_mode;
-    if (debug_mode)
-      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    else
-      glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-  }
-}
-
-void on_mouse([[maybe_unused]] GLFWwindow* window, double xpos, double ypos) {
-  if (debug_mode)
-    camera.lookat_mouse(xpos, ypos);
-}
-
-float zoom = 0.0;
-void on_scroll([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) {
-  zoom += (float)yoffset;
-  if (zoom < 1.0f)
-    zoom = 1.0f;
-  if (zoom > 45.0f)
-    zoom = 45.0f;
-  camera.set_zoom(zoom);
+  ImGui::Render();
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 int main() {
@@ -120,51 +69,27 @@ int main() {
     return -1;
   }
 
-  window->add_on_key_callback(on_key);
-  window->add_on_cursor_callback(on_mouse);
-  window->add_on_scroll_callback(on_scroll);
-
   print_system_info();
 
-  std::vector<Card> cards;
-
-  srand(time(NULL));
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 2; j++) {
-      int ind = (rand() % 2) + 1;
-      float x = (float) i;
-      float z = (float) j;
-      cards.push_back(Card(Transform(glm::vec3(x, 0.0f, z)), Texture("test" + std::to_string(ind) + ".png").id()));
-    }
-  }
-
-  Shader *shader = new Shader("simple.vert", "simple.frag");
+  IScene* scene = new CardRotation(window);
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
 
-  camera = Camera(Transform(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)));
+  window->init_gui();
 
   CHECK_GL_ERROR();
   while (!window->is_closing()) {
     window->clear_screen();
 
-    shader->use();
-
-    glm::mat4 viewMatrix = camera.view_matrix();
-    glm::mat4 projectionMatrix = camera.projection_matrix(proj_type);
-    glm::mat4 view_projection_matrix = projectionMatrix * viewMatrix;
-
-    for (Card &c : cards) {
-      c.render(view_projection_matrix, shader);
-    }
-
-    // Transparency
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     CHECK_GL_ERROR();
+    scene->update();
+    CHECK_GL_ERROR();
+    scene->render();
+    CHECK_GL_ERROR();
+
     glUseProgram(0);
+    gui(scene);
 
     window->update();
   }

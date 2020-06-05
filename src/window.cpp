@@ -1,5 +1,9 @@
 #include "window.hpp"
 
+#include <imgui.h>
+#include <imgui_internal.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_glfw.h>
 #include <stdexcept>
 
 using namespace open_pokemon_tcg;
@@ -18,7 +22,38 @@ Window::Window(int width, int height, const char* title) {
   }
 
   glfwMakeContextCurrent(window);
+  glfwSetWindowUserPointer(window, reinterpret_cast<void *>(this));
+
+  glfwSetKeyCallback(window, [](GLFWwindow* window, [[maybe_unused]] int key, [[maybe_unused]] int scancode, [[maybe_unused]] int action, [[maybe_unused]] int mods) {
+    Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+    for (std::function<void(GLFWwindow*)> c : w->on_key_callbacks)
+      c(window);
+  });
+
+  glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
+    Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+    for (std::function<void(GLFWwindow*, float, float)> c : w->on_cursor_callbacks)
+      c(window, xpos, ypos);
+  });
+
+  glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
+    Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+    for (std::function<void(GLFWwindow*, float, float)> c : w->on_scroll_callbacks)
+      c(window, xoffset, yoffset);
+  });
+
   this->window = window;
+}
+
+void Window::init_gui() {
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO(); (void)io;
+  ImGui::StyleColorsDark();
+
+  std::string glsl_version = "#version 420";
+  ImGui_ImplGlfw_InitForOpenGL(this->window, true);
+  ImGui_ImplOpenGL3_Init(glsl_version.c_str());
 }
 
 Window::~Window() {
@@ -39,14 +74,14 @@ bool Window::is_closing() {
   return glfwWindowShouldClose(this->window);
 }
 
-void Window::add_on_key_callback(GLFWkeyfun callback) {
-  glfwSetKeyCallback(window, callback);
+void Window::add_on_key_callback(std::function<void(GLFWwindow*)> callback) {
+  this->on_key_callbacks.push_back(callback);
 }
 
-void Window::add_on_cursor_callback(GLFWcursorposfun callback) {
-  glfwSetCursorPosCallback(window, callback);
+void Window::add_on_cursor_callback(std::function<void(GLFWwindow*, float, float)> callback) {
+  this->on_cursor_callbacks.push_back(callback);
 }
 
-void Window::add_on_scroll_callback(GLFWscrollfun callback) {
-  glfwSetScrollCallback(window, callback);
+void Window::add_on_scroll_callback(std::function<void(GLFWwindow*, float, float)> callback) {
+  this->on_scroll_callbacks.push_back(callback);
 }
