@@ -1,12 +1,10 @@
 #include "camera.hpp"
-
-// TODO: only when debugging, move to lib
-#include <iostream>
-#include <glm/gtx/string_cast.hpp>
+#include "logger.hpp"
 
 #include <algorithm>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 using namespace open_pokemon_tcg;
 
@@ -47,11 +45,9 @@ void Camera::move(Direction move_dir) {
     displacement_dir = -this->transform.up();
     break;
   default:
-    // std::cerr << "Direction not supported" << std::endl;
-    assert(false); // TODO: change to error
+    LOG_ERROR("Direction type not supported: " + std::to_string(move_dir));
   }
   this->transform.position += this->movement_speed * displacement_dir;
-  // std::cout << "Camera now at: " << glm::to_string(this->pos) << std::endl;
 }
 
 // void Camera::look_at(glm::vec3 target) {
@@ -88,7 +84,6 @@ void Camera::lookat_mouse(float mouse_xpos, float mouse_ypos) {
   pitch = std::clamp(pitch, -glm::half_pi<double>(), glm::half_pi<double>());
 
   this->transform.set_rotation(yaw, pitch, 0.0f);
-  // std::cout << "Camera now looking along: " << glm::to_string(this->transform.forward()) << std::endl;
 }
 
 glm::mat4 Camera::view_matrix() const {
@@ -119,7 +114,7 @@ glm::mat4 Camera::projection_matrix(ProjectionType projection_type) const {
       this->orthographic.far
     );
   default:
-    // std::cerr << "Projection type not supported" << std::endl;
-    assert(false); // TODO: change to error
+    LOG_ERROR("Projection type not supported: " + std::to_string(projection_type));
+    assert(false);
   }
 }

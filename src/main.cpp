@@ -1,3 +1,9 @@
+#include "scenes/debug/card_rotation.hpp"
+#include "window.hpp"
+#include "card.hpp"
+#include "texture.hpp"
+#include "logger.hpp"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -5,38 +11,13 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_glfw.h>
 
-#include <iostream>
 #include <chrono>
 #include <ctime>
 #include <string>
 #include <cstdlib>
 
-#include "window.hpp"
-#include "card.hpp"
-#include "texture.hpp"
-#include "scenes/debug/card_rotation.hpp"
 
 using namespace open_pokemon_tcg;
-
-bool checkGLError(const char* file, int line) {
-	bool wasError = false;
-	for (GLenum glErr = glGetError(); glErr != GL_NO_ERROR; glErr = glGetError()) {
-      std::cerr << "GL Error #" << glErr << " in " << file << " at line: " << line << std::endl;
-      wasError = true;
-    }
-	return wasError;
-}
-
-#define CHECK_GL_ERROR()                                      \
-	{                                                          \
-		checkGLError(__FILE__, __LINE__);  \
-	}
-
-void print_system_info() {
-  std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
-  std::cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << std::endl;
-  std::cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << std::endl;
-}
 
 void gui(IScene* scene) {
   ImGui_ImplOpenGL3_NewFrame();
@@ -50,26 +31,28 @@ void gui(IScene* scene) {
 }
 
 int main() {
+  Logger::set_profile(Logger::Profile::DEV);
+  LOG_INFO("Program started.");
   auto start = std::chrono::system_clock::now();
-  std::time_t start_time = std::chrono::system_clock::to_time_t(start);
-  std::cout << "### Program started at: " << std::ctime(&start_time);
 
   Window *window;
   try {
     window = new Window(1920/2, 1080, "OpenPokemonTCG");
   } catch(const std::exception& e) {
-    std::cout << e.what() << std::endl;
+    LOG_ERROR(e.what());
     return -1;
   }
 
   int status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
   if (!status) {
-    std::cout << "Failed to init GLAD" << std::endl;
+    LOG_ERROR("Failed to init GLAD");
     glfwTerminate();
     return -1;
   }
 
-  print_system_info();
+  LOG_INFO("OpenGL version: " + std::string((const char*)glGetString(GL_VERSION)));
+  LOG_INFO("OpenGL renderer: " + std::string((const char*)glGetString(GL_RENDERER)));
+  LOG_INFO("OpenGL vendor: " + std::string((const char*)glGetString(GL_VENDOR)));
 
   IScene* scene = new CardRotation(window);
 
@@ -95,9 +78,9 @@ int main() {
   }
 
   auto end = std::chrono::system_clock::now();
+  LOG_INFO("Program terminated.");
+
   std::chrono::duration<double> elapsed_seconds = end - start;
-  std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-  std::cout << "Program terminated at: " << std::ctime(&end_time);
-  std::cout << "Uptime: " << elapsed_seconds.count() << " seconds.\n";
+  LOG_INFO("Uptime: " + std::to_string(elapsed_seconds.count()) + " seconds.");
 }
 
