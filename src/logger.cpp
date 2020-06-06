@@ -16,6 +16,9 @@ bool checkGLError(const char* file, int line) {
 
 void Logger::set_profile(Logger::Profile profile) {
   switch (profile) {
+  case Profile::DEBUG:
+    apply_debug_profile();
+    break;
   case Profile::DEV:
     apply_dev_profile();
     break;
@@ -25,8 +28,12 @@ void Logger::set_profile(Logger::Profile profile) {
   }
 }
 
-void Logger::apply_dev_profile() {
+void Logger::apply_debug_profile() {
   spdlog::set_level(spdlog::level::debug);
+}
+
+void Logger::apply_dev_profile() {
+  spdlog::set_level(spdlog::level::info);
 }
 
 void Logger::apply_release_profile() {
