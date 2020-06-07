@@ -5,6 +5,8 @@
 #include "../../texture.hpp"
 #include "../../window.hpp"
 #include "../../debug_camera.hpp"
+#include "../../logger.hpp"
+#include "../../pokemon_tcg_api.hpp"
 
 #include <imgui.h>
 #include <glm/glm.hpp>
@@ -25,7 +27,7 @@ namespace open_pokemon_tcg {
   private:
     DebugCamera camera;
     std::vector<Card> cards;
-    Card debug_card;
+    Card *debug_card;
     Shader *shader;
 
     glm::vec3 pos = glm::vec3(0.0f, 0.1f, 0.0f);
@@ -38,27 +40,34 @@ namespace open_pokemon_tcg {
   CardRotation::CardRotation(Window* window) : camera(
                                                      DebugCamera(window,
                                                                  Transform(glm::vec3(0.0f, 2.0f, 0.0f),
-                                                                           glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)))),
-                                              debug_card(Card(Transform(), Texture("test3.png").id())) {
-
-    srand(time(NULL));
-    for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 2; j++) {
-        int ind = (rand() % 2) + 1;
-        float x = (float) i;
-        float z = (float) j;
-        this->cards.push_back(Card(Transform(glm::vec3(x, 0.0f, z)), Texture("test" + std::to_string(ind) + ".png").id()));
-      }
-    }
+                                                                           glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)))) {
 
     this->shader = new Shader("simple.vert", "simple.frag");
+
+    PokemonTcgApi* api = new PokemonTcgApi();
+
+    // TODO: migrate to new scene where we test loading decks.
+    nlohmann::json deck = api->load_deck("Team Rocket").data;
+    int row = 0;
+    for(auto &card : deck[0]["cards"]) {
+      for(int i = 0; i < card["count"]; i++) {
+        std::string id = card["id"];
+        Texture tex = api->load_card(id).texture;
+
+        this->cards.push_back(Card(Transform(glm::vec3(i, 0.0f, row)), tex.id()));
+      }
+      row++;
+    }
+
+    debug_card = new Card(Transform(), Texture("base1-26.png").id());
+
   }
   CardRotation::~CardRotation() {}
 
   void CardRotation::update() {
-    this->debug_card.transform.position = pos;
-    this->debug_card.transform.rotation = rot;
-    this->debug_card.transform.scale = scale;
+    this->debug_card->transform.position = pos;
+    this->debug_card->transform.rotation = rot;
+    this->debug_card->transform.scale = scale;
   }
 
   void CardRotation::render() {
@@ -72,7 +81,7 @@ namespace open_pokemon_tcg {
       c.render(view_projection_matrix, this->shader);
     }
 
-    this->debug_card.render(view_projection_matrix, shader);
+    this->debug_card->render(view_projection_matrix, shader);
   }
 
   void CardRotation::gui() {
