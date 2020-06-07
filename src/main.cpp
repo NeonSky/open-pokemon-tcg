@@ -1,4 +1,5 @@
-#include "scenes/debug/card_rotation.hpp"
+#include "scenes/debug/card_transform.hpp"
+#include "scenes/debug/deck_loading.hpp"
 #include "window.hpp"
 #include "card.hpp"
 #include "texture.hpp"
@@ -54,7 +55,8 @@ int main() {
   LOG_INFO("OpenGL renderer: " + std::string((const char*)glGetString(GL_RENDERER)));
   LOG_INFO("OpenGL vendor: " + std::string((const char*)glGetString(GL_VENDOR)));
 
-  IScene* scene = new CardRotation(window);
+  // IScene* scene = new scenes::CardTransform(window);
+  IScene* scene = new scenes::DeckLoading(window);
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
