@@ -1,7 +1,7 @@
 #include "texture.hpp"
+#include "logger.hpp"
 
 #include <boost/dll/runtime_symbol_info.hpp>
-#include <stdexcept>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -17,7 +17,7 @@ Texture::Texture(std::string img_path) {
   int w, h, comp;
   unsigned char* image = stbi_load(full_img_path.c_str(), &w, &h, &comp, STBI_rgb_alpha);
   if (image == NULL)
-    throw std::runtime_error("Can not load texture: " + full_img_path);
+    LOG_ERROR("Can not load texture: " + full_img_path);
 
   glGenTextures(1, &this->_texture);
   glBindTexture(GL_TEXTURE_2D, this->_texture);

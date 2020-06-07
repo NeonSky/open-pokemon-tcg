@@ -31,7 +31,7 @@ void gui(IScene* scene) {
 }
 
 int main() {
-  Logger::set_profile(Logger::Profile::DEV);
+  Logger::set_profile(Logger::Profile::DEBUG);
   LOG_INFO("Program started.");
   auto start = std::chrono::system_clock::now();
 

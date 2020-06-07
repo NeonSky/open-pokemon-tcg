@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include "logger.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -12,13 +13,13 @@ Window::Window() : Window(1920, 1080, "OpenPokemonTCG") {}
 
 Window::Window(int width, int height, const char* title) {
   if (!glfwInit()) {
-    throw std::runtime_error("Failed to init glfw");
+    LOG_CRITICAL("Failed to init glfw.");
   }
 
   GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
   if (!window) {
     glfwTerminate();
-    throw std::runtime_error("Failed to create glfw window");
+    LOG_CRITICAL("Failed to create glfw window.");
   }
 
   glfwMakeContextCurrent(window);

@@ -1,4 +1,5 @@
 #include "shader.hpp"
+#include "logger.hpp"
 
 #include <boost/dll/runtime_symbol_info.hpp>
 #include <fstream>
@@ -22,7 +23,7 @@ Shader::Shader(std::string vertex_shader_path, std::string fragment_shader_path)
 	GLint ok = 0;
 	glGetProgramiv(this->program, GL_LINK_STATUS, &ok);
 	if(!ok)
-    throw std::runtime_error("Could not link program.");
+    LOG_ERROR("Could not link program.");
 }
 
 Shader::~Shader() {}
@@ -53,7 +54,7 @@ GLuint Shader::load_shader_file(std::string shader_path, GLenum shader_type) {
 	int ok = 0;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &ok);
 	if(!ok)
-    throw std::runtime_error("Could not compile shader: " + shader_path);
+    LOG_ERROR("Could not compile shader: " + shader_path);
 
   return shader;
 }
