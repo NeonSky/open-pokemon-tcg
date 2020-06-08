@@ -11,7 +11,7 @@ using namespace open_pokemon_tcg;
 Texture::Texture(std::string img_path) {
   stbi_set_flip_vertically_on_load(true); // Match opengl
 
-  std::string res_path = boost::dll::program_location().parent_path().string() + "/res/cache/cards/img/";
+  std::string res_path = boost::dll::program_location().parent_path().string() + "/res/";
   std::string full_img_path = res_path + img_path;
 
   int w, h, comp;

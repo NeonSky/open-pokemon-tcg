@@ -39,7 +39,7 @@ namespace open_pokemon_tcg::scenes {
                                  glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)))) {
 
     this->shader = new Shader("simple.vert", "simple.frag");
-    debug_card = new Card(Transform(), Texture("base1-26.png").id());
+    debug_card = new Card(Transform(), Texture("cache/cards/img/base1-26.png").id());
 
   }
   CardTransform::~CardTransform() {}

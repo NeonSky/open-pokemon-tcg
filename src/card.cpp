@@ -30,7 +30,7 @@ Card::Card(Transform transform, GLuint texture) : transform(transform), front_te
       0.0f, 1.0f, // (u,v) for v3
   });
 
-  this->back_texture = Texture("cardback.png").id();
+  this->back_texture = Texture("img/cardback.png").id();
 }
 
 Card::~Card() {}
