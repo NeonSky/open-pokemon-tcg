@@ -21,6 +21,10 @@ void Transform::set_rotation(float yaw, float pitch, float roll) {
   this->rotation = glm::vec3(pitch, yaw, roll);
 }
 
+Transform Transform::operator+(const Transform &other) const {
+  return Transform(this->position + other.position, this->rotation + other.rotation, this->scale + other.scale);
+}
+
 glm::mat4 Transform::matrix() const {
   glm::mat4 m = glm::mat4(1.0f);
 

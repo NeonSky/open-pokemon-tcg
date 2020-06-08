@@ -22,6 +22,8 @@ namespace open_pokemon_tcg {
     void set_rotation(float yaw, float pitch, float roll);
 
     // Accessors
+    Transform operator+(const Transform &other) const;
+
     glm::mat4 matrix() const;
     glm::vec3 forward() const;
     glm::vec3 up() const;
