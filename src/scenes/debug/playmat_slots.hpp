@@ -6,6 +6,7 @@
 #include "../../window.hpp"
 #include "../../debug_camera.hpp"
 #include "../../playmats/black_playmat.hpp"
+#include "../../playmats/green_playmat.hpp"
 
 #include <imgui.h>
 #include <glm/glm.hpp>
@@ -34,7 +35,7 @@ namespace open_pokemon_tcg::scenes {
     // GUI options
     bool show_cards = true;
     bool show_debug_card = false;
-    glm::vec3 debug_card_pos = glm::vec3(0.0f);
+    glm::vec3 debug_card_pos = glm::vec3(0.0f, 0.02f, 0.0f);
     glm::vec3 debug_card_rot = glm::vec3(0.0f);
   };
 
@@ -45,7 +46,7 @@ namespace open_pokemon_tcg::scenes {
     debug_card(Card(Transform(glm::vec3(0.0f, 0.01f, 0.0f)), Texture("img/cardback.png").id())) {
 
     this->shader = new Shader("simple.vert", "simple.frag");
-    this->playmat = new playmats::BlackPlaymat();
+    this->playmat = new playmats::GreenPlaymat();
 
     this->cards.push_back(Card(playmat->active_slot(IPlaymat::PlayerSide::PLAYER1), Texture("cache/cards/img/base1-8.png").id()));
     this->cards.push_back(Card(playmat->supporter_slot(IPlaymat::PlayerSide::PLAYER1), Texture("cache/cards/img/base1-8.png").id()));
