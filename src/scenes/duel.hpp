@@ -7,6 +7,7 @@
 #include "../debug_camera.hpp"
 #include "../deck.hpp"
 #include "../discard_pile.hpp"
+#include "../hand.hpp"
 #include "../pokemon_tcg_api.hpp"
 #include "../playmats/black_playmat.hpp"
 #include "../logger.hpp"
@@ -30,8 +31,12 @@ namespace open_pokemon_tcg::scenes {
 
   private:
     DebugCamera camera;
+
+    // TODO: Move these to player class
     Deck *deck;
     DiscardPile *discard_pile;
+    Hand *hand;
+
     Shader *shader;
     IPlaymat *playmat;
 
@@ -41,7 +46,7 @@ namespace open_pokemon_tcg::scenes {
 
   Duel::Duel(Window* window) :
     camera(DebugCamera(window,
-                       Transform(glm::vec3(0.0f, 7.5f, -7.5f),
+                       Transform(glm::vec3(0.0f, 7.0f, -8.0f),
                                  glm::vec3(-0.5f*glm::half_pi<float>(), 0.0f, 0.0f)))) {
 
     window->add_on_key_callback(std::bind(&Duel::on_key, this, std::placeholders::_1));
@@ -63,10 +68,16 @@ namespace open_pokemon_tcg::scenes {
     this->deck = new Deck(this->playmat->deck_slot(IPlaymat::PlayerSide::PLAYER1), cards);
     this->deck->shuffle();
     this->discard_pile = new DiscardPile(this->playmat->discard_slot(IPlaymat::PlayerSide::PLAYER1));
+
+    // TODO: maybe place relative to camera instead.
+    this->hand = new Hand(Transform(glm::vec3(0.0f, 2.0f, -5.5f), glm::vec3(0.5f * glm::half_pi<float>(), 0.0f, 0.0f)));
   }
   Duel::~Duel() {}
 
-  void Duel::update() {}
+  void Duel::update() {
+    this->hand->update();
+  }
+
   void Duel::render() {
     this->shader->use();
 
@@ -77,6 +88,7 @@ namespace open_pokemon_tcg::scenes {
     this->playmat->render(view_projection_matrix, this->shader);
     this->deck->render(view_projection_matrix, this->shader);
     this->discard_pile->render(view_projection_matrix, this->shader);
+    this->hand->render(view_projection_matrix, this->shader);
   }
 
   void Duel::gui() {}
@@ -86,14 +98,12 @@ namespace open_pokemon_tcg::scenes {
     if (glfwGetKey(window, GLFW_KEY_M)) {
       Card card = this->deck->draw();
       card.transform = this->playmat->discard_slot(IPlaymat::PlayerSide::PLAYER1);
-      discard_pile->add_on_top(card);
+      this->discard_pile->add_on_top(card);
     }
 
     // Hand
     if (glfwGetKey(window, GLFW_KEY_H)) {
-      // Card card = this->deck->draw();
-      // card.transform = this->playmat->discard_slot(IPlaymat::PlayerSide::PLAYER1);
-      // discard_pile->add_on_top(card);
+      this->hand->cards.push_back(this->deck->draw());
     }
   }
 }
