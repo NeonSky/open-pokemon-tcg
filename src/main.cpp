@@ -1,5 +1,4 @@
-#include "scenes/debug/card_transform.hpp"
-#include "scenes/debug/deck_loading.hpp"
+#include "scenes/duel.hpp"
 #include "window.hpp"
 #include "card.hpp"
 #include "texture.hpp"
@@ -32,13 +31,15 @@ void gui(IScene* scene) {
 }
 
 int main() {
+  srand(time(NULL));
+
   Logger::set_profile(Logger::Profile::DEBUG);
   LOG_INFO("Program started.");
   auto start = std::chrono::system_clock::now();
 
   Window *window;
   try {
-    window = new Window(1920/2, 1080, "OpenPokemonTCG");
+    window = new Window(1920/2, 1200, "OpenPokemonTCG");
   } catch(const std::exception& e) {
     LOG_ERROR(e.what());
     return -1;
@@ -55,8 +56,7 @@ int main() {
   LOG_INFO("OpenGL renderer: " + std::string((const char*)glGetString(GL_RENDERER)));
   LOG_INFO("OpenGL vendor: " + std::string((const char*)glGetString(GL_VENDOR)));
 
-  // IScene* scene = new scenes::CardTransform(window);
-  IScene* scene = new scenes::DeckLoading(window);
+  IScene* scene = new scenes::Duel(window);
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
