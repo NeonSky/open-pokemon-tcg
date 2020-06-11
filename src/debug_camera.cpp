@@ -1,6 +1,13 @@
 #include "debug_camera.hpp"
+#include "logger.hpp"
+
 #include <algorithm>
 #include <iostream>
+#include <GLFW/glfw3.h>
+#include <glm/gtx/transform.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 using namespace open_pokemon_tcg;
 
@@ -44,9 +51,31 @@ void DebugCamera::on_key(GLFWwindow* window) {
   }
 }
 
-void DebugCamera::on_cursor([[maybe_unused]] GLFWwindow* window, float xpos, float ypos) {
+void DebugCamera::on_cursor(GLFWwindow* window, float xpos, float ypos) {
+  int width, height;
+  glfwGetWindowSize(window, &width, &height);
+
+  // Viewport Space [0:width, 0:height]
+  float x = xpos;
+  float y = height - ypos; // In OpenGL, (0, 0) is top-left. We want (0, 0) to be bot-left.
+
+  // Normalized Device Space [-1:1, -1:1, -1:1]
+  glm::vec3 ndc(2.0f * (x / width) - 1.0f, 2.0f * (y / height) - 1.0f, -1.0f); // z = -1.0f since cursor points along camera's forward direction.
+
+  // Homogeneous Clip Space [-1:1, -1:1, -1:1, -1:1]
+  glm::vec4 clip_coords(ndc.x, ndc.y, ndc.z, 1.0f);
+
+  // View Space (Eye Space) [-inf:inf, -inf:inf, -inf:inf, -inf:inf]
+  glm::vec4 view_coords(glm::vec3(glm::inverse(projection_matrix()) * clip_coords), 0.0f);
+
+  // World Space [-inf:inf, -inf:inf, -inf:inf, -inf:inf]
+  glm::vec4 world_coords = glm::inverse(view_matrix()) * view_coords;
+
+  // Normalized 3D vector form
+  this->_mouse_ray = glm::normalize(glm::vec3(world_coords));
+
   if (this->free_look_mode)
-    this->camera.lookat_mouse(xpos, ypos);
+    this->camera.lookat_mouse(x, y);
 }
 
 void DebugCamera::on_scroll([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] float xoffset, float yoffset) {

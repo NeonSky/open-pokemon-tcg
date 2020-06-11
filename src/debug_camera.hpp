@@ -12,8 +12,10 @@ namespace open_pokemon_tcg {
     ~DebugCamera();
 
     // Accessors
+    Transform transform() const { return this->camera.transform(); };
     glm::mat4 view_matrix() const { return this->camera.view_matrix(); };
     glm::mat4 projection_matrix() const {return this->camera.projection_matrix(this->projection_type); };
+    glm::vec3 mouse_ray() const { return this->_mouse_ray; }
 
   private:
     static constexpr float zoom_min = 0.0f;
@@ -22,6 +24,7 @@ namespace open_pokemon_tcg {
     Camera camera;
     Window* window;
 
+    glm::vec3 _mouse_ray;
     ProjectionType projection_type = ProjectionType::PERSPECTIVE;
     bool free_look_mode = false;
     float zoom = 0.0f;
