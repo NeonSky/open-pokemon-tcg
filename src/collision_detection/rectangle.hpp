@@ -10,6 +10,10 @@ namespace open_pokemon_tcg::collision_detection {
     glm::vec3 botright;
 
     Rectangle(glm::vec3 topleft, glm::vec3 botleft, glm::vec3 botright) : topleft(topleft), botleft(botleft), botright(botright) {}
+
+    glm::vec3 topright() {
+      return this->botleft + (this->topleft - this->botleft) + (this->botright - this->botleft);
+    }
   };
 
 }

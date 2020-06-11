@@ -1,5 +1,6 @@
 #include "card.hpp"
 #include "texture.hpp"
+#include "logger.hpp"
 
 #include <glm/mat4x4.hpp>
 #include <glm/gtx/transform.hpp>
@@ -10,12 +11,11 @@
 using namespace open_pokemon_tcg;
 
 Card::Card(Transform transform, GLuint texture) : transform(transform), front_texture(texture) {
-  float width = 1.0f;
-  float height = 1.0f;
-  glm::vec3 botleft = glm::vec3(-width/2.0f, -height/2.0f, 0.0f);
-  glm::vec3 botright = glm::vec3(width/2.0f, -height/2.0f, 0.0f);
-  glm::vec3 topleft = glm::vec3(-width/2.0f, height/2.0f, 0.0f);
-  glm::vec3 topright = glm::vec3(width/2.0f, height/2.0f, 0.0f);
+  collision_detection::Rectangle rect = raw_shape();
+  glm::vec3 botleft  = rect.botleft;
+  glm::vec3 botright = rect.botright;
+  glm::vec3 topleft  = rect.topleft;
+  glm::vec3 topright = rect.topright();
 
   this->vao = create_vao({
     //	 X      Y     Z
@@ -58,6 +58,10 @@ glm::mat4 Card::model_matrix() const {
   glm::mat4 m = this->transform.matrix();
   m = glm::rotate(m, glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
   return m;
+}
+
+collision_detection::Intersection* Card::does_intersect(collision_detection::Ray ray) {
+  return collision_detection::ray_rectangle_intersection(ray, shape());
 }
 
 GLuint Card::create_vao(const std::vector<float> positions, const std::vector<float> uv_coords) const {
@@ -111,4 +115,19 @@ GLuint Card::create_vao(const std::vector<float> positions, const std::vector<fl
 	glEnableVertexAttribArray(2); // Enable the uv coord attribute
 
   return vao;
+}
+
+collision_detection::Rectangle Card::shape() const {
+  collision_detection::Rectangle rect = raw_shape();
+  glm::vec3 topleft  = this->model_matrix() * glm::vec4(rect.topleft , 1.0f);
+  glm::vec3 botleft  = this->model_matrix() * glm::vec4(rect.botleft , 1.0f);
+  glm::vec3 botright = this->model_matrix() * glm::vec4(rect.botright, 1.0f);
+  return collision_detection::Rectangle(topleft, botleft, botright);
+}
+
+collision_detection::Rectangle Card::raw_shape() const {
+  glm::vec3  topleft(-this->width/2.0f, +this->height/2.0f, 0.0f);
+  glm::vec3  botleft(-this->width/2.0f, -this->height/2.0f, 0.0f);
+  glm::vec3 botright(+this->width/2.0f, -this->height/2.0f, 0.0f);
+  return collision_detection::Rectangle(topleft, botleft, botright);
 }
