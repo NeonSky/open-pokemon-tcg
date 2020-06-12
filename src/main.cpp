@@ -39,7 +39,7 @@ int main() {
 
   Window *window;
   try {
-    window = new Window(1920/2, 1200, "OpenPokemonTCG");
+    window = new Window(1920/2, 1080, "OpenPokemonTCG");
   } catch(const std::exception& e) {
     LOG_ERROR(e.what());
     return -1;
@@ -56,7 +56,10 @@ int main() {
   LOG_INFO("OpenGL renderer: " + std::string((const char*)glGetString(GL_RENDERER)));
   LOG_INFO("OpenGL vendor: " + std::string((const char*)glGetString(GL_VENDOR)));
 
+  CHECK_GL_ERROR();
   IScene* scene = new scenes::Duel(window);
+
+  CHECK_GL_ERROR();
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);

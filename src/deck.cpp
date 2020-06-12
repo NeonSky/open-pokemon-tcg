@@ -6,8 +6,9 @@
 using namespace open_pokemon_tcg;
 
 Deck::Deck(Transform transform, std::vector<Card> cards) : transform(transform) {
-  for (auto &c : cards)
-    add_on_top(c);
+  for (auto &card : cards)
+    this->cards.push_back(card);
+  update_card_positions();
 }
 
 Deck::~Deck() {}
@@ -42,14 +43,12 @@ std::vector<Card> Deck::draw(unsigned int amount) {
 
 void Deck::shuffle() {
   random_shuffle(this->cards.begin(), this->cards.end());
+  update_card_positions();
 }
 
-void Deck::add_on_top(Card card) {
-  card.transform.position = this->transform.position + glm::vec3(0.0f, this->card_spacing * this->cards.size(), 0.0f);
-  card.transform.rotation = this->transform.rotation + glm::vec3(0.0f, 0.0f, glm::pi<float>());
-  this->cards.push_back(card);
-}
-
-int Deck::size() {
-  return this->cards.size();
+void Deck::update_card_positions() {
+  for (unsigned int h = 0; h < this->cards.size(); h++) {
+    this->cards[h].transform.position = this->transform.position + glm::vec3(0.0f, this->card_spacing * h, 0.0f);
+    this->cards[h].transform.rotation = this->transform.rotation + glm::vec3(0.0f, 0.0f, glm::pi<float>());
+  }
 }

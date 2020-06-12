@@ -40,6 +40,8 @@ namespace open_pokemon_tcg::scenes {
     Shader *shader;
     IPlaymat *playmat;
 
+    bool focus_hovered_card = false;
+
     // Mutators
     void on_key(GLFWwindow* window);
   };
@@ -61,9 +63,11 @@ namespace open_pokemon_tcg::scenes {
     nlohmann::json deck_data = api->load_deck("Base").data;
 
     std::vector<Card> cards;
-    for (auto &card : deck_data[0]["cards"])
-      for (int i = 0; i < card["count"]; i++)
+    for (auto &card : deck_data[0]["cards"]) {
+      for (int i = 0; i < card["count"]; i++) {
         cards.push_back(Card(Transform(), api->load_card((std::string)card["id"]).texture.id()));
+      }
+    }
 
     this->deck = new Deck(this->playmat->deck_slot(IPlaymat::PlayerSide::PLAYER1), cards);
     this->deck->shuffle();
@@ -89,6 +93,53 @@ namespace open_pokemon_tcg::scenes {
     this->deck->render(view_projection_matrix, this->shader);
     this->discard_pile->render(view_projection_matrix, this->shader);
     this->hand->render(view_projection_matrix, this->shader);
+
+    collision_detection::Ray ray;
+    ray.origin = this->camera.transform().position;
+    ray.direction = glm::normalize(this->camera.mouse_ray());
+
+    Card *hover_card = nullptr;
+    float best_dist = 1e9;
+
+    for (auto &card : this->deck->cards) {
+      auto hit = card.does_intersect(ray);
+      if (hit != nullptr) {
+        float dist = glm::distance(hit->point, this->camera.transform().position);
+        if (dist < best_dist) {
+          best_dist = dist;
+          hover_card = &card;
+        }
+      }
+    }
+
+    for (auto &card : this->hand->cards) {
+      auto hit = card.does_intersect(ray);
+      if (hit != nullptr) {
+        float dist = glm::distance(hit->point, this->camera.transform().position);
+        if (dist < best_dist) {
+          best_dist = dist;
+          hover_card = &card;
+        }
+      }
+    }
+
+    for (auto &card : this->discard_pile->cards) {
+      auto hit = card.does_intersect(ray);
+      if (hit != nullptr) {
+        float dist = glm::distance(hit->point, this->camera.transform().position);
+        if (dist < best_dist) {
+          best_dist = dist;
+          hover_card = &card;
+        }
+      }
+    }
+
+    if (focus_hovered_card && hover_card != nullptr) {
+      Transform t = Transform(this->camera.transform().position + 2.0f * this->camera.transform().forward());
+      t.set_rotation(0.0f, 0.5f*glm::half_pi<float>(), 0.0f);
+      Card detail = Card(t, hover_card->texture());
+      detail.render(view_projection_matrix, this->shader);
+    }
   }
 
   void Duel::gui() {}
@@ -98,12 +149,14 @@ namespace open_pokemon_tcg::scenes {
     if (glfwGetKey(window, GLFW_KEY_M)) {
       Card card = this->deck->draw();
       card.transform = this->playmat->discard_slot(IPlaymat::PlayerSide::PLAYER1);
-      this->discard_pile->add_on_top(card);
+      this->discard_pile->cards.push_back(card);
     }
 
     // Hand
     if (glfwGetKey(window, GLFW_KEY_H)) {
       this->hand->cards.push_back(this->deck->draw());
     }
+
+    focus_hovered_card = glfwGetKey(window, GLFW_KEY_F);
   }
 }
