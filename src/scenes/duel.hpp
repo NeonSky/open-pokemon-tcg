@@ -5,12 +5,11 @@
 #include "../texture.hpp"
 #include "../window.hpp"
 #include "../debug_camera.hpp"
-#include "../deck.hpp"
-#include "../discard_pile.hpp"
-#include "../hand.hpp"
 #include "../pokemon_tcg_api.hpp"
 #include "../playmats/black_playmat.hpp"
 #include "../logger.hpp"
+#include "../duel_player.hpp"
+#include "../deck.hpp"
 
 #include <imgui.h>
 #include <glm/glm.hpp>
@@ -30,15 +29,18 @@ namespace open_pokemon_tcg::scenes {
     void gui() override;
 
   private:
+    const Transform camera1_transform = Transform(glm::vec3(0.0f, 5.5f, -7.5f),
+                                                 glm::vec3(-0.48f*glm::half_pi<float>(), 0.0f, 0.0f));
+    const Transform camera2_transform = Transform(glm::vec3(0.0f, 5.5f, 7.5f),
+                                                 glm::vec3(-0.48f*glm::half_pi<float>(), glm::pi<float>(), 0.0f));
+
     DebugCamera camera;
-
-    // TODO: Move these to player class
-    Deck *deck;
-    DiscardPile *discard_pile;
-    Hand *hand;
-
     Shader *shader;
     IPlaymat *playmat;
+
+    DuelPlayer *current_player;
+    DuelPlayer *player1;
+    DuelPlayer *player2;
 
     bool focus_hovered_card = false;
 
@@ -46,40 +48,41 @@ namespace open_pokemon_tcg::scenes {
     void on_key(GLFWwindow* window);
   };
 
-  Duel::Duel(Window* window) :
-    camera(DebugCamera(window,
-                       Transform(glm::vec3(0.0f, 7.0f, -8.0f),
-                                 glm::vec3(-0.5f*glm::half_pi<float>(), 0.0f, 0.0f)))) {
+  Duel::Duel(Window* window) : camera(DebugCamera(window, this->camera1_transform)) {
 
     window->add_on_key_callback(std::bind(&Duel::on_key, this, std::placeholders::_1));
-
     this->shader = new Shader("simple.vert", "simple.frag");
 
-    // Player player1;
-    // Player player2;
     this->playmat = new playmats::BlackPlaymat();
 
     PokemonTcgApi *api = new PokemonTcgApi();
-    nlohmann::json deck_data = api->load_deck("Base").data;
 
-    std::vector<Card> cards;
-    for (auto &card : deck_data[0]["cards"]) {
-      for (int i = 0; i < card["count"]; i++) {
-        cards.push_back(Card(Transform(), api->load_card((std::string)card["id"]).texture.id()));
-      }
-    }
+    LOG_DEBUG("Loading deck1...");
+    nlohmann::json deck1_data = api->load_deck("Base").data;
+    Deck deck1;
+    for (auto &card : deck1_data[0]["cards"])
+      for (int i = 0; i < card["count"]; i++)
+        deck1.cards.push_back(Card(Transform(), api->load_card((std::string)card["id"]).texture.id()));
 
-    this->deck = new Deck(this->playmat->deck_slot(IPlaymat::PlayerSide::PLAYER1), cards);
-    this->deck->shuffle();
-    this->discard_pile = new DiscardPile(this->playmat->discard_slot(IPlaymat::PlayerSide::PLAYER1));
+    LOG_DEBUG("Loading deck2...");
+    nlohmann::json deck2_data = api->load_deck("Jungle").data;
+    Deck deck2;
+    for (auto &card : deck2_data[0]["cards"])
+      for (int i = 0; i < card["count"]; i++)
+        deck2.cards.push_back(Card(Transform(), api->load_card((std::string)card["id"]).texture.id()));
 
-    // TODO: maybe place relative to camera instead.
-    this->hand = new Hand(Transform(glm::vec3(0.0f, 2.0f, -5.5f), glm::vec3(0.5f * glm::half_pi<float>(), 0.0f, 0.0f)));
+    this->player1 = new DuelPlayer(deck1, *this->playmat, IPlaymat::Side::PLAYER1);
+    this->player2 = new DuelPlayer(deck2, *this->playmat, IPlaymat::Side::PLAYER2);
+    this->current_player = this->player1;
+
+    LOG_DEBUG("Scene loaded.");
   }
+
   Duel::~Duel() {}
 
   void Duel::update() {
-    this->hand->update();
+    this->player1->update();
+    this->player2->update();
   }
 
   void Duel::render() {
@@ -89,10 +92,10 @@ namespace open_pokemon_tcg::scenes {
     glm::mat4 projectionMatrix = this->camera.projection_matrix();
     glm::mat4 view_projection_matrix = projectionMatrix * viewMatrix;
 
+    this->player1->render(view_projection_matrix, this->shader);
+    this->player2->render(view_projection_matrix, this->shader);
+
     this->playmat->render(view_projection_matrix, this->shader);
-    this->deck->render(view_projection_matrix, this->shader);
-    this->discard_pile->render(view_projection_matrix, this->shader);
-    this->hand->render(view_projection_matrix, this->shader);
 
     collision_detection::Ray ray;
     ray.origin = this->camera.transform().position;
@@ -101,7 +104,7 @@ namespace open_pokemon_tcg::scenes {
     Card *hover_card = nullptr;
     float best_dist = 1e9;
 
-    for (auto &card : this->deck->cards) {
+    for (auto &card : this->current_player->hand->cards) {
       auto hit = card.does_intersect(ray);
       if (hit != nullptr) {
         float dist = glm::distance(hit->point, this->camera.transform().position);
@@ -112,18 +115,7 @@ namespace open_pokemon_tcg::scenes {
       }
     }
 
-    for (auto &card : this->hand->cards) {
-      auto hit = card.does_intersect(ray);
-      if (hit != nullptr) {
-        float dist = glm::distance(hit->point, this->camera.transform().position);
-        if (dist < best_dist) {
-          best_dist = dist;
-          hover_card = &card;
-        }
-      }
-    }
-
-    for (auto &card : this->discard_pile->cards) {
+    for (auto &card : this->current_player->discard_pile->cards) {
       auto hit = card.does_intersect(ray);
       if (hit != nullptr) {
         float dist = glm::distance(hit->point, this->camera.transform().position);
@@ -136,7 +128,7 @@ namespace open_pokemon_tcg::scenes {
 
     if (focus_hovered_card && hover_card != nullptr) {
       Transform t = Transform(this->camera.transform().position + 2.0f * this->camera.transform().forward());
-      t.set_rotation(0.0f, 0.5f*glm::half_pi<float>(), 0.0f);
+      t.rotation = glm::vec3(0.5f*glm::half_pi<float>(), this->camera.transform().rotation.y, 0.0f);
       Card detail = Card(t, hover_card->texture());
       detail.render(view_projection_matrix, this->shader);
     }
@@ -147,15 +139,23 @@ namespace open_pokemon_tcg::scenes {
   void Duel::on_key(GLFWwindow* window) {
     // Mill
     if (glfwGetKey(window, GLFW_KEY_M)) {
-      Card card = this->deck->draw();
-      card.transform = this->playmat->discard_slot(IPlaymat::PlayerSide::PLAYER1);
-      this->discard_pile->cards.push_back(card);
+      this->current_player->mill();
     }
 
     // Hand
     if (glfwGetKey(window, GLFW_KEY_H)) {
-      this->hand->cards.push_back(this->deck->draw());
+      this->current_player->hand->cards.push_back(*this->current_player->deck_pile->draw());
     }
+
+    // Switch which user/player to control
+    if (glfwGetKey(window, GLFW_KEY_U))
+      this->current_player = (this->current_player == this->player1) ? this->player2 : player1;
+
+    if (glfwGetKey(window, GLFW_KEY_1))
+      this->camera.set_transform(this->camera1_transform);
+
+    if (glfwGetKey(window, GLFW_KEY_2))
+      this->camera.set_transform(this->camera2_transform);
 
     focus_hovered_card = glfwGetKey(window, GLFW_KEY_F);
   }
