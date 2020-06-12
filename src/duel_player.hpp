@@ -5,6 +5,7 @@
 #include "deck.hpp"
 #include "deck_pile.hpp"
 #include "discard_pile.hpp"
+#include "prize_card_pool.hpp"
 #include "hand.hpp"
 
 namespace open_pokemon_tcg {
@@ -21,7 +22,7 @@ namespace open_pokemon_tcg {
     Card *suporter_card;
     Card *stadium_card;
     // Bench bench;
-    // PrizeCardPool prize_cards;
+    PrizeCardPool *prize_card_pool;
 
     // Mutators
     void update();
@@ -30,6 +31,8 @@ namespace open_pokemon_tcg {
     void mill();
 
   private:
+    static const int start_hand = 7;
+
     Deck deck;
     const IPlaymat *playmat;
     IPlaymat::Side playmat_side;

@@ -105,23 +105,23 @@ namespace open_pokemon_tcg::scenes {
     float best_dist = 1e9;
 
     for (auto &card : this->current_player->hand->cards) {
-      auto hit = card.does_intersect(ray);
+      auto hit = card->does_intersect(ray);
       if (hit != nullptr) {
         float dist = glm::distance(hit->point, this->camera.transform().position);
         if (dist < best_dist) {
           best_dist = dist;
-          hover_card = &card;
+          hover_card = card;
         }
       }
     }
 
     for (auto &card : this->current_player->discard_pile->cards) {
-      auto hit = card.does_intersect(ray);
+      auto hit = card->does_intersect(ray);
       if (hit != nullptr) {
         float dist = glm::distance(hit->point, this->camera.transform().position);
         if (dist < best_dist) {
           best_dist = dist;
-          hover_card = &card;
+          hover_card = card;
         }
       }
     }
@@ -144,7 +144,7 @@ namespace open_pokemon_tcg::scenes {
 
     // Hand
     if (glfwGetKey(window, GLFW_KEY_H)) {
-      this->current_player->hand->cards.push_back(*this->current_player->deck_pile->draw());
+      this->current_player->hand->cards.push_back(this->current_player->deck_pile->draw());
     }
 
     // Switch which user/player to control

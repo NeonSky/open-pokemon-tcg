@@ -11,7 +11,7 @@ namespace open_pokemon_tcg {
     Hand(Transform transform);
     ~Hand();
 
-    std::vector<Card> cards;
+    std::vector<Card*> cards;
 
     // Mutators
     void update();

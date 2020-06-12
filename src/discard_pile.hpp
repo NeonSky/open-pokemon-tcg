@@ -15,7 +15,7 @@ namespace open_pokemon_tcg {
     ~DiscardPile();
 
     Transform transform;
-    std::vector<Card> cards;
+    std::vector<Card*> cards;
 
     // Mutators
     void render(const glm::mat4 &view_projection_matrix, Shader *shader);

@@ -18,12 +18,12 @@ void Hand::update() {
 
   for (int i = 0; i < count; i++) {
     float p = i+1;
-    this->cards[i].transform.position = this->transform.position + glm::vec3(xspacing * (p - mid), 0.0f, zspacing * (p - mid));
-      this->cards[i].transform.rotation = this->transform.rotation;
+    this->cards[i]->transform.position = this->transform.position + glm::vec3(xspacing * (p - mid), 0.0f, zspacing * (p - mid));
+    this->cards[i]->transform.rotation = this->transform.rotation;
   }
 }
 
 void Hand::render(const glm::mat4 &view_projection_matrix, Shader *shader) {
   for (auto &c : this->cards)
-    c.render(view_projection_matrix, shader);
+    c->render(view_projection_matrix, shader);
 }
