@@ -9,6 +9,8 @@
 
 using namespace open_pokemon_tcg::collision_detection;
 
+Intersection::Intersection(glm::vec3 point) : point(point) {}
+
 Intersection* open_pokemon_tcg::collision_detection::ray_plane_intersection(Ray ray, Plane plane) {
   glm::vec3 from = ray.origin;
   glm::vec3 dir = ray.direction;

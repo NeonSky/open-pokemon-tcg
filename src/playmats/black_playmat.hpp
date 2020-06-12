@@ -22,6 +22,8 @@ namespace open_pokemon_tcg::playmats {
     void render(const glm::mat4 &view_projection_matrix, Shader *shader) override;
 
     // Accessors
+    Intersection* does_intersect(collision_detection::Ray ray) const override;
+
     Transform deck_slot(Side side) const override {
       const Transform side1 = Transform(glm::vec3(3.75f, 0.01f, -3.12f));
       const Transform side2 = mirror_transform(side1);
@@ -142,14 +144,32 @@ namespace open_pokemon_tcg::playmats {
     glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
   }
 
+  BlackPlaymat::Intersection* BlackPlaymat::does_intersect(collision_detection::Ray ray) const {
+    glm::vec3 mid = active_slot(Side::PLAYER1).position;
+    glm::vec3 topleft  = mid + glm::vec3(-0.5f, +0.5f, 0.0f);
+    glm::vec3 botleft  = mid + glm::vec3(-0.5f, -0.5f, 0.0f);
+    glm::vec3 botright = mid + glm::vec3(+0.5f, -0.5f, 0.0f);
+    collision_detection::Rectangle rectangle(topleft, botleft, botright);
+
+    auto hit = collision_detection::ray_rectangle_intersection(ray, rectangle);
+    if (hit != nullptr) {
+      auto in = new BlackPlaymat::Intersection();
+      in->side = Side::PLAYER1;
+      in->area_type = AreaType::ACTIVE_SLOT;
+      return in;
+    }
+
+    return nullptr;
+  }
+
   GLuint BlackPlaymat::create_vao() const {
-    float width = 2.4f * 3.75f;
+    float width  = 2.4f * 3.75f;
     float height = 1.0f * 3.75f * 2.0f;
-    glm::vec3 botleft = glm::vec3(-width/2.0f, -height/2.0f, 0.0f);
+    glm::vec3 botleft  = glm::vec3(-width/2.0f, -height/2.0f, 0.0f);
     glm::vec3 botright = glm::vec3(width/2.0f, -height/2.0f, 0.0f);
-    glm::vec3 topleft = glm::vec3(-width/2.0f, height/2.0f, 0.0f);
+    glm::vec3 topleft  = glm::vec3(-width/2.0f, height/2.0f, 0.0f);
     glm::vec3 topright = glm::vec3(width/2.0f, height/2.0f, 0.0f);
-    glm::vec3 midleft = (botleft + topleft) / 2.0f;
+    glm::vec3 midleft  = (botleft + topleft) / 2.0f;
     glm::vec3 midright = (botright + topright) / 2.0f;
 
     // x, y, z

@@ -101,6 +101,14 @@ namespace open_pokemon_tcg::scenes {
     ray.origin = this->camera.transform().position;
     ray.direction = glm::normalize(this->camera.mouse_ray());
 
+    // Check hover playmat
+    auto in = this->playmat->does_intersect(ray);
+    if (in != nullptr) {
+      LOG_DEBUG(in->side);
+      LOG_DEBUG(in->area_type);
+    }
+
+    // Check hover cards
     Card *hover_card = nullptr;
     float best_dist = 1e9;
 

@@ -10,7 +10,7 @@ namespace open_pokemon_tcg::collision_detection {
 
   class Intersection {
   public:
-    Intersection(glm::vec3 point) : point(point) {}
+    Intersection(glm::vec3 point);
     glm::vec3 point;
   };
 
