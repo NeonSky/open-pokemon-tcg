@@ -20,8 +20,8 @@ namespace open_pokemon_tcg {
     Card *active_pokemon;
     Card *suporter_card;
     Card *stadium_card;
-    // std::vector<Card> bench;
-    // std::vector<Card> prize_cards;
+    // Bench bench;
+    // PrizeCardPool prize_cards;
 
     // Mutators
     void update();
