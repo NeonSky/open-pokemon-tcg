@@ -28,6 +28,8 @@ namespace open_pokemon_tcg{
     Camera(Transform);
     ~Camera();
 
+    Transform transform;
+
     // Mutators
     void move(Direction dir);
     void look_at(glm::vec3 target);
@@ -35,7 +37,6 @@ namespace open_pokemon_tcg{
     void set_zoom(float zoom_level);
 
     // Accessors
-    Transform transform() const { return this->_transform; };
     glm::mat4 view_matrix() const;
     glm::mat4 projection_matrix(ProjectionType projection_type) const;
 
@@ -72,7 +73,6 @@ namespace open_pokemon_tcg{
       }
     };
 
-    Transform _transform;
     Perspective perspective;
     Orthographic orthographic;
     float movement_speed = 0.5f;

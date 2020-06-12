@@ -19,10 +19,10 @@ Card::Card(Transform transform, GLuint texture) : transform(transform), front_te
 
   this->vao = create_vao({
     //	 X      Y     Z
-    botleft.x, botleft.y, botleft.z,
+    botleft.x , botleft.y , botleft.z,
     botright.x, botright.y, botright.z,
     topright.x, topright.y, topright.z,
-    topleft.x, topleft.y, topleft.z,
+    topleft.x , topleft.y , topleft.z,
   }, {
       0.0f, 0.0f, // (u,v) for v0
       1.0f, 0.0f, // (u,v) for v1

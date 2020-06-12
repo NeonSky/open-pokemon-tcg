@@ -21,6 +21,10 @@ DebugCamera::DebugCamera(Window* window, Transform transform) : camera(Camera(tr
 DebugCamera::~DebugCamera() {}
 
 // Mutators
+void DebugCamera::set_transform(Transform transform) {
+  this->camera.transform = transform;
+};
+
 void DebugCamera::on_key(GLFWwindow* window) {
   if (glfwGetKey(window, GLFW_KEY_W))
     this->camera.move(Direction::FORWARD);

@@ -16,9 +16,9 @@ double yaw = 0.0f;
 double pitch = 0.0f;
 
 Camera::Camera() : Camera(Transform()){}
-Camera::Camera(Transform transform) : _transform(transform){
-  yaw = this->_transform.yaw();
-  pitch = this->_transform.pitch();
+Camera::Camera(Transform transform) : transform(transform){
+  yaw = this->transform.yaw();
+  pitch = this->transform.pitch();
 }
 
 Camera::~Camera() {}
@@ -27,27 +27,27 @@ void Camera::move(Direction move_dir) {
   glm::vec3 displacement_dir;
   switch (move_dir) {
   case Direction::FORWARD:
-    displacement_dir = this->_transform.forward();
+    displacement_dir = this->transform.forward();
     break;
   case Direction::BACKWARD:
-    displacement_dir = -this->_transform.forward();
+    displacement_dir = -this->transform.forward();
     break;
   case Direction::RIGHT:
-    displacement_dir = this->_transform.right();
+    displacement_dir = this->transform.right();
     break;
   case Direction::LEFT:
-    displacement_dir = -this->_transform.right();
+    displacement_dir = -this->transform.right();
     break;
   case Direction::UP:
-    displacement_dir = this->_transform.up();
+    displacement_dir = this->transform.up();
     break;
   case Direction::DOWN:
-    displacement_dir = -this->_transform.up();
+    displacement_dir = -this->transform.up();
     break;
   default:
     LOG_ERROR("Direction type not supported: " + std::to_string(move_dir));
   }
-  this->_transform.position += this->movement_speed * displacement_dir;
+  this->transform.position += this->movement_speed * displacement_dir;
 }
 
 // void Camera::look_at(glm::vec3 target) {
@@ -81,16 +81,16 @@ void Camera::lookat_mouse(float mouse_xpos, float mouse_ypos) {
 
   pitch = std::clamp(pitch, -glm::half_pi<double>(), glm::half_pi<double>());
 
-  this->_transform.set_rotation(yaw, pitch, 0.0f);
+  this->transform.set_rotation(yaw, pitch, 0.0f);
 }
 
 glm::mat4 Camera::view_matrix() const {
-  glm::mat3 base_vectors_in_world_space(this->_transform.right(), this->_transform.up(), -this->_transform.forward());
+  glm::mat3 base_vectors_in_world_space(this->transform.right(), this->transform.up(), -this->transform.forward());
 
   // NOTE: transpose = inverse, since the matrix is an orthonormal base.
   glm::mat3 inverse_base = glm::transpose(base_vectors_in_world_space);
 
-  return glm::mat4(inverse_base) * glm::translate(-this->_transform.position);
+  return glm::mat4(inverse_base) * glm::translate(-this->transform.position);
 }
 
 glm::mat4 Camera::projection_matrix(ProjectionType projection_type) const {
