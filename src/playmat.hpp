@@ -15,7 +15,7 @@ namespace open_pokemon_tcg {
     IPlaymat();
     virtual ~IPlaymat() = 0;
 
-    enum PlayerSide {
+    enum Side {
       PLAYER1 = 0,
       PLAYER2 = 1,
     };
@@ -24,13 +24,13 @@ namespace open_pokemon_tcg {
     virtual void render(const glm::mat4 &view_projection_matrix, Shader *shader) = 0;
 
     // Accessors
-    virtual Transform deck_slot(PlayerSide side) const = 0;
-    virtual Transform discard_slot(PlayerSide side) const = 0;
-    virtual Transform active_slot(PlayerSide side) const = 0;
-    virtual Transform supporter_slot(PlayerSide side) const = 0;
-    virtual Transform stadium_slot(PlayerSide side) const = 0;
-    virtual std::array<Transform, 5> bench_slots(PlayerSide side) const = 0;
-    virtual std::array<Transform, 6> prize_slots(PlayerSide side) const = 0;
+    virtual Transform deck_slot(Side side) const = 0;
+    virtual Transform discard_slot(Side side) const = 0;
+    virtual Transform active_slot(Side side) const = 0;
+    virtual Transform supporter_slot(Side side) const = 0;
+    virtual Transform stadium_slot(Side side) const = 0;
+    virtual std::array<Transform, 5> bench_slots(Side side) const = 0;
+    virtual std::array<Transform, 6> prize_slots(Side side) const = 0;
 
   protected:
     static Transform mirror_transform(Transform transform) {

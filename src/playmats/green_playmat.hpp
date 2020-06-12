@@ -22,42 +22,42 @@ namespace open_pokemon_tcg::playmats {
     void render(const glm::mat4 &view_projection_matrix, Shader *shader) override;
 
     // Accessors
-    Transform deck_slot(PlayerSide side) const override {
+    Transform deck_slot(Side side) const override {
       const Transform side1 = Transform(glm::vec3(4.305f, 0.01f, -2.330));
       const Transform side2 = mirror_transform(side1);
       const Transform sides[] { side1, side2 };
       return sides[side] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
     }
 
-    Transform discard_slot(PlayerSide side) const override {
+    Transform discard_slot(Side side) const override {
       const Transform side1 = Transform(glm::vec3(4.305f, 0.01f, -1.17f));
       const Transform side2 = mirror_transform(side1);
       const Transform sides[] { side1, side2 };
       return sides[side] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
     }
 
-    Transform active_slot(PlayerSide side) const override {
+    Transform active_slot(Side side) const override {
       const Transform side1 = Transform(glm::vec3(0.615f, 0.01f, -1.165f));
       const Transform side2 = mirror_transform(side1);
       const Transform sides[] { side1, side2 };
       return sides[side] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
     }
 
-    Transform supporter_slot(PlayerSide side) const override {
+    Transform supporter_slot(Side side) const override {
       const Transform side1 = Transform(glm::vec3(-0.615f, 0.01f, -1.165f));
       const Transform side2 = mirror_transform(side1);
       const Transform sides[] { side1, side2 };
       return sides[side] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
     }
 
-    Transform stadium_slot(PlayerSide side) const override {
+    Transform stadium_slot(Side side) const override {
       const Transform side1 = Transform(glm::vec3(0.0f, 0.01f, 0.0f), glm::vec3(0.0f, glm::half_pi<float>(), 0.0f));
       const Transform side2 = mirror_transform(side1);
       const Transform sides[] { side1, side2 };
       return sides[side] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
     }
 
-    std::array<Transform, 5> bench_slots(PlayerSide side) const override {
+    std::array<Transform, 5> bench_slots(Side side) const override {
       const float x = 0.615f;
       const float z = -2.33f;
       const float xspacing = 1.23f;
@@ -85,7 +85,7 @@ namespace open_pokemon_tcg::playmats {
       return res;
     }
 
-    std::array<Transform, 6> prize_slots(PlayerSide side) const override {
+    std::array<Transform, 6> prize_slots(Side side) const override {
       const float x = -3.075f;
       const float z = -2.330f;
       const float xspacing = 1.235;
