@@ -10,7 +10,8 @@ using namespace open_pokemon_tcg;
 PokemonTcgApi::PokemonTcgApi() :
   api_http_client(httplib::SSLClient("api.pokemontcg.io", 443)),
   img_http_client(httplib::SSLClient("images.pokemontcg.io", 443)) {
-  std::filesystem::create_directories("res/cache/cards");
+  std::filesystem::create_directories("res/cache/cards/data");
+  std::filesystem::create_directories("res/cache/cards/img");
 }
 
 PokemonTcgApi::~PokemonTcgApi() {}
