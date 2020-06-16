@@ -1,6 +1,6 @@
 #pragma once
 
-namespace open_pokemon_tcg {
+namespace open_pokemon_tcg::engine::scene {
 
   class IScene {
   public:

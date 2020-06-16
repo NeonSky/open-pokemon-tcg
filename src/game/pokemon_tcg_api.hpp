@@ -16,7 +16,7 @@ namespace open_pokemon_tcg {
 
   struct CardModel {
     nlohmann::json data;
-    Texture texture;
+    engine::graphics::Texture texture;
   };
 
   // https://pokemontcg.io

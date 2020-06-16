@@ -3,7 +3,7 @@
 #include <glad/glad.h>
 #include <string>
 
-namespace open_pokemon_tcg {
+namespace open_pokemon_tcg::engine::graphics {
 
   class Shader {
   public:

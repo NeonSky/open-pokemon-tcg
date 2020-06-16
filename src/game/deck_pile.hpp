@@ -13,14 +13,14 @@ namespace open_pokemon_tcg {
 
   class DeckPile {
   public:
-    DeckPile(Transform transform, std::vector<Card*> cards);
+    DeckPile(engine::geometry::Transform transform, std::vector<Card*> cards);
     ~DeckPile();
 
-    Transform transform;
+    engine::geometry::Transform transform;
     std::vector<Card*> cards;
 
     // Mutators
-    void render(const glm::mat4 &view_projection_matrix, Shader *shader);
+    void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader);
     void shuffle();
 
     // Hybrids

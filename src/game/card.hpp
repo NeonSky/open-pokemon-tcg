@@ -9,20 +9,20 @@
 #include <glm/vec3.hpp>
 #include <vector>
 
-namespace open_pokemon_tcg{
+namespace open_pokemon_tcg {
   class Card {
   public:
-    Transform transform;
+    engine::geometry::Transform transform;
 
-    Card(Transform transform, GLuint texture);
+    Card(engine::geometry::Transform transform, GLuint texture);
     ~Card();
 
     // Mutators
-    void render(const glm::mat4 &view_projection_matrix, Shader *shader);
+    void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader);
 
     // Accessors
     glm::mat4 model_matrix() const;
-    collision_detection::Intersection* does_intersect(collision_detection::Ray ray);
+    engine::geometry::Intersection* does_intersect(engine::geometry::Ray ray);
     GLuint texture() const { return this->front_texture; }
 
   private:
@@ -35,7 +35,7 @@ namespace open_pokemon_tcg{
 
     // Accessors
     GLuint create_vao(const std::vector<float> positions, const std::vector<float> uv_coords) const;
-    collision_detection::Rectangle shape() const;
-    collision_detection::Rectangle raw_shape() const;
+    engine::geometry::Rectangle shape() const;
+    engine::geometry::Rectangle raw_shape() const;
   };
 }

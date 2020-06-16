@@ -16,7 +16,7 @@ bool checkGLError(const char* file, int line);
 
 #define CHECK_GL_ERROR() { checkGLError(__FILE__, __LINE__); }
 
-namespace open_pokemon_tcg {
+namespace open_pokemon_tcg::engine::debug {
 
   class Logger {
   public:

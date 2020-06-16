@@ -4,9 +4,8 @@
 #include <algorithm>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
-#include <glm/gtx/string_cast.hpp>
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::engine::graphics;
 
 // FIXME
 bool firstMouse = true;
@@ -15,13 +14,13 @@ double lastY;
 double yaw = 0.0f;
 double pitch = 0.0f;
 
-Camera::Camera() : Camera(Transform()){}
-Camera::Camera(Transform transform) : transform(transform){
+Camera::Camera() : Camera(geometry::Transform()){}
+Camera::Camera(const geometry::Transform& transform) : transform(transform){
   yaw = this->transform.yaw();
   pitch = this->transform.pitch();
 }
 
-Camera::~Camera() {}
+Camera::~Camera() = default;
 
 void Camera::move(Direction move_dir) {
   glm::vec3 displacement_dir;

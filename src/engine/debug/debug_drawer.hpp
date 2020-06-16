@@ -6,7 +6,7 @@
 #include <glm/vec3.hpp>
 #include <vector>
 
-namespace open_pokemon_tcg {
+namespace open_pokemon_tcg::engine::debug {
 
   struct Line {
     glm::vec3 A, B;
@@ -25,7 +25,7 @@ namespace open_pokemon_tcg {
   private:
     const float line_width = 5.0f;
 
-    Shader shader;
+    graphics::Shader shader;
 
     std::vector<Line> line_queue;
   };

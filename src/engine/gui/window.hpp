@@ -5,7 +5,7 @@
 #include <vector>
 #include <functional>
 
-namespace open_pokemon_tcg{
+namespace open_pokemon_tcg::engine::gui {
 
   class Window {
   public:

@@ -3,17 +3,17 @@
 using namespace open_pokemon_tcg;
 
 
-PrizeCardPool::PrizeCardPool(std::array<Card*, 6> prize_cards, std::array<Transform, 6> prize_slots)
+PrizeCardPool::PrizeCardPool(std::array<Card*, 6> prize_cards, std::array<engine::geometry::Transform, 6> prize_slots)
   : prize_cards(prize_cards), prize_slots(prize_slots) {
 
   for (unsigned int i = 0; i < this->prize_cards.size(); i++)
     this->prize_cards[i]->transform = prize_slots[i];
 }
 
-PrizeCardPool::~PrizeCardPool() {}
+PrizeCardPool::~PrizeCardPool() = default;
 
 // Mutators
-void PrizeCardPool::render(const glm::mat4 &view_projection_matrix, Shader *shader) {
+void PrizeCardPool::render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) {
   for (auto &c : prize_cards)
     c->render(view_projection_matrix, shader);
 }

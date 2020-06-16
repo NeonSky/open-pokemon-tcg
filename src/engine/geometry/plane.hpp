@@ -5,7 +5,7 @@
 #include <glm/vec3.hpp>
 #include <glm/gtx/transform.hpp>
 
-namespace open_pokemon_tcg::collision_detection {
+namespace open_pokemon_tcg::engine::geometry {
 
   struct Plane {
     glm::vec3 point_on_plane;

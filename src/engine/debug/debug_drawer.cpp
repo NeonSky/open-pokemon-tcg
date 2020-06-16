@@ -1,9 +1,9 @@
 #include "debug_drawer.hpp"
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::engine::debug;
 
-DebugDrawer::DebugDrawer() : shader(Shader("projection_only.vert", "red.frag")) {}
-DebugDrawer::~DebugDrawer() {}
+DebugDrawer::DebugDrawer() : shader(graphics::Shader("projection_only.vert", "red.frag")) {}
+DebugDrawer::~DebugDrawer() = default;
 
 void DebugDrawer::render(const glm::mat4 &view_projection_matrix) {
 
@@ -32,5 +32,5 @@ void DebugDrawer::render(const glm::mat4 &view_projection_matrix) {
 }
 
 void DebugDrawer::draw_line(glm::vec3 from, glm::vec3 to) {
-  this->line_queue.push_back(Line(from, to));
+  this->line_queue.emplace_back(from, to);
 }

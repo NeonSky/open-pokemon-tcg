@@ -4,7 +4,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
-namespace open_pokemon_tcg {
+namespace open_pokemon_tcg::engine::geometry {
 
   class Transform {
   public:

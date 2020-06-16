@@ -7,7 +7,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::engine::graphics;
 
 Texture::Texture(std::string img_path) {
   stbi_set_flip_vertically_on_load(true); // Match opengl

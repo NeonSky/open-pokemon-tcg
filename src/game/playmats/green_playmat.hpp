@@ -21,89 +21,89 @@ namespace open_pokemon_tcg::playmats {
     ~GreenPlaymat();
 
     // Mutators
-    void render(const glm::mat4 &view_projection_matrix, Shader *shader) override;
+    void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) override;
 
     // Accessors
-    Intersection* does_intersect(collision_detection::Ray ray) const override;
+    Slot* does_intersect(engine::geometry::Ray ray) const override;
 
-    Transform deck_slot(Side side) const override {
-      const Transform side1 = Transform(glm::vec3(4.305f, 0.01f, -2.330));
-      const Transform side2 = mirror_transform(side1);
-      const Transform sides[] { side1, side2 };
-      return sides[side] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
+    engine::geometry::Transform deck_slot(Side side) const override {
+      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(4.305f, 0.01f, -2.330));
+      const engine::geometry::Transform side2 = mirror_transform(side1);
+      const engine::geometry::Transform sides[] { side1, side2 };
+      return sides[side] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
     }
 
-    Transform discard_slot(Side side) const override {
-      const Transform side1 = Transform(glm::vec3(4.305f, 0.01f, -1.17f));
-      const Transform side2 = mirror_transform(side1);
-      const Transform sides[] { side1, side2 };
-      return sides[side] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
+    engine::geometry::Transform discard_slot(Side side) const override {
+      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(4.305f, 0.01f, -1.17f));
+      const engine::geometry::Transform side2 = mirror_transform(side1);
+      const engine::geometry::Transform sides[] { side1, side2 };
+      return sides[side] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
     }
 
-    Transform active_slot(Side side) const override {
-      const Transform side1 = Transform(glm::vec3(0.615f, 0.01f, -1.165f));
-      const Transform side2 = mirror_transform(side1);
-      const Transform sides[] { side1, side2 };
-      return sides[side] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
+    engine::geometry::Transform active_slot(Side side) const override {
+      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(0.615f, 0.01f, -1.165f));
+      const engine::geometry::Transform side2 = mirror_transform(side1);
+      const engine::geometry::Transform sides[] { side1, side2 };
+      return sides[side] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
     }
 
-    Transform supporter_slot(Side side) const override {
-      const Transform side1 = Transform(glm::vec3(-0.615f, 0.01f, -1.165f));
-      const Transform side2 = mirror_transform(side1);
-      const Transform sides[] { side1, side2 };
-      return sides[side] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
+    engine::geometry::Transform supporter_slot(Side side) const override {
+      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(-0.615f, 0.01f, -1.165f));
+      const engine::geometry::Transform side2 = mirror_transform(side1);
+      const engine::geometry::Transform sides[] { side1, side2 };
+      return sides[side] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
     }
 
-    Transform stadium_slot(Side side) const override {
-      const Transform side1 = Transform(glm::vec3(0.0f, 0.01f, 0.0f), glm::vec3(0.0f, glm::half_pi<float>(), 0.0f));
-      const Transform side2 = mirror_transform(side1);
-      const Transform sides[] { side1, side2 };
-      return sides[side] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
+    engine::geometry::Transform stadium_slot(Side side) const override {
+      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(0.0f, 0.01f, 0.0f), glm::vec3(0.0f, glm::half_pi<float>(), 0.0f));
+      const engine::geometry::Transform side2 = mirror_transform(side1);
+      const engine::geometry::Transform sides[] { side1, side2 };
+      return sides[side] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
     }
 
-    std::array<Transform, 5> bench_slots(Side side) const override {
+    std::array<engine::geometry::Transform, 5> bench_slots(Side side) const override {
       const float x = 0.615f;
       const float z = -2.33f;
       const float xspacing = 1.23f;
 
-      const std::array<Transform, 5> side1 = {
-        Transform(glm::vec3(x             , 0.01f, z)),
-        Transform(glm::vec3(x + xspacing  , 0.01f, z)),
-        Transform(glm::vec3(x + 2*xspacing, 0.01f, z)),
-        Transform(glm::vec3(x - xspacing  , 0.01f, z)),
-        Transform(glm::vec3(x - 2*xspacing, 0.01f, z)),
+      const std::array<engine::geometry::Transform, 5> side1 = {
+        engine::geometry::Transform(glm::vec3(x             , 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x + xspacing  , 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x + 2*xspacing, 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x - xspacing  , 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x - 2*xspacing, 0.01f, z)),
       };
-      const std::array<Transform, 5> side2 = {
+      const std::array<engine::geometry::Transform, 5> side2 = {
         mirror_transform(side1[0]),
         mirror_transform(side1[1]),
         mirror_transform(side1[2]),
         mirror_transform(side1[3]),
         mirror_transform(side1[4]),
       };
-      const std::array<std::array<Transform, 5>, 2> sides = { side1, side2 };
+      const std::array<std::array<engine::geometry::Transform, 5>, 2> sides = { side1, side2 };
 
-      std::array<Transform, 5> res;
+      std::array<engine::geometry::Transform, 5> res;
       for (unsigned long i = 0; i < res.size(); i++)
-        res[i] = sides[side][i] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
+        res[i] = sides[side][i] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
 
       return res;
     }
 
-    std::array<Transform, 6> prize_slots(Side side) const override {
+    std::array<engine::geometry::Transform, 6> prize_slots(Side side) const override {
       const float x = -3.075f;
       const float z = -2.330f;
       const float xspacing = 1.235;
       const float zspacing = 1.165f;
 
-      const std::array<Transform, 6> side1 = {
-        Transform(glm::vec3(x           , 0.01f, z)),
-        Transform(glm::vec3(x           , 0.01f, z + zspacing)),
-        Transform(glm::vec3(x           , 0.01f, z + 2*zspacing)),
-        Transform(glm::vec3(x - xspacing, 0.01f, z)),
-        Transform(glm::vec3(x - xspacing, 0.01f, z + zspacing)),
-        Transform(glm::vec3(x - xspacing, 0.01f, z + 2*zspacing)),
+      const std::array<engine::geometry::Transform, 6> side1 = {
+        engine::geometry::Transform(glm::vec3(x           , 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x           , 0.01f, z + zspacing)),
+        engine::geometry::Transform(glm::vec3(x           , 0.01f, z + 2*zspacing)),
+        engine::geometry::Transform(glm::vec3(x - xspacing, 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x - xspacing, 0.01f, z + zspacing)),
+        engine::geometry::Transform(glm::vec3(x - xspacing, 0.01f, z + 2*zspacing)),
       };
-      const std::array<Transform, 6> side2 = {
+      const std::array<engine::geometry::Transform, 6> side2 = {
         mirror_transform(side1[0]),
         mirror_transform(side1[1]),
         mirror_transform(side1[2]),
@@ -111,32 +111,32 @@ namespace open_pokemon_tcg::playmats {
         mirror_transform(side1[4]),
         mirror_transform(side1[5]),
       };
-      const std::array<std::array<Transform, 6>, 2> sides = { side1, side2 };
+      const std::array<std::array<engine::geometry::Transform, 6>, 2> sides = { side1, side2 };
 
-      std::array<Transform, 6> res;
+      std::array<engine::geometry::Transform, 6> res;
       for (unsigned long i = 0; i < res.size(); i++)
-        res[i] = sides[side][i] + Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
+        res[i] = sides[side][i] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
       return res;
     }
 
   private:
     GLuint texture;
     GLuint vao;
-    Transform transform;
+    engine::geometry::Transform transform;
 
     // Accessors
     GLuint create_vao() const;
   };
 
   GreenPlaymat::GreenPlaymat() : IPlaymat() {
-    this->texture = Texture("img/playmat.png").id();
+    this->texture = engine::graphics::Texture("img/playmat.png").id();
     this->vao = create_vao();
-    this->transform = Transform();
+    this->transform = engine::geometry::Transform();
   }
 
   GreenPlaymat::~GreenPlaymat() {}
 
-  void GreenPlaymat::render(const glm::mat4 &view_projection_matrix, Shader *shader) {
+  void GreenPlaymat::render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) {
     glm::mat4 front_matrix = this->transform.matrix();
     front_matrix = glm::rotate(front_matrix, glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
     glm::mat4 modelViewProjectionMatrix = view_projection_matrix * front_matrix;
@@ -148,7 +148,7 @@ namespace open_pokemon_tcg::playmats {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   }
 
-  GreenPlaymat::Intersection* GreenPlaymat::does_intersect([[maybe_unused]] collision_detection::Ray ray) const {
+  GreenPlaymat::Slot* GreenPlaymat::does_intersect([[maybe_unused]] engine::geometry::Ray ray) const {
     return nullptr;
   }
 

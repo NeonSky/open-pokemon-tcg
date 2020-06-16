@@ -6,13 +6,13 @@
 
 using namespace open_pokemon_tcg;
 
-DeckPile::DeckPile(Transform transform, std::vector<Card*> cards) : transform(transform), cards(cards) {
+DeckPile::DeckPile(engine::geometry::Transform transform, std::vector<Card*> cards) : transform(transform), cards(cards) {
   update_card_positions();
 }
 
 DeckPile::~DeckPile() {}
 
-void DeckPile::render(const glm::mat4 &view_projection_matrix, Shader *shader) {
+void DeckPile::render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) {
   for (auto &c : this->cards)
     c->render(view_projection_matrix, shader);
 }

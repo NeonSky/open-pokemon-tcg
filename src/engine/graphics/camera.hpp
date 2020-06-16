@@ -5,7 +5,7 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
-namespace open_pokemon_tcg{
+namespace open_pokemon_tcg::engine::graphics {
 
   // TODO: Move, remove or potentially change name. Maybe to player_camera
   enum Direction {
@@ -25,10 +25,10 @@ namespace open_pokemon_tcg{
   class Camera {
   public:
     Camera();
-    Camera(Transform);
+    explicit Camera(const geometry::Transform&);
     ~Camera();
 
-    Transform transform;
+    geometry::Transform transform;
 
     // Mutators
     void move(Direction dir);

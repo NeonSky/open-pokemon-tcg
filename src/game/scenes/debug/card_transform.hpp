@@ -15,9 +15,9 @@
 
 namespace open_pokemon_tcg::scenes {
 
-  class CardTransform : public IScene {
+class CardTransform : public engine::scene::IScene {
   public:
-    CardTransform(Window* window);
+    CardTransform(engine::gui::Window* window);
     ~CardTransform();
 
     void update() override;
@@ -27,20 +27,20 @@ namespace open_pokemon_tcg::scenes {
   private:
     DebugCamera camera;
     Card *debug_card;
-    Shader *shader;
+    engine::graphics::Shader *shader;
 
     glm::vec3 pos = glm::vec3(0.0f);
     glm::vec3 rot = glm::vec3(0.0f);
     glm::vec3 scale = glm::vec3(1.0f);
   };
 
-  CardTransform::CardTransform(Window* window) :
+  CardTransform::CardTransform(engine::gui::Window* window) :
     camera(DebugCamera(window,
-                       Transform(glm::vec3(0.0f, 2.0f, 0.0f),
+                       engine::geometry::Transform(glm::vec3(0.0f, 2.0f, 0.0f),
                                  glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)))) {
 
-    this->shader = new Shader("simple.vert", "simple.frag");
-    debug_card = new Card(Transform(), Texture("cache/cards/img/base1-26.png").id());
+    this->shader = new engine::graphics::Shader("simple.vert", "simple.frag");
+    debug_card = new Card(engine::geometry::Transform(), engine::graphics::Texture("cache/cards/img/base1-26.png").id());
 
   }
   CardTransform::~CardTransform() {}

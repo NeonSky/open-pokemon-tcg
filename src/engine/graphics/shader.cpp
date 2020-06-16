@@ -5,7 +5,7 @@
 #include <fstream>
 #include <stdexcept>
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::engine::graphics;
 
 Shader::Shader(std::string vertex_shader_path, std::string fragment_shader_path) {
   this->vertex_shader = load_shader_file(vertex_shader_path, GL_VERTEX_SHADER);

@@ -43,7 +43,7 @@ CardModel PokemonTcgApi::load_card(std::string card_id) {
     img_url = img_url.substr(28);
     download_card_image(card_id, img_url);
   }
-  Texture texture("cache/cards/img/" + card_id + ".png");
+  engine::graphics::Texture texture("cache/cards/img/" + card_id + ".png");
 
   return CardModel{data, texture};
 }

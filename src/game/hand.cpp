@@ -3,7 +3,7 @@
 using namespace open_pokemon_tcg;
 
 
-Hand::Hand(Transform transform) : transform(transform) {}
+Hand::Hand(engine::geometry::Transform transform) : transform(transform) {}
 Hand::~Hand() {}
 
 // Mutators
@@ -23,7 +23,7 @@ void Hand::update() {
   }
 }
 
-void Hand::render(const glm::mat4 &view_projection_matrix, Shader *shader) {
+void Hand::render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) {
   for (auto &c : this->cards)
     c->render(view_projection_matrix, shader);
 }

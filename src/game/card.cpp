@@ -11,8 +11,8 @@
 
 using namespace open_pokemon_tcg;
 
-Card::Card(Transform transform, GLuint texture) : transform(transform), front_texture(texture) {
-  collision_detection::Rectangle rect = raw_shape();
+Card::Card(engine::geometry::Transform transform, GLuint texture) : transform(transform), front_texture(texture) {
+  engine::geometry::Rectangle rect = raw_shape();
   glm::vec3 botleft  = rect.botleft;
   glm::vec3 botright = rect.botright;
   glm::vec3 topleft  = rect.topleft;
@@ -31,12 +31,12 @@ Card::Card(Transform transform, GLuint texture) : transform(transform), front_te
       0.0f, 1.0f, // (u,v) for v3
   });
 
-  this->back_texture = Texture("img/cardback.png").id();
+  this->back_texture = engine::graphics::Texture("img/cardback.png").id();
 }
 
 Card::~Card() {}
 
-void Card::render(const glm::mat4 &view_projection_matrix, Shader *shader) {
+void Card::render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) {
 
   glm::mat4 front_matrix = this->model_matrix();
   glm::mat4 modelViewProjectionMatrix = view_projection_matrix * front_matrix;
@@ -61,8 +61,8 @@ glm::mat4 Card::model_matrix() const {
   return m;
 }
 
-collision_detection::Intersection* Card::does_intersect(collision_detection::Ray ray) {
-  return collision_detection::ray_rectangle_intersection(ray, shape());
+engine::geometry::Intersection* Card::does_intersect(engine::geometry::Ray ray) {
+  return engine::geometry::ray_rectangle_intersection(ray, shape());
 }
 
 GLuint Card::create_vao(const std::vector<float> positions, const std::vector<float> uv_coords) const {
@@ -118,17 +118,17 @@ GLuint Card::create_vao(const std::vector<float> positions, const std::vector<fl
   return vao;
 }
 
-collision_detection::Rectangle Card::shape() const {
-  collision_detection::Rectangle rect = raw_shape();
+engine::geometry::Rectangle Card::shape() const {
+  engine::geometry::Rectangle rect = raw_shape();
   glm::vec3 topleft  = this->model_matrix() * glm::vec4(rect.topleft , 1.0f);
   glm::vec3 botleft  = this->model_matrix() * glm::vec4(rect.botleft , 1.0f);
   glm::vec3 botright = this->model_matrix() * glm::vec4(rect.botright, 1.0f);
-  return collision_detection::Rectangle(topleft, botleft, botright);
+  return engine::geometry::Rectangle(topleft, botleft, botright);
 }
 
-collision_detection::Rectangle Card::raw_shape() const {
+engine::geometry::Rectangle Card::raw_shape() const {
   glm::vec3  topleft(-this->width/2.0f, +this->height/2.0f, 0.0f);
   glm::vec3  botleft(-this->width/2.0f, -this->height/2.0f, 0.0f);
   glm::vec3 botright(+this->width/2.0f, -this->height/2.0f, 0.0f);
-  return collision_detection::Rectangle(topleft, botleft, botright);
+  return engine::geometry::Rectangle(topleft, botleft, botright);
 }

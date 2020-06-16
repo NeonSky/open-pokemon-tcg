@@ -1,4 +1,6 @@
 #include "collision_detection.hpp"
+#include "rectangle.hpp"
+#include "plane.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/scalar_constants.hpp>
@@ -7,11 +9,11 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/mat4x4.hpp>
 
-using namespace open_pokemon_tcg::collision_detection;
+using namespace open_pokemon_tcg::engine::geometry;
 
 Intersection::Intersection(glm::vec3 point) : point(point) {}
 
-Intersection* open_pokemon_tcg::collision_detection::ray_plane_intersection(Ray ray, Plane plane) {
+Intersection* open_pokemon_tcg::engine::geometry::ray_plane_intersection(Ray ray, Plane plane) {
   glm::vec3 from = ray.origin;
   glm::vec3 dir = ray.direction;
   glm::vec3 normal = plane.normal;
@@ -26,7 +28,7 @@ Intersection* open_pokemon_tcg::collision_detection::ray_plane_intersection(Ray 
   return new Intersection(hit);
 }
 
-Intersection* open_pokemon_tcg::collision_detection::ray_rectangle_intersection(Ray ray, Rectangle rectangle) {
+Intersection* open_pokemon_tcg::engine::geometry::ray_rectangle_intersection(Ray ray, Rectangle rectangle) {
   Intersection* hit = ray_plane_intersection(ray, Plane(rectangle));
   if (hit == nullptr)
     return nullptr;

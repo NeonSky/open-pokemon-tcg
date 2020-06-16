@@ -7,7 +7,7 @@
 #include <imgui_impl_glfw.h>
 #include <stdexcept>
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::engine::gui;
 
 Window::Window() : Window(1920, 1080, "OpenPokemonTCG") {}
 

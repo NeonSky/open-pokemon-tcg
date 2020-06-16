@@ -26,7 +26,7 @@ namespace open_pokemon_tcg {
 
     // Mutators
     void update();
-    void render(const glm::mat4 &view_projection_matrix, Shader *shader);
+    void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader);
 
     void mill();
 

@@ -9,12 +9,11 @@
 #include <glm/gtx/transform.hpp>
 
 #include <algorithm>
-#include <iostream>
 
 using namespace open_pokemon_tcg;
 
-DebugCamera::DebugCamera(Window* window) : camera(Camera()), window(window){}
-DebugCamera::DebugCamera(Window* window, Transform transform) : camera(Camera(transform)), window(window) {
+DebugCamera::DebugCamera(engine::gui::Window* window) : camera(engine::graphics::Camera()), window(window){}
+DebugCamera::DebugCamera(engine::gui::Window* window, engine::geometry::Transform transform) : camera(engine::graphics::Camera(transform)), window(window) {
   this->window->add_on_key_callback(std::bind(&DebugCamera::on_key, this, std::placeholders::_1));
   this->window->add_on_cursor_callback(std::bind(&DebugCamera::on_cursor, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
   this->window->add_on_scroll_callback(std::bind(&DebugCamera::on_scroll, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
@@ -23,29 +22,29 @@ DebugCamera::DebugCamera(Window* window, Transform transform) : camera(Camera(tr
 DebugCamera::~DebugCamera() {}
 
 // Mutators
-void DebugCamera::set_transform(Transform transform) {
+void DebugCamera::set_transform(engine::geometry::Transform transform) {
   this->camera.transform = transform;
 };
 
 void DebugCamera::on_key(GLFWwindow* window) {
   if (glfwGetKey(window, GLFW_KEY_W))
-    this->camera.move(Direction::FORWARD);
+    this->camera.move(engine::graphics::Direction::FORWARD);
   if (glfwGetKey(window, GLFW_KEY_S))
-    this->camera.move(Direction::BACKWARD);
+    this->camera.move(engine::graphics::Direction::BACKWARD);
   if (glfwGetKey(window, GLFW_KEY_D))
-    this->camera.move(Direction::RIGHT);
+    this->camera.move(engine::graphics::Direction::RIGHT);
   if (glfwGetKey(window, GLFW_KEY_A))
-    this->camera.move(Direction::LEFT);
+    this->camera.move(engine::graphics::Direction::LEFT);
   if (glfwGetKey(window, GLFW_KEY_E))
-    this->camera.move(Direction::UP);
+    this->camera.move(engine::graphics::Direction::UP);
   if (glfwGetKey(window, GLFW_KEY_Q))
-    this->camera.move(Direction::DOWN);
+    this->camera.move(engine::graphics::Direction::DOWN);
 
   if (glfwGetKey(window, GLFW_KEY_P)) {
-    if (this->projection_type == ProjectionType::PERSPECTIVE)
-      this->projection_type = ProjectionType::ORTHOGRAPHIC;
+    if (this->projection_type == engine::graphics::ProjectionType::PERSPECTIVE)
+      this->projection_type = engine::graphics::ProjectionType::ORTHOGRAPHIC;
     else
-      this->projection_type = ProjectionType::PERSPECTIVE;
+      this->projection_type = engine::graphics::ProjectionType::PERSPECTIVE;
   }
 
   if (glfwGetKey(window, GLFW_KEY_T)) {

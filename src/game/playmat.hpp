@@ -37,27 +37,28 @@ namespace open_pokemon_tcg {
       PRIZE_CARD6,
     };
 
-    class Intersection {
+    class Slot {
     public:
       Side side;
       AreaType area_type;
+      engine::geometry::Transform transform;
     };
 
     // Mutators
-    virtual void render(const glm::mat4 &view_projection_matrix, Shader *shader) = 0;
+    virtual void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) = 0;
 
     // Accessors
-    virtual Intersection* does_intersect(collision_detection::Ray ray) const = 0;
-    virtual Transform deck_slot(Side side) const = 0;
-    virtual Transform discard_slot(Side side) const = 0;
-    virtual Transform active_slot(Side side) const = 0;
-    virtual Transform supporter_slot(Side side) const = 0;
-    virtual Transform stadium_slot(Side side) const = 0;
-    virtual std::array<Transform, 5> bench_slots(Side side) const = 0;
-    virtual std::array<Transform, 6> prize_slots(Side side) const = 0;
+    virtual Slot* does_intersect(engine::geometry::Ray ray) const = 0;
+    virtual engine::geometry::Transform deck_slot(Side side) const = 0;
+    virtual engine::geometry::Transform discard_slot(Side side) const = 0;
+    virtual engine::geometry::Transform active_slot(Side side) const = 0;
+    virtual engine::geometry::Transform supporter_slot(Side side) const = 0;
+    virtual engine::geometry::Transform stadium_slot(Side side) const = 0;
+    virtual std::array<engine::geometry::Transform, 5> bench_slots(Side side) const = 0;
+    virtual std::array<engine::geometry::Transform, 6> prize_slots(Side side) const = 0;
 
   protected:
-    static Transform mirror_transform(Transform transform);
+    static engine::geometry::Transform mirror_transform(engine::geometry::Transform transform);
 
   };
 }

@@ -3,7 +3,7 @@
 #include <string>
 #include <glad/glad.h>
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::engine::debug;
 
 bool checkGLError(const char* file, int line) {
 	bool wasError = false;

@@ -10,6 +10,7 @@
 #include "../../engine/debug/logger.hpp"
 #include "../../engine/gui/window.hpp"
 #include "../../engine/scene/scene.hpp"
+#include "../../engine/graphics/rectangle.hpp"
 
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/glm.hpp>
@@ -18,9 +19,9 @@
 
 namespace open_pokemon_tcg::scenes {
 
-  class Duel : public IScene {
+class Duel : public engine::scene::IScene {
   public:
-    Duel(Window* window);
+    Duel(engine::gui::Window* window);
     ~Duel();
 
     // Mutators
@@ -29,18 +30,20 @@ namespace open_pokemon_tcg::scenes {
     void gui() override;
 
   private:
-    const Transform camera1_transform = Transform(glm::vec3(0.0f, 5.5f, -7.5f),
+    const engine::geometry::Transform camera1_transform = engine::geometry::Transform(glm::vec3(0.0f, 5.5f, -7.5f),
                                                  glm::vec3(-0.48f*glm::half_pi<float>(), 0.0f, 0.0f));
-    const Transform camera2_transform = Transform(glm::vec3(0.0f, 5.5f, 7.5f),
+    const engine::geometry::Transform camera2_transform = engine::geometry::Transform(glm::vec3(0.0f, 5.5f, 7.5f),
                                                  glm::vec3(-0.48f*glm::half_pi<float>(), glm::pi<float>(), 0.0f));
 
     DebugCamera camera;
-    Shader *shader;
+    engine::graphics::Shader *shader;
+    engine::graphics::Shader *highlight_shader;
     IPlaymat *playmat;
 
     DuelPlayer *current_player;
     DuelPlayer *player1;
     DuelPlayer *player2;
+    engine::graphics::Rectangle *debug_rect;
 
     bool focus_hovered_card = false;
 
@@ -48,28 +51,30 @@ namespace open_pokemon_tcg::scenes {
     void on_key(GLFWwindow* window);
   };
 
-  Duel::Duel(Window* window) : camera(DebugCamera(window, this->camera1_transform)) {
+  Duel::Duel(engine::gui::Window* window) : camera(DebugCamera(window, this->camera1_transform)) {
 
     window->add_on_key_callback(std::bind(&Duel::on_key, this, std::placeholders::_1));
-    this->shader = new Shader("simple.vert", "simple.frag");
+    this->shader = new engine::graphics::Shader("simple.vert", "simple.frag");
+    this->highlight_shader = new engine::graphics::Shader("simple.vert", "highlight.frag");
 
     this->playmat = new playmats::BlackPlaymat();
 
     PokemonTcgApi *api = new PokemonTcgApi();
+    this->debug_rect = new engine::graphics::Rectangle(engine::geometry::Rectangle(engine::geometry::Transform(), 1.0f, 1.0f)); // TODO: Replace card.cpp to use two rectangles
 
     LOG_DEBUG("Loading deck1...");
     nlohmann::json deck1_data = api->load_deck("Base").data;
     Deck deck1;
     for (auto &card : deck1_data[0]["cards"])
       for (int i = 0; i < card["count"]; i++)
-        deck1.cards.push_back(Card(Transform(), api->load_card((std::string)card["id"]).texture.id()));
+        deck1.cards.push_back(Card(engine::geometry::Transform(), api->load_card((std::string)card["id"]).texture.id()));
 
     LOG_DEBUG("Loading deck2...");
     nlohmann::json deck2_data = api->load_deck("Jungle").data;
     Deck deck2;
     for (auto &card : deck2_data[0]["cards"])
       for (int i = 0; i < card["count"]; i++)
-        deck2.cards.push_back(Card(Transform(), api->load_card((std::string)card["id"]).texture.id()));
+        deck2.cards.push_back(Card(engine::geometry::Transform(), api->load_card((std::string)card["id"]).texture.id()));
 
     this->player1 = new DuelPlayer(deck1, *this->playmat, IPlaymat::Side::PLAYER1);
     this->player2 = new DuelPlayer(deck2, *this->playmat, IPlaymat::Side::PLAYER2);
@@ -97,15 +102,15 @@ namespace open_pokemon_tcg::scenes {
 
     this->playmat->render(view_projection_matrix, this->shader);
 
-    collision_detection::Ray ray;
+    engine::geometry::Ray ray;
     ray.origin = this->camera.transform().position;
     ray.direction = glm::normalize(this->camera.mouse_ray());
 
     // Check hover playmat
     auto in = this->playmat->does_intersect(ray);
     if (in != nullptr) {
-      LOG_DEBUG(in->side);
-      LOG_DEBUG(in->area_type);
+      this->debug_rect->transform.position = in->transform.position;
+      this->debug_rect->transform.rotation = glm::vec3(in->transform.rotation.x - glm::half_pi<float>(), in->transform.rotation.y, in->transform.rotation.z);
     }
 
     // Check hover cards
@@ -135,11 +140,14 @@ namespace open_pokemon_tcg::scenes {
     }
 
     if (focus_hovered_card && hover_card != nullptr) {
-      Transform t = Transform(this->camera.transform().position + 2.0f * this->camera.transform().forward());
+      engine::geometry::Transform t = engine::geometry::Transform(this->camera.transform().position + 2.0f * this->camera.transform().forward());
       t.rotation = glm::vec3(0.5f*glm::half_pi<float>(), this->camera.transform().rotation.y, 0.0f);
       Card detail = Card(t, hover_card->texture());
       detail.render(view_projection_matrix, this->shader);
     }
+
+    this->highlight_shader->use();
+    this->debug_rect->render(view_projection_matrix, this->highlight_shader);
   }
 
   void Duel::gui() {}

@@ -13,14 +13,14 @@ namespace open_pokemon_tcg {
 
   class DiscardPile {
   public:
-    DiscardPile(Transform transform);
+    DiscardPile(const engine::geometry::Transform& transform);
     ~DiscardPile();
 
-    Transform transform;
+    engine::geometry::Transform transform;
     std::vector<Card*> cards;
 
     // Mutators
-    void render(const glm::mat4 &view_projection_matrix, Shader *shader);
+    void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader);
 
   private:
     const float card_spacing = 0.004f;

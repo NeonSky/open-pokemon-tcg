@@ -16,9 +16,9 @@
 
 namespace open_pokemon_tcg::scenes {
 
-  class DeckLoading : public IScene {
+class DeckLoading : public engine::scene::IScene {
   public:
-    DeckLoading(Window* window);
+    DeckLoading(engine::gui::Window* window);
     ~DeckLoading();
 
     void update() override;
@@ -29,7 +29,7 @@ namespace open_pokemon_tcg::scenes {
     PokemonTcgApi* api;
     DebugCamera camera;
     std::vector<Card> cards;
-    Shader *shader;
+    engine::graphics::Shader *shader;
 
     // GUI options
     char deck_id[100] = { 0 };
@@ -38,12 +38,12 @@ namespace open_pokemon_tcg::scenes {
     void load_deck(std::string deck_id);
   };
 
-  DeckLoading::DeckLoading(Window* window) :
+  DeckLoading::DeckLoading(engine::gui::Window* window) :
     camera(DebugCamera(window,
-                       Transform(glm::vec3(0.0f, 2.0f, 0.0f),
+                       engine::geometry::Transform(glm::vec3(0.0f, 2.0f, 0.0f),
                                  glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)))) {
 
-    this->shader = new Shader("simple.vert", "simple.frag");
+    this->shader = new engine::graphics::Shader("simple.vert", "simple.frag");
 
     this->api = new PokemonTcgApi();
   }
@@ -79,12 +79,12 @@ namespace open_pokemon_tcg::scenes {
     for(auto &card : deck[0]["cards"]) {
       for(int i = 0; i < card["count"]; i++) {
         std::string id = card["id"];
-        Texture tex = api->load_card(id).texture;
+        engine::graphics::Texture tex = api->load_card(id).texture;
 
         if (one_card_type_per_row)
-          this->cards.push_back(Card(Transform(glm::vec3(i, 0.0f, row)), tex.id()));
+          this->cards.push_back(Card(engine::geometry::Transform(glm::vec3(i, 0.0f, row)), tex.id()));
         else
-          this->cards.push_back(Card(Transform(glm::vec3(card_counter % 10, 0.0f, card_counter / 10)), tex.id()));
+          this->cards.push_back(Card(engine::geometry::Transform(glm::vec3(card_counter % 10, 0.0f, card_counter / 10)), tex.id()));
 
         card_counter++;
       }

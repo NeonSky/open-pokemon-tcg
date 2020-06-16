@@ -4,7 +4,7 @@
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/transform.hpp>
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::engine::geometry;
 
 Transform::Transform() : Transform(glm::vec3(0.0f)) {}
 Transform::Transform(glm::vec3 position) : Transform(position, glm::vec3(0.0f)) {}

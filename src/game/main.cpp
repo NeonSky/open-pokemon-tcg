@@ -20,7 +20,7 @@
 
 using namespace open_pokemon_tcg;
 
-void gui(IScene* scene) {
+void gui(engine::scene::IScene* scene) {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
@@ -34,13 +34,13 @@ void gui(IScene* scene) {
 int main() {
   srand(time(NULL));
 
-  Logger::set_profile(Logger::Profile::DEBUG);
+  engine::debug::Logger::set_profile(engine::debug::Logger::Profile::DEBUG);
   LOG_INFO("Program started.");
   auto start = std::chrono::system_clock::now();
 
-  Window *window;
+  engine::gui::Window *window;
   try {
-    window = new Window(1920/2, 1080, "OpenPokemonTCG");
+    window = new engine::gui::Window(1920/2, 1080, "OpenPokemonTCG");
   } catch(const std::exception& e) {
     LOG_ERROR(e.what());
     return -1;
@@ -58,15 +58,18 @@ int main() {
   LOG_INFO("OpenGL vendor: " + std::string((const char*)glGetString(GL_VENDOR)));
 
   CHECK_GL_ERROR();
-  // IScene* scene = new scenes::Duel(window);
+  engine::scene::IScene* scene = new scenes::Duel(window);
   // IScene* scene = new scenes::CardTransform(window);
   // IScene* scene = new scenes::DeckLoading(window);
-  IScene* scene = new scenes::PlaymatSlots(window);
+  // IScene* scene = new scenes::PlaymatSlots(window);
 
   CHECK_GL_ERROR();
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   window->init_gui();
 

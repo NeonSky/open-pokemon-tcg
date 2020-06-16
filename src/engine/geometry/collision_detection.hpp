@@ -6,7 +6,7 @@
 
 #include <glm/vec3.hpp>
 
-namespace open_pokemon_tcg::collision_detection {
+namespace open_pokemon_tcg::engine::geometry {
 
   class Intersection {
   public:
@@ -15,7 +15,7 @@ namespace open_pokemon_tcg::collision_detection {
   };
 
   // Accessors
-  Intersection* ray_plane_intersection(Ray ray, Plane plane);
+  Intersection* ray_plane_intersection(Ray ray, open_pokemon_tcg::engine::geometry::Plane plane);
   Intersection* ray_rectangle_intersection(Ray ray, Rectangle rectangle);
 
 }
