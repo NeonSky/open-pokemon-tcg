@@ -20,8 +20,13 @@ namespace open_pokemon_tcg::engine::geometry {
 
     // Mutators
     void set_rotation(float yaw, float pitch, float roll);
+    void flip_rotation();
 
     // Accessors
+    static constexpr glm::vec4 world_right   = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
+    static constexpr glm::vec4 world_up      = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+    static constexpr glm::vec4 world_forward = glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
+
     Transform operator+(const Transform &other) const;
 
     glm::mat4 matrix() const;
@@ -34,10 +39,6 @@ namespace open_pokemon_tcg::engine::geometry {
     float roll() const { return rotation.z; };
 
   private:
-    static constexpr glm::vec4 world_right   = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
-    static constexpr glm::vec4 world_up      = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
-    static constexpr glm::vec4 world_forward = glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
-
     // Accessors
     glm::mat4 rotation_matrix() const;
   };
