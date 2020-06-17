@@ -7,21 +7,33 @@
 
 namespace open_pokemon_tcg::engine::geometry {
 
-  struct Rectangle {
-    glm::vec3 topleft;
-    glm::vec3 botleft;
-    glm::vec3 botright;
+  class Rectangle {
+  public:
+    Rectangle();
+    Rectangle(Transform transform, float width = 1.0f, float height = 1.0f);
 
-    Rectangle(Transform transform, float width, float height) {
-      this->topleft  = transform.matrix() * glm::vec4(transform.position + glm::vec3(-width/2.0f, +height/2.0f, 0.0f), 1.0f);
-      this->botleft  = transform.matrix() * glm::vec4(transform.position + glm::vec3(-width/2.0f, -height/2.0f, 0.0f), 1.0f);
-      this->botright = transform.matrix() * glm::vec4(transform.position + glm::vec3(+width/2.0f, -height/2.0f, 0.0f), 1.0f);
-    }
+    // Accessors
+    Transform transform() const;
+    float width() const;
+    float height() const;
 
-    Rectangle(glm::vec3 topleft, glm::vec3 botleft, glm::vec3 botright) : topleft(topleft), botleft(botleft), botright(botright) {}
+    glm::vec3 topleft() const;
+    glm::vec3 topright() const;
+    glm::vec3 botleft() const;
+    glm::vec3 botright() const;
 
-    glm::vec3 topright() {
-      return this->botleft + (this->topleft - this->botleft) + (this->botright - this->botleft);
-    }
+  private:
+    Transform _transform;
+    float _width;
+    float _height;
+
+    glm::vec3 _topleft;
+    glm::vec3 _topright;
+    glm::vec3 _botleft;
+    glm::vec3 _botright;
+
+    // Mutators
+    void update_corners();
+
   };
 }

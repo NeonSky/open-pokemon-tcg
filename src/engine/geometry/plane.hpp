@@ -13,8 +13,8 @@ namespace open_pokemon_tcg::engine::geometry {
 
     Plane() {}
     Plane(Rectangle rectangle) {
-      this->point_on_plane = rectangle.botleft;
-      this->normal = glm::cross(rectangle.botright - rectangle.botleft, rectangle.topleft - rectangle.botleft);
+      this->point_on_plane = rectangle.botleft();
+      this->normal = rectangle.transform().forward();
     }
   };
 

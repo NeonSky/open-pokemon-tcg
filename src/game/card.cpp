@@ -1,6 +1,7 @@
 #include "card.hpp"
 
 #include "../engine/debug/logger.hpp"
+#include "../engine/debug/debug_drawer.hpp"
 #include "../engine/graphics/texture.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
@@ -12,10 +13,10 @@
 using namespace open_pokemon_tcg;
 
 Card::Card(engine::geometry::Transform transform, GLuint texture) : transform(transform), front_texture(texture) {
-  engine::geometry::Rectangle rect = raw_shape();
-  glm::vec3 botleft  = rect.botleft;
-  glm::vec3 botright = rect.botright;
-  glm::vec3 topleft  = rect.topleft;
+  engine::geometry::Rectangle rect(engine::geometry::Transform(), this->width, this->height);
+  glm::vec3 botleft  = rect.botleft();
+  glm::vec3 botright = rect.botright();
+  glm::vec3 topleft  = rect.topleft();
   glm::vec3 topright = rect.topright();
 
   this->vao = create_vao({
@@ -38,7 +39,9 @@ Card::~Card() {}
 
 void Card::render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) {
 
-  glm::mat4 front_matrix = this->model_matrix();
+  shader->use();
+
+  glm::mat4 front_matrix = this->transform.matrix();
   glm::mat4 modelViewProjectionMatrix = view_projection_matrix * front_matrix;
   shader->set_uniform("modelViewProjectionMatrix", &modelViewProjectionMatrix[0].x);
 
@@ -55,14 +58,8 @@ void Card::render(const glm::mat4 &view_projection_matrix, engine::graphics::Sha
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-glm::mat4 Card::model_matrix() const {
-  glm::mat4 m = this->transform.matrix();
-  m = glm::rotate(m, glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f));
-  return m;
-}
-
 engine::geometry::Intersection* Card::does_intersect(engine::geometry::Ray ray) {
-  return engine::geometry::ray_rectangle_intersection(ray, shape());
+  return engine::geometry::ray_rectangle_intersection(ray, engine::geometry::Rectangle(this->transform, this->width, this->height));
 }
 
 GLuint Card::create_vao(const std::vector<float> positions, const std::vector<float> uv_coords) const {
@@ -70,18 +67,6 @@ GLuint Card::create_vao(const std::vector<float> positions, const std::vector<fl
   glGenBuffers(1, &pos_buffer); // Gen buffer object and store buffer id
   glBindBuffer(GL_ARRAY_BUFFER, pos_buffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_STATIC_DRAW);
-
-  const float colors[] = {
-    //   R     G     B
-    1.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f,
-    1.0f, 1.0f, 0.0f
-  };
-
-  unsigned int color_buffer;
-  glGenBuffers(1, &color_buffer); // Gen buffer object and store buffer id
-  glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
   unsigned int uv_buffer;
   glGenBuffers(1, &uv_buffer);
@@ -105,30 +90,11 @@ GLuint Card::create_vao(const std::vector<float> positions, const std::vector<fl
   glBindBuffer(GL_ARRAY_BUFFER, pos_buffer);
 	glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-	glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
-
 	glBindBuffer(GL_ARRAY_BUFFER, uv_buffer);
 	glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
 
 	glEnableVertexAttribArray(0); // Enable the vertex position attribute
-	glEnableVertexAttribArray(1); // Enable the vertex color attribute
 	glEnableVertexAttribArray(2); // Enable the uv coord attribute
 
   return vao;
-}
-
-engine::geometry::Rectangle Card::shape() const {
-  engine::geometry::Rectangle rect = raw_shape();
-  glm::vec3 topleft  = this->model_matrix() * glm::vec4(rect.topleft , 1.0f);
-  glm::vec3 botleft  = this->model_matrix() * glm::vec4(rect.botleft , 1.0f);
-  glm::vec3 botright = this->model_matrix() * glm::vec4(rect.botright, 1.0f);
-  return engine::geometry::Rectangle(topleft, botleft, botright);
-}
-
-engine::geometry::Rectangle Card::raw_shape() const {
-  glm::vec3  topleft(-this->width/2.0f, +this->height/2.0f, 0.0f);
-  glm::vec3  botleft(-this->width/2.0f, -this->height/2.0f, 0.0f);
-  glm::vec3 botright(+this->width/2.0f, -this->height/2.0f, 0.0f);
-  return engine::geometry::Rectangle(topleft, botleft, botright);
 }

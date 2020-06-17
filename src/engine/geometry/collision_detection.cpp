@@ -33,9 +33,9 @@ Intersection* open_pokemon_tcg::engine::geometry::ray_rectangle_intersection(Ray
   if (hit == nullptr)
     return nullptr;
 
-  glm::vec3 topleft = rectangle.topleft;
-  glm::vec3 botleft = rectangle.botleft;
-  glm::vec3 botright = rectangle.botright;
+  glm::vec3 topleft  = rectangle.topleft();
+  glm::vec3 botleft  = rectangle.botleft();
+  glm::vec3 botright = rectangle.botright();
 
   glm::vec3 OA = topleft - botleft;
   glm::vec3 OB = botright - botleft;
