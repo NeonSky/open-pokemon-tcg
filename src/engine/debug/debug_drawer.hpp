@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../geometry/rectangle.hpp"
 #include "../geometry/transform.hpp"
 #include "../graphics/shader.hpp"
 
@@ -26,6 +27,7 @@ namespace open_pokemon_tcg::engine::debug {
     void render(const glm::mat4 &view_projection_matrix);
     void draw_line(glm::vec3 from, glm::vec3 to);
     void draw_transform(geometry::Transform transform);
+    void draw_rectangle(geometry::Rectangle rectangle);
 
   private:
     const float line_width = 5.0f;

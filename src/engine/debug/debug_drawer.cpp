@@ -70,3 +70,10 @@ void DebugDrawer::draw_transform(geometry::Transform transform) {
   this->line_queue.emplace_back(transform.position, transform.position + transform.up()     , glm::vec3(0.0f, 1.0f, 0.0f));
   this->line_queue.emplace_back(transform.position, transform.position + transform.forward(), glm::vec3(0.0f, 0.0f, 1.0f));
 }
+
+void DebugDrawer::draw_rectangle(geometry::Rectangle rectangle) {
+  this->line_queue.emplace_back(rectangle.topleft(), rectangle.topright());
+  this->line_queue.emplace_back(rectangle.topleft(), rectangle.botleft());
+  this->line_queue.emplace_back(rectangle.botright(), rectangle.botleft());
+  this->line_queue.emplace_back(rectangle.botright(), rectangle.topright());
+}
