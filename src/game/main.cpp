@@ -40,7 +40,7 @@ int main() {
 
   engine::gui::Window *window;
   try {
-    window = new engine::gui::Window(1920/2, 1080, "OpenPokemonTCG");
+    window = new engine::gui::Window(1920/2, 1080-30, "OpenPokemonTCG");
   } catch(const std::exception& e) {
     LOG_ERROR(e.what());
     return -1;
@@ -59,9 +59,9 @@ int main() {
 
   CHECK_GL_ERROR();
   engine::scene::IScene* scene = new scenes::Duel(window);
-  // IScene* scene = new scenes::CardTransform(window);
-  // IScene* scene = new scenes::DeckLoading(window);
-  // IScene* scene = new scenes::PlaymatSlots(window);
+  // engine::scene::IScene* scene = new scenes::CardTransform(window);
+  // engine::scene::IScene* scene = new scenes::DeckLoading(window);
+  // engine::scene::IScene* scene = new scenes::PlaymatSlots(window);
 
   CHECK_GL_ERROR();
 

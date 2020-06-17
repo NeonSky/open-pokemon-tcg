@@ -21,7 +21,7 @@ namespace open_pokemon_tcg::engine::graphics {
     void render(const glm::mat4 &view_projection_matrix, Shader *shader);
 
   private:
-    GLuint vao;
+    GLuint _vao;
   };
 
 }

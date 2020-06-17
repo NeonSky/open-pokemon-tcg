@@ -44,13 +44,13 @@ Rectangle::Rectangle(geometry::Rectangle rectangle) {
 	glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 	glEnableVertexAttribArray(0);
 
-  this->vao = vao;
+  this->_vao = vao;
 }
 
 void Rectangle::render(const glm::mat4 &view_projection_matrix, Shader *shader) {
   glm::mat4 modelViewProjectionMatrix = view_projection_matrix * this->transform.matrix();
   shader->set_uniform("modelViewProjectionMatrix", &modelViewProjectionMatrix[0].x);
 
-  glBindVertexArray(this->vao);
+  glBindVertexArray(this->_vao);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
