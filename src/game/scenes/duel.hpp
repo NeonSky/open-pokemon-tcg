@@ -7,6 +7,7 @@
 #include "../playmats/black_playmat.hpp"
 #include "../pokemon_tcg_api.hpp"
 
+#include "../../engine/debug/debug_drawer.hpp"
 #include "../../engine/debug/logger.hpp"
 #include "../../engine/gui/window.hpp"
 #include "../../engine/scene/scene.hpp"
@@ -60,7 +61,7 @@ class Duel : public engine::scene::IScene {
     this->playmat = new playmats::BlackPlaymat();
 
     PokemonTcgApi *api = new PokemonTcgApi();
-    this->debug_rect = new engine::graphics::Rectangle(engine::geometry::Rectangle(engine::geometry::Transform(), 1.0f, 1.0f)); // TODO: Replace card.cpp to use two rectangles
+    this->debug_rect = new engine::graphics::Rectangle(engine::geometry::Rectangle(engine::geometry::Transform()));
 
     LOG_DEBUG("Loading deck1...");
     nlohmann::json deck1_data = api->load_deck("Base").data;
@@ -91,11 +92,11 @@ class Duel : public engine::scene::IScene {
   }
 
   void Duel::render() {
-    this->shader->use();
-
     glm::mat4 viewMatrix = this->camera.view_matrix();
     glm::mat4 projectionMatrix = this->camera.projection_matrix();
     glm::mat4 view_projection_matrix = projectionMatrix * viewMatrix;
+
+    this->shader->use();
 
     this->player1->render(view_projection_matrix, this->shader);
     this->player2->render(view_projection_matrix, this->shader);
@@ -110,7 +111,7 @@ class Duel : public engine::scene::IScene {
     auto in = this->playmat->does_intersect(ray);
     if (in != nullptr) {
       this->debug_rect->transform.position = in->transform.position;
-      this->debug_rect->transform.rotation = glm::vec3(in->transform.rotation.x - glm::half_pi<float>(), in->transform.rotation.y, in->transform.rotation.z);
+      this->debug_rect->transform.rotation = in->transform.rotation;
     }
 
     // Check hover cards
@@ -141,7 +142,9 @@ class Duel : public engine::scene::IScene {
 
     if (focus_hovered_card && hover_card != nullptr) {
       engine::geometry::Transform t = engine::geometry::Transform(this->camera.transform().position + 2.0f * this->camera.transform().forward());
-      t.rotation = glm::vec3(0.5f*glm::half_pi<float>(), this->camera.transform().rotation.y, 0.0f);
+      t.rotation = this->camera.transform().rotation;
+      t.flip_rotation();
+
       Card detail = Card(t, hover_card->texture());
       detail.render(view_projection_matrix, this->shader);
     }

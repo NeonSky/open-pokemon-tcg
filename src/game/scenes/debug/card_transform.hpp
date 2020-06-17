@@ -36,8 +36,8 @@ class CardTransform : public engine::scene::IScene {
 
   CardTransform::CardTransform(engine::gui::Window* window) :
     camera(DebugCamera(window,
-                       engine::geometry::Transform(glm::vec3(0.0f, 2.0f, 0.0f),
-                                 glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)))) {
+                       engine::geometry::Transform(glm::vec3(0.0f, 0.0f, 2.0f),
+                                                 glm::vec3(0.0f, glm::pi<float>(), 0.0f)))) {
 
     this->shader = new engine::graphics::Shader("simple.vert", "simple.frag");
     debug_card = new Card(engine::geometry::Transform(), engine::graphics::Texture("cache/cards/img/base1-26.png").id());

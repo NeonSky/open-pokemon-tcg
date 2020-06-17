@@ -6,6 +6,7 @@
 #include "../../playmats/green_playmat.hpp"
 
 #include "../../../engine/debug/logger.hpp"
+#include "../../../engine/debug/debug_drawer.hpp"
 #include "../../../engine/graphics/texture.hpp"
 #include "../../../engine/gui/window.hpp"
 #include "../../../engine/scene/scene.hpp"
@@ -34,66 +35,64 @@ class PlaymatSlots : public engine::scene::IScene {
 
     std::vector<Card> cards;
     Card debug_card;
-    engine::graphics::Rectangle *debug_rect;
 
     // GUI options
     bool show_cards = true;
     bool show_debug_card = false;
     glm::vec3 debug_card_pos = glm::vec3(0.0f, 0.02f, 0.0f);
-    glm::vec3 debug_card_rot = glm::vec3(0.0f);
+    glm::vec3 debug_card_rot = glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f);
   };
 
   PlaymatSlots::PlaymatSlots(engine::gui::Window* window) :
     camera(DebugCamera(window,
                        engine::geometry::Transform(glm::vec3(0.0f, 10.0f, 0.0f),
                                  glm::vec3(-glm::half_pi<float>(), 0.0f, 0.0f)))),
-    debug_card(Card(engine::geometry::Transform(glm::vec3(0.0f, 0.01f, 0.0f)), engine::graphics::Texture("img/cardback.png").id())) {
-    this->debug_rect = new engine::graphics::Rectangle(
-            engine::geometry::Rectangle(engine::geometry::Transform(glm::vec3(0.0f, 0.01f, 0.0f)), 1.0f, 1.0f));
+    debug_card(Card(engine::geometry::Transform(), engine::graphics::Texture("img/cardback.png").id())) {
 
     this->shader = new engine::graphics::Shader("simple.vert", "simple.frag");
     // this->playmat = new playmats::BlackPlaymat();
     this->playmat = new playmats::GreenPlaymat();
 
-    this->cards.push_back(Card(playmat->active_slot(IPlaymat::Side::PLAYER1), engine::graphics::Texture("cache/cards/img/base1-8.png").id()));
-    this->cards.push_back(Card(playmat->supporter_slot(IPlaymat::Side::PLAYER1), engine::graphics::Texture("cache/cards/img/base1-8.png").id()));
-    this->cards.push_back(Card(playmat->stadium_slot(IPlaymat::Side::PLAYER1), engine::graphics::Texture("cache/cards/img/base1-8.png").id()));
+    // Player 1
+    engine::graphics::Texture texture1("cache/cards/img/base1-8.png");
+    this->cards.push_back(Card(playmat->active_slot(IPlaymat::Side::PLAYER1).transform(), texture1.id()));
+    this->cards.push_back(Card(playmat->supporter_slot(IPlaymat::Side::PLAYER1).transform(), texture1.id()));
+    this->cards.push_back(Card(playmat->stadium_slot(IPlaymat::Side::PLAYER1).transform(), texture1.id()));
     for (int i = 0; i < 5; i++)
-      this->cards.push_back(Card(playmat->bench_slots(IPlaymat::Side::PLAYER1)[i], engine::graphics::Texture("cache/cards/img/base1-8.png").id()));
+      this->cards.push_back(Card(playmat->bench_slots(IPlaymat::Side::PLAYER1)[i].transform(), texture1.id()));
     for (int i = 0; i < 6; i++)
-      this->cards.push_back(Card(playmat->prize_slots(IPlaymat::Side::PLAYER1)[i], engine::graphics::Texture("cache/cards/img/base1-8.png").id()));
-    this->cards.push_back(Card(playmat->deck_slot(IPlaymat::Side::PLAYER1), engine::graphics::Texture("cache/cards/img/base1-8.png").id()));
-    this->cards.push_back(Card(playmat->discard_slot(IPlaymat::Side::PLAYER1), engine::graphics::Texture("cache/cards/img/base1-8.png").id()));
+      this->cards.push_back(Card(playmat->prize_slots(IPlaymat::Side::PLAYER1)[i].transform(), texture1.id()));
+    this->cards.push_back(Card(playmat->deck_slot(IPlaymat::Side::PLAYER1).transform(), texture1.id()));
+    this->cards.push_back(Card(playmat->discard_slot(IPlaymat::Side::PLAYER1).transform(), texture1.id()));
 
-    this->cards.push_back(Card(playmat->active_slot(IPlaymat::Side::PLAYER2), engine::graphics::Texture("cache/cards/img/base1-24.png").id()));
-    this->cards.push_back(Card(playmat->supporter_slot(IPlaymat::Side::PLAYER2), engine::graphics::Texture("cache/cards/img/base1-24.png").id()));
-    this->cards.push_back(Card(playmat->stadium_slot(IPlaymat::Side::PLAYER2), engine::graphics::Texture("cache/cards/img/base1-24.png").id()));
+    // Player 2
+    engine::graphics::Texture texture2("cache/cards/img/base1-24.png");
+    this->cards.push_back(Card(playmat->active_slot(IPlaymat::Side::PLAYER2).transform(), texture2.id()));
+    this->cards.push_back(Card(playmat->supporter_slot(IPlaymat::Side::PLAYER2).transform(), texture2.id()));
+    this->cards.push_back(Card(playmat->stadium_slot(IPlaymat::Side::PLAYER2).transform(), texture2.id()));
     for (int i = 0; i < 5; i++)
-      this->cards.push_back(Card(playmat->bench_slots(IPlaymat::Side::PLAYER2)[i], engine::graphics::Texture("cache/cards/img/base1-24.png").id()));
+      this->cards.push_back(Card(playmat->bench_slots(IPlaymat::Side::PLAYER2)[i].transform(), texture2.id()));
     for (int i = 0; i < 6; i++)
-      this->cards.push_back(Card(playmat->prize_slots(IPlaymat::Side::PLAYER2)[i], engine::graphics::Texture("cache/cards/img/base1-24.png").id()));
-    this->cards.push_back(Card(playmat->deck_slot(IPlaymat::Side::PLAYER2), engine::graphics::Texture("cache/cards/img/base1-24.png").id()));
-    this->cards.push_back(Card(playmat->discard_slot(IPlaymat::Side::PLAYER2), engine::graphics::Texture("cache/cards/img/base1-24.png").id()));
+      this->cards.push_back(Card(playmat->prize_slots(IPlaymat::Side::PLAYER2)[i].transform(), texture2.id()));
+    this->cards.push_back(Card(playmat->deck_slot(IPlaymat::Side::PLAYER2).transform(), texture2.id()));
+    this->cards.push_back(Card(playmat->discard_slot(IPlaymat::Side::PLAYER2).transform(), texture2.id()));
   }
   PlaymatSlots::~PlaymatSlots() {}
 
   void PlaymatSlots::update() {
     this->debug_card.transform.position = debug_card_pos;
     this->debug_card.transform.rotation = debug_card_rot;
-    this->debug_rect->transform.position = debug_card_pos;
-    this->debug_rect->transform.rotation = glm::vec3(debug_card_rot.x - glm::half_pi<float>(), debug_card_rot.y, debug_card_rot.z);
   }
 
   void PlaymatSlots::render() {
-    this->shader->use();
-
     glm::mat4 viewMatrix = this->camera.view_matrix();
     glm::mat4 projectionMatrix = this->camera.projection_matrix();
     glm::mat4 view_projection_matrix = projectionMatrix * viewMatrix;
 
+    this->shader->use();
+
     if (show_debug_card)
       this->debug_card.render(view_projection_matrix, this->shader);
-    this->debug_rect->render(view_projection_matrix, this->shader);
 
     if (show_cards)
       for (Card &c : cards)

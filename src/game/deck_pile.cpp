@@ -48,6 +48,6 @@ void DeckPile::shuffle() {
 void DeckPile::update_card_positions() {
   for (unsigned int h = 0; h < this->cards.size(); h++) {
     this->cards[h]->transform.position = this->transform.position + glm::vec3(0.0f, this->card_spacing * h, 0.0f);
-    this->cards[h]->transform.rotation = this->transform.rotation + glm::vec3(0.0f, 0.0f, glm::pi<float>());
+    this->cards[h]->transform.rotation = this->transform.rotation + glm::vec3(-glm::pi<float>(), -glm::pi<float>(), 0.0f);
   }
 }
