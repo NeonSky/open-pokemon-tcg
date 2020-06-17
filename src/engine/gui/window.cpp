@@ -67,7 +67,7 @@ void Window::update() {
 }
 
 void Window::clear_screen() {
-  glClearColor(0.2f, 0.2f, 0.8f, 1.0);
+  glClearColor(0.2f, 0.2f, 0.2f, 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
