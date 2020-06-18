@@ -4,6 +4,7 @@
 #include "../debug_camera.hpp"
 #include "../deck.hpp"
 #include "../duel_player.hpp"
+#include "../playmats/green_playmat.hpp"
 #include "../playmats/black_playmat.hpp"
 #include "../pokemon_tcg_api.hpp"
 
@@ -58,7 +59,7 @@ class Duel : public engine::scene::IScene {
     this->shader = new engine::graphics::Shader("simple.vert", "simple.frag");
     this->highlight_shader = new engine::graphics::Shader("simple.vert", "highlight.frag");
 
-    this->playmat = new playmats::BlackPlaymat();
+    this->playmat = new playmats::GreenPlaymat();
 
     PokemonTcgApi *api = new PokemonTcgApi();
     this->debug_rect = new engine::graphics::Rectangle(engine::geometry::Rectangle(engine::geometry::Transform()));
@@ -108,10 +109,21 @@ class Duel : public engine::scene::IScene {
     ray.direction = glm::normalize(this->camera.mouse_ray());
 
     // Check hover playmat
-    auto in = this->playmat->does_intersect(ray);
-    if (in != nullptr) {
-      this->debug_rect->transform.position = in->transform.position;
-      this->debug_rect->transform.rotation = in->transform.rotation;
+    engine::geometry::Rectangle *hit = nullptr;
+    IPlaymat::Side hover_side = (this->current_player == this->player1) ? IPlaymat::Side::PLAYER1 : IPlaymat::Side::PLAYER2;
+    auto slots = this->playmat->player_slots(hover_side);
+    for (auto &slot : slots) {
+      if (engine::geometry::ray_rectangle_intersection(ray, slot)) {
+        hit = &slot;
+        break;
+      }
+    }
+
+    if (hit != nullptr) {
+      this->debug_rect->transform.position = hit->transform().position;
+      this->debug_rect->transform.rotation = hit->transform().rotation;
+    } else {
+      this->debug_rect->transform.position = glm::vec3(10000.0f, 0.0, 0.0f);
     }
 
     // Check hover cards

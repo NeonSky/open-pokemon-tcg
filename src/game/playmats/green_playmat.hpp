@@ -24,8 +24,6 @@ namespace open_pokemon_tcg::playmats {
     void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) override;
 
     // Accessors
-    Slot* does_intersect(engine::geometry::Ray ray) const override;
-
     engine::geometry::Rectangle deck_slot(Side side) const override {
       const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(4.305f, 0.01f, -2.330));
       const engine::geometry::Transform side2 = mirror_transform(side1);
@@ -156,10 +154,6 @@ namespace open_pokemon_tcg::playmats {
     glBindTexture(GL_TEXTURE_2D, this->texture);
     glBindVertexArray(this->vao);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-  }
-
-  GreenPlaymat::Slot* GreenPlaymat::does_intersect([[maybe_unused]] engine::geometry::Ray ray) const {
-    return nullptr;
   }
 
   GLuint GreenPlaymat::create_vao() const {
