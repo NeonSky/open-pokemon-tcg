@@ -21,7 +21,7 @@
 
 namespace open_pokemon_tcg::scenes {
 
-class Duel : public engine::scene::IScene {
+  class Duel : public engine::scene::IScene {
   public:
     Duel(engine::gui::Window* window);
     ~Duel();
@@ -45,17 +45,20 @@ class Duel : public engine::scene::IScene {
     DuelPlayer *current_player;
     DuelPlayer *player1;
     DuelPlayer *player2;
-    engine::graphics::Rectangle *debug_rect;
 
+    Card *selected_card;
+    engine::graphics::Rectangle *debug_rect;
     bool focus_hovered_card = false;
 
     // Mutators
     void on_key(GLFWwindow* window);
+    void on_mouse_click(GLFWwindow* window, int button, int action);
   };
 
   Duel::Duel(engine::gui::Window* window) : camera(DebugCamera(window, this->camera1_transform)) {
 
     window->add_on_key_callback(std::bind(&Duel::on_key, this, std::placeholders::_1));
+    window->add_on_mouse_click_callback(std::bind(&Duel::on_mouse_click, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     this->shader = new engine::graphics::Shader("simple.vert", "simple.frag");
     this->highlight_shader = new engine::graphics::Shader("simple.vert", "highlight.frag");
 
@@ -178,6 +181,26 @@ class Duel : public engine::scene::IScene {
       this->current_player->hand->cards.push_back(this->current_player->deck_pile->draw());
     }
 
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
+      this->selected_card = nullptr;
+    }
+
+    // Active slot
+    if (glfwGetKey(window, GLFW_KEY_A)) {
+      if (this->selected_card != nullptr) {
+        this->current_player->place_active_pokemon(this->selected_card);
+        this->selected_card = nullptr;
+      }
+    }
+
+    // Bench
+    if (glfwGetKey(window, GLFW_KEY_B)) {
+      if (this->selected_card != nullptr) {
+        this->current_player->place_bench_pokemon(this->selected_card);
+        this->selected_card = nullptr;
+      }
+    }
+
     // Switch which user/player to control
     if (glfwGetKey(window, GLFW_KEY_U))
       this->current_player = (this->current_player == this->player1) ? this->player2 : player1;
@@ -189,5 +212,28 @@ class Duel : public engine::scene::IScene {
       this->camera.set_transform(this->camera2_transform);
 
     focus_hovered_card = glfwGetKey(window, GLFW_KEY_F);
+  }
+
+  void Duel::on_mouse_click([[maybe_unused]] GLFWwindow* window, int button, int action) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT  && action == GLFW_PRESS) {
+
+      engine::geometry::Ray ray;
+      ray.origin = this->camera.transform().position;
+      ray.direction = glm::normalize(this->camera.mouse_ray());
+
+      this->selected_card = nullptr;
+      float best_dist = 1e9;
+
+      for (auto &card : this->current_player->hand->cards) {
+        auto hit = card->does_intersect(ray);
+        if (hit != nullptr) {
+          float dist = glm::distance(hit->point, this->camera.transform().position);
+          if (dist < best_dist) {
+            best_dist = dist;
+            this->selected_card = card;
+          }
+        }
+      }
+    }
   }
 }

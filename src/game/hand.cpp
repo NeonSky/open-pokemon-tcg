@@ -1,5 +1,9 @@
 #include "hand.hpp"
 
+#include "../engine/debug/logger.hpp"
+
+#include <algorithm>
+
 using namespace open_pokemon_tcg;
 
 
@@ -26,4 +30,12 @@ void Hand::update() {
 void Hand::render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) {
   for (auto &c : this->cards)
     c->render(view_projection_matrix, shader);
+}
+
+void Hand::remove(Card *card) {
+  std::vector<Card*>::iterator it = std::find(this->cards.begin(), this->cards.end(), card);
+  if (it == this->cards.end())
+    LOG_ERROR("Tried to remove card from hand, but that card was not found.");
+
+  this->cards.erase(it);
 }
