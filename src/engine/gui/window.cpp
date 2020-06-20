@@ -31,15 +31,21 @@ Window::Window(int width, int height, const char* title) {
       c(window);
   });
 
+  glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, [[maybe_unused]] int mods) {
+    Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+    for (std::function<void(GLFWwindow*, int, int)> c : w->on_mouse_click_callbacks)
+      c(window, button, action);
+  });
+
   glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
     Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
-    for (std::function<void(GLFWwindow*, float, float)> c : w->on_cursor_callbacks)
+    for (std::function<void(GLFWwindow*, float, float)> c : w->on_mouse_move_callbacks)
       c(window, xpos, ypos);
   });
 
   glfwSetScrollCallback(window, [](GLFWwindow* window, double xoffset, double yoffset) {
     Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
-    for (std::function<void(GLFWwindow*, float, float)> c : w->on_scroll_callbacks)
+    for (std::function<void(GLFWwindow*, float, float)> c : w->on_mouse_scroll_callbacks)
       c(window, xoffset, yoffset);
   });
 
@@ -79,10 +85,14 @@ void Window::add_on_key_callback(std::function<void(GLFWwindow*)> callback) {
   this->on_key_callbacks.push_back(callback);
 }
 
-void Window::add_on_cursor_callback(std::function<void(GLFWwindow*, float, float)> callback) {
-  this->on_cursor_callbacks.push_back(callback);
+void Window::add_on_mouse_click_callback(std::function<void(GLFWwindow*, int, int)> callback) {
+  this->on_mouse_click_callbacks.push_back(callback);
 }
 
-void Window::add_on_scroll_callback(std::function<void(GLFWwindow*, float, float)> callback) {
-  this->on_scroll_callbacks.push_back(callback);
+void Window::add_on_mouse_move_callback(std::function<void(GLFWwindow*, float, float)> callback) {
+  this->on_mouse_move_callbacks.push_back(callback);
+}
+
+void Window::add_on_mouse_scroll_callback(std::function<void(GLFWwindow*, float, float)> callback) {
+  this->on_mouse_scroll_callbacks.push_back(callback);
 }
