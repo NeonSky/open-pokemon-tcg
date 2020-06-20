@@ -70,11 +70,11 @@ namespace open_pokemon_tcg::playmats {
       const float xspacing = 1.23f;
 
       const std::array<engine::geometry::Transform, 5> side1 = {
+        engine::geometry::Transform(glm::vec3(x - 2*xspacing, 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x - xspacing  , 0.01f, z)),
         engine::geometry::Transform(glm::vec3(x             , 0.01f, z)),
         engine::geometry::Transform(glm::vec3(x + xspacing  , 0.01f, z)),
         engine::geometry::Transform(glm::vec3(x + 2*xspacing, 0.01f, z)),
-        engine::geometry::Transform(glm::vec3(x - xspacing  , 0.01f, z)),
-        engine::geometry::Transform(glm::vec3(x - 2*xspacing, 0.01f, z)),
       };
       const std::array<engine::geometry::Transform, 5> side2 = {
         mirror_transform(side1[0]),
