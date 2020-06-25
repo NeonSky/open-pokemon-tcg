@@ -2,10 +2,10 @@
 
 #include "../model/card.hpp"
 #include "../model/deck.hpp"
-#include "../model/energy.hpp"
-#include "../model/pokemon_card.hpp"
-#include "../model/trainer_card.hpp"
-#include "../model/energy_card.hpp"
+#include "../model/cards/traits/energy.hpp"
+#include "../model/cards/pokemon_card.hpp"
+#include "../model/cards/trainer_card.hpp"
+#include "../model/cards/energy_card.hpp"
 
 #include "../../engine/graphics/texture.hpp"
 
@@ -40,10 +40,10 @@ namespace open_pokemon_tcg::game::data {
 
     // Accessors
     model::ICard* parse_card_data(nlohmann::json data) const;
-    model::PokemonCard* parse_pokemon_card_data(nlohmann::json data) const;
-    model::TrainerCard* parse_trainer_card_data(nlohmann::json data) const;
-    model::EnergyCard* parse_energy_card_data(nlohmann::json data) const;
-    model::EnergyType to_energy_type(std::string name) const;
+    model::cards::PokemonCard* parse_pokemon_card_data(nlohmann::json data) const;
+    model::cards::TrainerCard* parse_trainer_card_data(nlohmann::json data) const;
+    model::cards::EnergyCard* parse_energy_card_data(nlohmann::json data) const;
+    model::cards::traits::EnergyType to_energy_type(std::string name) const;
 
   };
 }

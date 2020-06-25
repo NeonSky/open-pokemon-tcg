@@ -1,6 +1,7 @@
 #include "pokemon_card.hpp"
 
 using namespace open_pokemon_tcg::game::model;
+using namespace open_pokemon_tcg::game::model::cards;
 
 PokemonCard::PokemonCard(PokemonCardData data) : _data(data) {}
 PokemonCard::~PokemonCard() {}

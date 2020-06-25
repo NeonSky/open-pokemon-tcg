@@ -1,13 +1,12 @@
 #pragma once
 
-#include "attack.hpp"
-#include "card.hpp"
-#include "energy.hpp"
-#include "pokemon_evolution_stage.hpp"
+#include "../card.hpp"
+#include "../effects/effect_target.hpp"
+#include "traits/attack.hpp"
+#include "traits/energy.hpp"
+#include "traits/pokemon_evolution_stage.hpp"
 
-#include "effects/effect_target.hpp"
-
-namespace open_pokemon_tcg::game::model {
+namespace open_pokemon_tcg::game::model::cards {
 
   struct PokemonCardData {
     CardId id;
@@ -15,12 +14,12 @@ namespace open_pokemon_tcg::game::model {
 
     bool is_gx;
     bool is_alolan;
-    EvolutionStage stage;
+    traits::EvolutionStage stage;
     CardName evolves_from;
     int hp;
-    EnergyType energy_type;
-    EnergyAmount retreat_cost;
-    std::vector<Attack> attacks;
+    traits::EnergyType energy_type;
+    traits::EnergyAmount retreat_cost;
+    std::vector<traits::Attack> attacks;
   };
 
   class PokemonCard : public ICard, public effects::IHealthTarget {

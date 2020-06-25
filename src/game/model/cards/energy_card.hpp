@@ -1,13 +1,13 @@
 #pragma once
 
-#include "card.hpp"
-#include "energy.hpp"
+#include "../card.hpp"
+#include "traits/energy.hpp"
 
-namespace open_pokemon_tcg::game::model {
+namespace open_pokemon_tcg::game::model::cards {
 
   class EnergyCard : public ICard {
   public:
-    EnergyCard(std::string id, std::string name, EnergyType energy);
+    EnergyCard(std::string id, std::string name, traits::EnergyType energy);
     ~EnergyCard();
 
     std::string debug() override;
@@ -17,7 +17,7 @@ namespace open_pokemon_tcg::game::model {
   private:
     std::string _id;
     std::string _name;
-    EnergyType _energy;
+    traits::EnergyType _energy;
 
   };
 

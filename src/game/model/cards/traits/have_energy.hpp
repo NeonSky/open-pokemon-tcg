@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../energy.hpp"
+#include "energy.hpp"
 
 namespace open_pokemon_tcg::game::model::cards::traits {
 

@@ -108,8 +108,8 @@ void PokemonTcgApi::download_card_image(std::string card_id, std::string image_u
   file.close();
 }
 
-model::PokemonCard* PokemonTcgApi::parse_pokemon_card_data(nlohmann::json data) const {
-  model::PokemonCardData card;
+model::cards::PokemonCard* PokemonTcgApi::parse_pokemon_card_data(nlohmann::json data) const {
+  model::cards::PokemonCardData card;
 
   card.id = data["id"];
   card.name = data["name"];
@@ -118,15 +118,15 @@ model::PokemonCard* PokemonTcgApi::parse_pokemon_card_data(nlohmann::json data) 
   card.is_alolan = false;
 
   if (data["subtype"] == "Basic")
-    card.stage = model::EvolutionStage::BASIC;
+    card.stage = model::cards::traits::EvolutionStage::BASIC;
   else if (data["subtype"] == "Stage 1")
-    card.stage = model::EvolutionStage::STAGE1;
+    card.stage = model::cards::traits::EvolutionStage::STAGE1;
   else if (data["subtype"] == "Stage 2")
-    card.stage = model::EvolutionStage::STAGE2;
+    card.stage = model::cards::traits::EvolutionStage::STAGE2;
   else
     LOG_ERROR("Did not understand subtype: " + (std::string)data["subtype"]);
 
-  if (card.stage != model::EvolutionStage::BASIC)
+  if (card.stage != model::cards::traits::EvolutionStage::BASIC)
     card.evolves_from = data["evolvesFrom"];
   card.hp = std::stoi(data["hp"].get<std::string>());
 
@@ -143,7 +143,7 @@ model::PokemonCard* PokemonTcgApi::parse_pokemon_card_data(nlohmann::json data) 
     auto attack = data["attacks"][i];
 
     if (attack["text"] == "") {
-      model::EnergyAmount cost;
+      model::cards::traits::EnergyAmount cost;
       for (auto &e : attack["cost"])
         cost += to_energy_type(e);
 
@@ -153,44 +153,44 @@ model::PokemonCard* PokemonTcgApi::parse_pokemon_card_data(nlohmann::json data) 
     }
   }
 
-  return new model::PokemonCard(card);
+  return new model::cards::PokemonCard(card);
 }
 
-model::TrainerCard* PokemonTcgApi::parse_trainer_card_data(nlohmann::json data) const {
-  model::TrainerCardData card;
+model::cards::TrainerCard* PokemonTcgApi::parse_trainer_card_data(nlohmann::json data) const {
+  model::cards::TrainerCardData card;
   card.id = data["id"].get<std::string>();
   card.name = data["name"].get<std::string>();
   card.effect = new model::effects::Draw(2);
-  return new model::TrainerCard(card);
+  return new model::cards::TrainerCard(card);
 }
 
-model::EnergyCard* PokemonTcgApi::parse_energy_card_data(nlohmann::json data) const {
-  return new model::EnergyCard(data["id"].get<std::string>(), data["name"].get<std::string>(), model::EnergyType::FIRE);
+model::cards::EnergyCard* PokemonTcgApi::parse_energy_card_data(nlohmann::json data) const {
+  return new model::cards::EnergyCard(data["id"].get<std::string>(), data["name"].get<std::string>(), model::cards::traits::EnergyType::FIRE);
 }
 
-model::EnergyType PokemonTcgApi::to_energy_type(std::string name) const {
+model::cards::traits::EnergyType PokemonTcgApi::to_energy_type(std::string name) const {
   if (name == "Grass")
-    return model::EnergyType::GRASS;
+    return model::cards::traits::EnergyType::GRASS;
   else if (name == "Fire")
-    return model::EnergyType::FIRE;
+    return model::cards::traits::EnergyType::FIRE;
   else if (name == "Water")
-    return model::EnergyType::WATER;
+    return model::cards::traits::EnergyType::WATER;
   else if (name == "Lightning")
-    return model::EnergyType::LIGHTNING;
+    return model::cards::traits::EnergyType::LIGHTNING;
   else if (name == "Psychic")
-    return model::EnergyType::PSYCHIC;
+    return model::cards::traits::EnergyType::PSYCHIC;
   else if (name == "Fighting")
-    return model::EnergyType::FIGHTING;
+    return model::cards::traits::EnergyType::FIGHTING;
   else if (name == "Darkness")
-    return model::EnergyType::DARKNESS;
+    return model::cards::traits::EnergyType::DARKNESS;
   else if (name == "Metal")
-    return model::EnergyType::METAL;
+    return model::cards::traits::EnergyType::METAL;
   else if (name == "Fairy")
-    return model::EnergyType::FAIRY;
+    return model::cards::traits::EnergyType::FAIRY;
   else if (name == "Dragon")
-    return model::EnergyType::DRAGON;
+    return model::cards::traits::EnergyType::DRAGON;
   else if (name == "Colorless")
-    return model::EnergyType::COLORLESS;
+    return model::cards::traits::EnergyType::COLORLESS;
   else
     LOG_ERROR("Could not convert " + name + " to an energy type.");
 }

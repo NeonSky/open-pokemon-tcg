@@ -1,6 +1,7 @@
 #include "trainer_card.hpp"
 
 using namespace open_pokemon_tcg::game::model;
+using namespace open_pokemon_tcg::game::model::cards;
 
 TrainerCard::TrainerCard(TrainerCardData data) : _data(data) {}
 TrainerCard::~TrainerCard() {}

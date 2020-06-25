@@ -1,8 +1,8 @@
 #include "energy.hpp"
 
-#include "../../engine/debug/logger.hpp"
+#include "../../../../engine/debug/logger.hpp"
 
-using namespace open_pokemon_tcg::game::model;
+using namespace open_pokemon_tcg::game::model::cards::traits;
 
 
 EnergyAmount::EnergyAmount() {}

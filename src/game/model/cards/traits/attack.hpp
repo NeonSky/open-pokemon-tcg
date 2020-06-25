@@ -1,11 +1,11 @@
 #pragma once
 
 #include "energy.hpp"
-#include "effects/attack_effect.hpp"
+#include "../../effects/attack_effect.hpp"
 
 #include <string>
 
-namespace open_pokemon_tcg::game::model {
+namespace open_pokemon_tcg::game::model::cards::traits {
 
   class Attack {
   public:

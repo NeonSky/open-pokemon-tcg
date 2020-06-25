@@ -1,9 +1,9 @@
 #pragma once
 
-#include "card.hpp"
-#include "effects/card_effect.hpp"
+#include "../card.hpp"
+#include "../effects/card_effect.hpp"
 
-namespace open_pokemon_tcg::game::model {
+namespace open_pokemon_tcg::game::model::cards {
 
   struct TrainerCardData {
     CardId id;

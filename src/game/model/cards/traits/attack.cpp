@@ -1,6 +1,6 @@
 #include "attack.hpp"
 
-using namespace open_pokemon_tcg::game::model;
+using namespace open_pokemon_tcg::game::model::cards::traits;
 
 Attack::Attack() {} // FIXME: remove
 Attack::Attack(std::string name, unsigned int damage, EnergyAmount cost)
