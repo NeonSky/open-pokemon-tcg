@@ -34,3 +34,4 @@
 # Project Directories
 build
 .idea
+cmake-build-debug
