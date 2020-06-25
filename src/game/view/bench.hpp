@@ -2,11 +2,11 @@
 
 #include "card.hpp"
 
-#include "../engine/geometry/rectangle.hpp"
+#include "../../engine/geometry/rectangle.hpp"
 
 #include <array>
 
-namespace open_pokemon_tcg {
+namespace open_pokemon_tcg::game::view {
 
   class Bench {
   public:

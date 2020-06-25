@@ -2,7 +2,8 @@
 
 #include "../playmat.hpp"
 
-#include "../../engine/graphics/texture.hpp"
+#include "../../../engine/graphics/texture.hpp"
+#include "../../../engine/graphics/shader.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/scalar_constants.hpp>
@@ -13,37 +14,35 @@
 
 #include <vector>
 
-namespace open_pokemon_tcg::playmats {
+namespace open_pokemon_tcg::game::view::playmats {
 
-  class BlackPlaymat : public IPlaymat {
+  class GreenPlaymat : public open_pokemon_tcg::game::view::IPlaymat {
   public:
-    BlackPlaymat();
-    ~BlackPlaymat();
+    GreenPlaymat();
+    ~GreenPlaymat();
 
     // Mutators
-    void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) override;
+    void render(const glm::mat4 &view_projection) override;
 
     // Accessors
     engine::geometry::Rectangle deck_slot(Side side) const override {
-      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(3.75f, 0.01f, -3.12f));
+      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(4.305f, 0.01f, -2.330));
       const engine::geometry::Transform side2 = mirror_transform(side1);
       const engine::geometry::Transform sides[] { side1, side2 };
-
       engine::geometry::Transform t = sides[side] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
       return engine::geometry::Rectangle(t);
     }
 
     engine::geometry::Rectangle discard_slot(Side side) const override {
-      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(3.725f, 0.01f, -1.86f));
+      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(4.305f, 0.01f, -1.17f));
       const engine::geometry::Transform side2 = mirror_transform(side1);
       const engine::geometry::Transform sides[] { side1, side2 };
-
       engine::geometry::Transform t = sides[side] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
       return engine::geometry::Rectangle(t);
     }
 
     engine::geometry::Rectangle active_slot(Side side) const override {
-      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(-0.045f, 0.01f, -0.91f));
+      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(0.615f, 0.01f, -1.165f));
       const engine::geometry::Transform side2 = mirror_transform(side1);
       const engine::geometry::Transform sides[] { side1, side2 };
       engine::geometry::Transform t = sides[side] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
@@ -51,7 +50,7 @@ namespace open_pokemon_tcg::playmats {
     }
 
     engine::geometry::Rectangle supporter_slot(Side side) const override {
-      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(1.25f, 0.01f, -0.91f));
+      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(-0.615f, 0.01f, -1.165f));
       const engine::geometry::Transform side2 = mirror_transform(side1);
       const engine::geometry::Transform sides[] { side1, side2 };
       engine::geometry::Transform t = sides[side] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
@@ -59,7 +58,7 @@ namespace open_pokemon_tcg::playmats {
     }
 
     engine::geometry::Rectangle stadium_slot(Side side) const override {
-      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(-2.25f, 0.01f, -1.65f));
+      const engine::geometry::Transform side1 = engine::geometry::Transform(glm::vec3(0.0f, 0.01f, 0.0f), glm::vec3(0.0f, glm::half_pi<float>(), 0.0f));
       const engine::geometry::Transform side2 = mirror_transform(side1);
       const engine::geometry::Transform sides[] { side1, side2 };
       engine::geometry::Transform t = sides[side] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
@@ -67,15 +66,16 @@ namespace open_pokemon_tcg::playmats {
     }
 
     std::array<engine::geometry::Rectangle, 5> bench_slots(Side side) const override {
-      const float mid = 0.035f;
-      const float spacing = 1.15f;
+      const float x = 0.615f;
+      const float z = -2.33f;
+      const float xspacing = 1.23f;
 
       const std::array<engine::geometry::Transform, 5> side1 = {
-        engine::geometry::Transform(glm::vec3(mid - 2*spacing, 0.01f, -2.98f)),
-        engine::geometry::Transform(glm::vec3(mid - spacing  , 0.01f, -2.98f)),
-        engine::geometry::Transform(glm::vec3(mid            , 0.01f, -2.98f)),
-        engine::geometry::Transform(glm::vec3(mid + spacing  , 0.01f, -2.98f)),
-        engine::geometry::Transform(glm::vec3(mid + 2*spacing, 0.01f, -2.98f)),
+        engine::geometry::Transform(glm::vec3(x - 2*xspacing, 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x - xspacing  , 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x             , 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x + xspacing  , 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x + 2*xspacing, 0.01f, z)),
       };
       const std::array<engine::geometry::Transform, 5> side2 = {
         mirror_transform(side1[0]),
@@ -96,17 +96,18 @@ namespace open_pokemon_tcg::playmats {
     }
 
     std::array<engine::geometry::Rectangle, 6> prize_slots(Side side) const override {
-      const float left = -3.59f;
-      const float bot = -3.15f;
-      const float spacing = 1.15f;
+      const float x = -3.075f;
+      const float z = -2.330f;
+      const float xspacing = 1.235;
+      const float zspacing = 1.165f;
 
       const std::array<engine::geometry::Transform, 6> side1 = {
-        engine::geometry::Transform(glm::vec3(left        , 0.01f , bot)),
-        engine::geometry::Transform(glm::vec3(left        , 0.01f , bot + spacing)),
-        engine::geometry::Transform(glm::vec3(left        , 0.01f , bot + 2.11f*spacing)),
-        engine::geometry::Transform(glm::vec3(left - 0.16f, 0.005f, bot + 0.11f)),
-        engine::geometry::Transform(glm::vec3(left - 0.16f, 0.005f, bot + spacing + 0.11f)),
-        engine::geometry::Transform(glm::vec3(left - 0.16f, 0.005f, bot + 2.11f*spacing + 0.11f)),
+        engine::geometry::Transform(glm::vec3(x           , 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x           , 0.01f, z + zspacing)),
+        engine::geometry::Transform(glm::vec3(x           , 0.01f, z + 2*zspacing)),
+        engine::geometry::Transform(glm::vec3(x - xspacing, 0.01f, z)),
+        engine::geometry::Transform(glm::vec3(x - xspacing, 0.01f, z + zspacing)),
+        engine::geometry::Transform(glm::vec3(x - xspacing, 0.01f, z + 2*zspacing)),
       };
       const std::array<engine::geometry::Transform, 6> side2 = {
         mirror_transform(side1[0]),
@@ -116,21 +117,21 @@ namespace open_pokemon_tcg::playmats {
         mirror_transform(side1[4]),
         mirror_transform(side1[5]),
       };
-      const std::array<std::array<engine::geometry::Transform, 6>, 2> transforms = { side1, side2 };
+      const std::array<std::array<engine::geometry::Transform, 6>, 2> sides = { side1, side2 };
 
       std::array<engine::geometry::Rectangle, 6> res;
-      for (int i = 0; i < 6; i++) {
-        engine::geometry::Transform t = transforms[side][i] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
+      for (unsigned long i = 0; i < res.size(); i++) {
+        engine::geometry::Transform t = sides[side][i] + engine::geometry::Transform(this->transform.position, this->transform.rotation, glm::vec3(0.0f));
         res[i] = engine::geometry::Rectangle(t);
       }
-
       return res;
     }
 
   private:
-    static constexpr float width = 2.4f * 3.75f;
-    static constexpr float height = 1.0f * 3.75f * 2.0f;
+    static constexpr float width = 2.4f * 4.2f;
+    static constexpr float height = 1.0f * 3.0f * 2.0f;
 
+    engine::graphics::Shader *_shader;
     GLuint texture;
     GLuint vao;
     engine::geometry::Transform transform;
@@ -139,46 +140,39 @@ namespace open_pokemon_tcg::playmats {
     GLuint create_vao() const;
   };
 
-  BlackPlaymat::BlackPlaymat() : IPlaymat() {
-    this->texture = engine::graphics::Texture("img/playmat2.png").id();
+  GreenPlaymat::GreenPlaymat() : IPlaymat() {
+    this->texture = engine::graphics::Texture("img/playmat.png").id();
     this->vao = create_vao();
     this->transform = engine::geometry::Transform(glm::vec3(0.0f), glm::vec3(glm::half_pi<float>(), glm::pi<float>(), 0.0f));
   }
 
-  BlackPlaymat::~BlackPlaymat() {}
+  GreenPlaymat::~GreenPlaymat() {}
 
-  void BlackPlaymat::render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) {
-    glm::mat4 modelViewProjectionMatrix = view_projection_matrix * this->transform.matrix();
-    shader->set_uniform("modelViewProjectionMatrix", &modelViewProjectionMatrix[0].x);
+  void GreenPlaymat::render(const glm::mat4 &view_projection) {
+    _shader->use();
+
+    glm::mat4 mvp = view_projection * this->transform.matrix();
+    _shader->set_uniform("modelViewProjectionMatrix", &mvp[0].x);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, this->texture);
     glBindVertexArray(this->vao);
-    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   }
 
-  GLuint BlackPlaymat::create_vao() const {
+  GLuint GreenPlaymat::create_vao() const {
     engine::geometry::Rectangle rect(engine::geometry::Transform(), this->width, this->height);
     glm::vec3 botleft  = rect.botleft();
     glm::vec3 botright = rect.botright();
     glm::vec3 topleft  = rect.topleft();
     glm::vec3 topright = rect.topright();
-    glm::vec3 midleft  = (botleft + topleft) / 2.0f;
-    glm::vec3 midright = (botright + topright) / 2.0f;
 
     // x, y, z
     const float positions[] = {
-      // Player 1
       botleft.x, botleft.y, botleft.z,
       botright.x, botright.y, botright.z,
-      midright.x, midright.y, midright.z,
-      midleft.x, midleft.y, midleft.z,
-
-      // Player 2
       topright.x, topright.y, topright.z,
       topleft.x, topleft.y, topleft.z,
-      midleft.x, midleft.y, midleft.z,
-      midright.x, midright.y, midright.z,
     };
 
     unsigned int pos_buffer;
@@ -188,13 +182,6 @@ namespace open_pokemon_tcg::playmats {
 
     // u, v
     const float uv_coords[] = {
-      // Player 1
-      0.0f, 0.0f,
-      1.0f, 0.0f,
-      1.0f, 1.0f,
-      0.0f, 1.0f,
-
-      // Player 2
       0.0f, 0.0f,
       1.0f, 0.0f,
       1.0f, 1.0f,
@@ -213,13 +200,8 @@ namespace open_pokemon_tcg::playmats {
     // vert1, vert2, vert3
     unsigned int index_buffer;
     const int indices[] = {
-      // Player 1
       0, 1, 2,
       2, 3, 0,
-
-      // Player 2
-      4, 5, 6,
-      6, 7, 4,
     };
 
     glGenBuffers(1, &index_buffer);

@@ -1,6 +1,6 @@
 #include "discard_pile.hpp"
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::game::view;
 
 DiscardPile::DiscardPile(const engine::geometry::Transform& transform) : transform(transform) {}
 

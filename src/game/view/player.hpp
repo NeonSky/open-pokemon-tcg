@@ -9,12 +9,14 @@
 #include "playmat.hpp"
 #include "prize_card_pool.hpp"
 
-namespace open_pokemon_tcg {
+#include "../model/player.hpp"
 
-  class DuelPlayer {
+namespace open_pokemon_tcg::game::view {
+
+  class Player {
   public:
-    DuelPlayer(Deck deck, const IPlaymat &playmat, IPlaymat::Side playmat_side);
-    ~DuelPlayer();
+    Player(const model::Player &player, const open_pokemon_tcg::game::view::IPlaymat &playmat, open_pokemon_tcg::game::view::IPlaymat::Side playmat_side);
+    ~Player();
 
     DeckPile *deck_pile;
     DiscardPile *discard_pile;
@@ -27,7 +29,7 @@ namespace open_pokemon_tcg {
 
     // Mutators
     void update();
-    void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader);
+    void render(const glm::mat4 &view_projection);
 
     void mill();
     void place_active_pokemon(Card *card);
@@ -36,8 +38,11 @@ namespace open_pokemon_tcg {
   private:
     static const int start_hand = 7;
 
+    const model::Player &_model;
+    engine::graphics::Shader *_shader; // TODO: remove
+
     Deck deck;
-    const IPlaymat *playmat;
-    IPlaymat::Side playmat_side;
+    const open_pokemon_tcg::game::view::IPlaymat *playmat;
+    open_pokemon_tcg::game::view::IPlaymat::Side playmat_side;
   };
 }

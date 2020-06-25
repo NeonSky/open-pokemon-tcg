@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace open_pokemon_tcg {
+namespace open_pokemon_tcg::game::view {
 
   class Hand {
   public:

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../card.hpp"
-#include "../../debug_camera.hpp"
+#include "../../view/card.hpp"
+#include "../debug_camera.hpp"
 #include "../../playmats/black_playmat.hpp"
 #include "../../playmats/green_playmat.hpp"
 
@@ -11,13 +11,14 @@
 #include "../../../engine/gui/window.hpp"
 #include "../../../engine/scene/scene.hpp"
 #include "../../../engine/graphics/rectangle.hpp"
+#include "playmat.hpp"
 
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <imgui.h>
 
-namespace open_pokemon_tcg::scenes {
+namespace open_pokemon_tcg::game::scenes {
 
 class PlaymatSlots : public engine::scene::IScene {
   public:
@@ -31,7 +32,7 @@ class PlaymatSlots : public engine::scene::IScene {
   private:
     DebugCamera camera;
     engine::graphics::Shader *shader;
-    IPlaymat *playmat;
+    open_pokemon_tcg::game::view::IPlaymat *playmat;
 
     std::vector<Card> cards;
     Card debug_card;
@@ -55,27 +56,27 @@ class PlaymatSlots : public engine::scene::IScene {
 
     // Player 1
     engine::graphics::Texture texture1("cache/cards/img/base1-8.png");
-    this->cards.push_back(Card(playmat->active_slot(IPlaymat::Side::PLAYER1).transform(), texture1.id()));
-    this->cards.push_back(Card(playmat->supporter_slot(IPlaymat::Side::PLAYER1).transform(), texture1.id()));
-    this->cards.push_back(Card(playmat->stadium_slot(IPlaymat::Side::PLAYER1).transform(), texture1.id()));
+    this->cards.push_back(Card(playmat->active_slot(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER1).transform(), texture1.id()));
+    this->cards.push_back(Card(playmat->supporter_slot(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER1).transform(), texture1.id()));
+    this->cards.push_back(Card(playmat->stadium_slot(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER1).transform(), texture1.id()));
     for (int i = 0; i < 5; i++)
-      this->cards.push_back(Card(playmat->bench_slots(IPlaymat::Side::PLAYER1)[i].transform(), texture1.id()));
+      this->cards.push_back(Card(playmat->bench_slots(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER1)[i].transform(), texture1.id()));
     for (int i = 0; i < 6; i++)
-      this->cards.push_back(Card(playmat->prize_slots(IPlaymat::Side::PLAYER1)[i].transform(), texture1.id()));
-    this->cards.push_back(Card(playmat->deck_slot(IPlaymat::Side::PLAYER1).transform(), texture1.id()));
-    this->cards.push_back(Card(playmat->discard_slot(IPlaymat::Side::PLAYER1).transform(), texture1.id()));
+      this->cards.push_back(Card(playmat->prize_slots(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER1)[i].transform(), texture1.id()));
+    this->cards.push_back(Card(playmat->deck_slot(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER1).transform(), texture1.id()));
+    this->cards.push_back(Card(playmat->discard_slot(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER1).transform(), texture1.id()));
 
     // Player 2
     engine::graphics::Texture texture2("cache/cards/img/base1-24.png");
-    this->cards.push_back(Card(playmat->active_slot(IPlaymat::Side::PLAYER2).transform(), texture2.id()));
-    this->cards.push_back(Card(playmat->supporter_slot(IPlaymat::Side::PLAYER2).transform(), texture2.id()));
-    this->cards.push_back(Card(playmat->stadium_slot(IPlaymat::Side::PLAYER2).transform(), texture2.id()));
+    this->cards.push_back(Card(playmat->active_slot(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER2).transform(), texture2.id()));
+    this->cards.push_back(Card(playmat->supporter_slot(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER2).transform(), texture2.id()));
+    this->cards.push_back(Card(playmat->stadium_slot(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER2).transform(), texture2.id()));
     for (int i = 0; i < 5; i++)
-      this->cards.push_back(Card(playmat->bench_slots(IPlaymat::Side::PLAYER2)[i].transform(), texture2.id()));
+      this->cards.push_back(Card(playmat->bench_slots(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER2)[i].transform(), texture2.id()));
     for (int i = 0; i < 6; i++)
-      this->cards.push_back(Card(playmat->prize_slots(IPlaymat::Side::PLAYER2)[i].transform(), texture2.id()));
-    this->cards.push_back(Card(playmat->deck_slot(IPlaymat::Side::PLAYER2).transform(), texture2.id()));
-    this->cards.push_back(Card(playmat->discard_slot(IPlaymat::Side::PLAYER2).transform(), texture2.id()));
+      this->cards.push_back(Card(playmat->prize_slots(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER2)[i].transform(), texture2.id()));
+    this->cards.push_back(Card(playmat->deck_slot(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER2).transform(), texture2.id()));
+    this->cards.push_back(Card(playmat->discard_slot(open_pokemon_tcg::game::view::IPlaymat::Side::PLAYER2).transform(), texture2.id()));
   }
   PlaymatSlots::~PlaymatSlots() {}
 

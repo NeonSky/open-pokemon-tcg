@@ -1,8 +1,7 @@
 #include "card.hpp"
 
-#include "../engine/debug/logger.hpp"
-#include "../engine/debug/debug_drawer.hpp"
-#include "../engine/graphics/texture.hpp"
+#include "../../engine/debug/logger.hpp"
+#include "../../engine/debug/debug_drawer.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/scalar_constants.hpp>
@@ -11,8 +10,14 @@
 #include <glm/mat4x4.hpp>
 
 using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::game::view;
 
-Card::Card(engine::geometry::Transform transform, GLuint texture) : transform(transform), front_texture(texture) {
+Card::Card(engine::geometry::Transform transform, model::ICard &model)
+  : transform(transform),
+    _model(model),
+    front_texture(engine::graphics::Texture("cache/cards/img/" + _model.id() + ".png")),
+    back_texture(engine::graphics::Texture("img/cardback.png")) {
+
   engine::geometry::Rectangle rect(engine::geometry::Transform(), this->width, this->height);
   glm::vec3 botleft  = rect.botleft();
   glm::vec3 botright = rect.botright();
@@ -31,8 +36,6 @@ Card::Card(engine::geometry::Transform transform, GLuint texture) : transform(tr
       1.0f, 1.0f, // (u,v) for v2
       0.0f, 1.0f, // (u,v) for v3
   });
-
-  this->back_texture = engine::graphics::Texture("img/cardback.png").id();
 }
 
 Card::~Card() {}
@@ -46,7 +49,7 @@ void Card::render(const glm::mat4 &view_projection_matrix, engine::graphics::Sha
   shader->set_uniform("modelViewProjectionMatrix", &modelViewProjectionMatrix[0].x);
 
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, this->front_texture);
+  glBindTexture(GL_TEXTURE_2D, this->front_texture.id());
   glBindVertexArray(this->vao);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -54,7 +57,7 @@ void Card::render(const glm::mat4 &view_projection_matrix, engine::graphics::Sha
   modelViewProjectionMatrix = view_projection_matrix * back_matrix;
   shader->set_uniform("modelViewProjectionMatrix", &modelViewProjectionMatrix[0].x);
 
-  glBindTexture(GL_TEXTURE_2D, this->back_texture);
+  glBindTexture(GL_TEXTURE_2D, this->back_texture.id());
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 

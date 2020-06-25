@@ -2,14 +2,14 @@
 
 #include "card.hpp"
 
-#include "../engine/geometry/transform.hpp"
-#include "../engine/graphics/shader.hpp"
+#include "../../engine/geometry/transform.hpp"
+#include "../../engine/graphics/shader.hpp"
 
 #include <glm/mat4x4.hpp>
 
 #include <vector>
 
-namespace open_pokemon_tcg {
+namespace open_pokemon_tcg::game::view {
 
   class DiscardPile {
   public:

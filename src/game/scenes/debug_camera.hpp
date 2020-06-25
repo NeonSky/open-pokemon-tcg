@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../engine/graphics/camera.hpp"
-#include "../engine/gui/window.hpp"
+#include "../../engine/graphics/camera.hpp"
+#include "../../engine/gui/window.hpp"
 
-namespace open_pokemon_tcg {
+namespace open_pokemon_tcg::game::scenes {
 
   class DebugCamera {
   public:

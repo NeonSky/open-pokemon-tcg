@@ -1,10 +1,10 @@
 #include "deck_pile.hpp"
 
-#include "../engine/debug/logger.hpp"
+#include "../../engine/debug/logger.hpp"
 
 #include <glm/ext/scalar_constants.hpp>
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::game::view;
 
 DeckPile::DeckPile(engine::geometry::Transform transform, std::vector<Card*> cards) : transform(transform), cards(cards) {
   update_card_positions();

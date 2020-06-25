@@ -1,6 +1,7 @@
 #include "playmat.hpp"
 
 using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::game::view;
 
 IPlaymat::IPlaymat() = default;
 IPlaymat::~IPlaymat() = default;
@@ -19,16 +20,7 @@ std::array<engine::geometry::Rectangle, 16> IPlaymat::player_slots(Side side) co
       active_slot(side),
       supporter_slot(side),
       stadium_slot(side),
-      bx[0],
-      bx[1],
-      bx[2],
-      bx[3],
-      bx[4],
-      px[0],
-      px[1],
-      px[2],
-      px[3],
-      px[4],
-      px[5],
+      bx[0], bx[1], bx[2], bx[3], bx[4],
+      px[0], px[1], px[2], px[3], px[4], px[5],
   };
 }

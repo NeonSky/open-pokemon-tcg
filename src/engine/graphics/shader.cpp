@@ -22,7 +22,7 @@ Shader::Shader(std::string vertex_shader_path, std::string fragment_shader_path)
 
 	GLint ok = 0;
 	glGetProgramiv(this->program, GL_LINK_STATUS, &ok);
-	if(!ok)
+	if (!ok)
     LOG_ERROR("Could not link program.");
 }
 
@@ -38,6 +38,9 @@ void Shader::set_uniform(const GLchar* uniform, const GLfloat *data) {
 }
 
 GLuint Shader::load_shader_file(std::string shader_path, GLenum shader_type) {
+  if (_cache.count(shader_path))
+    return _cache[shader_path];
+
 	GLuint shader = glCreateShader(shader_type);
 
   std::string res_path = boost::dll::program_location().parent_path().string() + "/../res/shaders/";
@@ -56,5 +59,5 @@ GLuint Shader::load_shader_file(std::string shader_path, GLenum shader_type) {
 	if(!ok)
     LOG_ERROR("Could not compile shader: " + shader_path);
 
-  return shader;
+  return _cache[shader_path] = shader;
 }

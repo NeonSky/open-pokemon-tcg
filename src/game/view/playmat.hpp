@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../engine/geometry/collision_detection.hpp"
-#include "../engine/geometry/rectangle.hpp"
-#include "../engine/graphics/shader.hpp"
+#include "../../engine/geometry/collision_detection.hpp"
+#include "../../engine/geometry/rectangle.hpp"
 
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/vec3.hpp>
@@ -10,8 +9,7 @@
 #include <array>
 #include <vector>
 
-namespace open_pokemon_tcg {
-
+namespace open_pokemon_tcg::game::view {
   class IPlaymat {
   public:
     IPlaymat();
@@ -23,7 +21,7 @@ namespace open_pokemon_tcg {
     };
 
     // Mutators
-    virtual void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) = 0;
+    virtual void render(const glm::mat4 &view_projection) = 0;
 
     // Accessors
     std::array<engine::geometry::Rectangle, 16> player_slots(Side side) const;

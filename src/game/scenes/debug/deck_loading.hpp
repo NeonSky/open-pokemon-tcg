@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../card.hpp"
-#include "../../debug_camera.hpp"
-#include "../../pokemon_tcg_api.hpp"
+#include "../../view/card.hpp"
+#include "../debug_camera.hpp"
+#include "../../data/pokemon_tcg_api.hpp"
 
 #include "../../../engine/debug/logger.hpp"
 #include "../../../engine/graphics/texture.hpp"
@@ -14,7 +14,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <imgui.h>
 
-namespace open_pokemon_tcg::scenes {
+namespace open_pokemon_tcg::game::scenes {
 
 class DeckLoading : public engine::scene::IScene {
   public:

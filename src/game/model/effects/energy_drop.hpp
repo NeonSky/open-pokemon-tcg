@@ -1,7 +1,7 @@
 #pragma once
 
 #include "attack_effect.hpp"
-#include "../crads/traits/have_energy.hpp"
+#include "../cards/traits/have_energy.hpp"
 
 namespace open_pokemon_tcg::game::model::effects {
 

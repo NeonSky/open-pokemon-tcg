@@ -1,6 +1,6 @@
 #include "debug_camera.hpp"
 
-#include "../engine/debug/logger.hpp"
+#include "../../engine/debug/logger.hpp"
 
 #include <GLFW/glfw3.h>
 #include <glm/ext/matrix_transform.hpp>
@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::game::scenes;
 
 DebugCamera::DebugCamera(engine::gui::Window* window) : camera(engine::graphics::Camera()), window(window){}
 DebugCamera::DebugCamera(engine::gui::Window* window, engine::geometry::Transform transform) : camera(engine::graphics::Camera(transform)), window(window) {

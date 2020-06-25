@@ -1,10 +1,10 @@
 #include "hand.hpp"
 
-#include "../engine/debug/logger.hpp"
+#include "../../engine/debug/logger.hpp"
 
 #include <algorithm>
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::game::view;
 
 
 Hand::Hand(engine::geometry::Transform transform) : transform(transform) {}

@@ -1,8 +1,8 @@
 #include "bench.hpp"
 
-#include "../engine/debug/logger.hpp"
+#include "../../engine/debug/logger.hpp"
 
-using namespace open_pokemon_tcg;
+using namespace open_pokemon_tcg::game::view;
 
 Bench::Bench(std::array<engine::geometry::Rectangle, 5> slots) : slots(slots) {
   for (unsigned int i = 0; i < this->cards.size(); i++)

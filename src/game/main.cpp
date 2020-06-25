@@ -1,7 +1,8 @@
 #include "scenes/duel.hpp"
-#include "scenes/debug/card_transform.hpp"
-#include "scenes/debug/deck_loading.hpp"
-#include "scenes/debug/playmat_slots.hpp"
+// #include "scenes/debug/card_transform.hpp"
+// #include "scenes/debug/deck_loading.hpp"
+// #include "scenes/debug/model.hpp"
+// #include "scenes/debug/playmat_slots.hpp"
 
 #include "../engine/debug/logger.hpp"
 #include "../engine/gui/window.hpp"
@@ -58,10 +59,11 @@ int main() {
   LOG_INFO("OpenGL vendor: " + std::string((const char*)glGetString(GL_VENDOR)));
 
   CHECK_GL_ERROR();
-  engine::scene::IScene* scene = new scenes::Duel(window);
-  // engine::scene::IScene* scene = new scenes::CardTransform(window);
-  // engine::scene::IScene* scene = new scenes::DeckLoading(window);
-  // engine::scene::IScene* scene = new scenes::PlaymatSlots(window);
+  engine::scene::IScene* scene = new game::scenes::Duel(window);
+  // engine::scene::IScene* scene = new game::scenes::CardTransform(window);
+  // engine::scene::IScene* scene = new game::scenes::DeckLoading(window);
+  // engine::scene::IScene* scene = new game::scenes::PlaymatSlots(window);
+  // engine::scene::IScene* scene = new game::scenes::Model(window);
 
   CHECK_GL_ERROR();
 

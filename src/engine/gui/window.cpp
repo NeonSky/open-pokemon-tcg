@@ -25,10 +25,10 @@ Window::Window(int width, int height, const char* title) {
   glfwMakeContextCurrent(window);
   glfwSetWindowUserPointer(window, reinterpret_cast<void *>(this));
 
-  glfwSetKeyCallback(window, [](GLFWwindow* window, [[maybe_unused]] int key, [[maybe_unused]] int scancode, [[maybe_unused]] int action, [[maybe_unused]] int mods) {
+  glfwSetKeyCallback(window, [](GLFWwindow* window, [[maybe_unused]] int key, [[maybe_unused]] int scancode, int action, [[maybe_unused]] int mods) {
     Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
-    for (std::function<void(GLFWwindow*)> c : w->on_key_callbacks)
-      c(window);
+    for (std::function<void(GLFWwindow*, int)> c : w->on_key_callbacks)
+      c(window, action);
   });
 
   glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, [[maybe_unused]] int mods) {
@@ -81,7 +81,7 @@ bool Window::is_closing() {
   return glfwWindowShouldClose(this->window);
 }
 
-void Window::add_on_key_callback(std::function<void(GLFWwindow*)> callback) {
+void Window::add_on_key_callback(std::function<void(GLFWwindow*, int)> callback) {
   this->on_key_callbacks.push_back(callback);
 }
 

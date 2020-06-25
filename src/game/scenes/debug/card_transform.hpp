@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../card.hpp"
-#include "../../debug_camera.hpp"
+#include "../../view/card.hpp"
+#include "../debug_camera.hpp"
 
 #include "../../../engine/debug/logger.hpp"
 #include "../../../engine/graphics/texture.hpp"
@@ -13,7 +13,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <imgui.h>
 
-namespace open_pokemon_tcg::scenes {
+namespace open_pokemon_tcg::game::scenes {
 
 class CardTransform : public engine::scene::IScene {
   public:
