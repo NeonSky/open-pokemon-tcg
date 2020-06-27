@@ -35,6 +35,7 @@ file(COPY "res" DESTINATION ".")
 # Link dependencies.
 target_link_libraries(OpenPokemonTCG PRIVATE glfw)
 target_link_libraries(OpenPokemonTCG PRIVATE glm)
+target_link_libraries(OpenPokemonTCG PRIVATE eventpp)
 target_link_libraries(OpenPokemonTCG PRIVATE glad)
 target_link_libraries(OpenPokemonTCG PRIVATE imgui::imgui)
 target_link_libraries(OpenPokemonTCG PRIVATE imgui_glfw)

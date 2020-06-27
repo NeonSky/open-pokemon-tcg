@@ -1,7 +1,12 @@
+# eventpp
+file(GLOB_RECURSE vendor_files "eventpp/*.c" "eventpp/*.h" "eventpp/*.cpp" "eventpp/*.hpp")
+add_library(eventpp "${vendor_files}")
+target_include_directories(eventpp PUBLIC "eventpp")
+set_target_properties(eventpp PROPERTIES LINKER_LANGUAGE CXX)
+
 # glad
 file(GLOB_RECURSE vendor_files "glad/*.c" "glad/*.h" "glad/*.cpp" "glad/*.hpp")
 add_library(glad "${vendor_files}")
-
 target_include_directories(glad PUBLIC "glad/include")
 
 # imgui_glfw
