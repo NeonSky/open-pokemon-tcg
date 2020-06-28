@@ -131,7 +131,7 @@ namespace open_pokemon_tcg::game::scenes {
     view::Card *hover_card = nullptr;
     float best_dist = 1e9;
 
-    for (auto &card : this->current_player->hand->cards) {
+    for (auto &card : this->current_player->hand->cards()) {
       auto hit = card->does_intersect(ray);
       if (hit != nullptr) {
         float dist = glm::distance(hit->point, this->camera.transform().position);
@@ -142,13 +142,13 @@ namespace open_pokemon_tcg::game::scenes {
       }
     }
 
-    for (auto &card : this->current_player->discard_pile->cards) {
-      auto hit = card->does_intersect(ray);
+    for (auto card : this->current_player->discard_pile->cards()) {
+      auto hit = card.does_intersect(ray);
       if (hit != nullptr) {
         float dist = glm::distance(hit->point, this->camera.transform().position);
         if (dist < best_dist) {
           best_dist = dist;
-          hover_card = card;
+          hover_card = &card;
         }
       }
     }
@@ -170,14 +170,12 @@ namespace open_pokemon_tcg::game::scenes {
 
   void Duel::on_key(GLFWwindow* window) {
     // Mill
-    if (glfwGetKey(window, GLFW_KEY_M)) {
-      this->current_player->mill();
-    }
+    if (glfwGetKey(window, GLFW_KEY_M))
+      _game->model().current_player().mill();
 
     // Hand
-    if (glfwGetKey(window, GLFW_KEY_H)) {
-      this->current_player->hand->cards.push_back(this->current_player->deck_pile->draw());
-    }
+    if (glfwGetKey(window, GLFW_KEY_H))
+      _game->model().current_player().draw();
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
       this->selected_card = nullptr;
@@ -186,15 +184,19 @@ namespace open_pokemon_tcg::game::scenes {
     // Active slot
     if (glfwGetKey(window, GLFW_KEY_A)) {
       if (this->selected_card != nullptr) {
-        this->current_player->place_active_pokemon(this->selected_card);
-        this->selected_card = nullptr;
+        // this->current_player->place_active_pokemon(this->selected_card);
+        // this->selected_card = nullptr;
       }
     }
+
+    // Take prize card
+    if (glfwGetKey(window, GLFW_KEY_L))
+      _game->model().current_player().take_prize_card();
 
     // Bench
     if (glfwGetKey(window, GLFW_KEY_B)) {
       if (this->selected_card != nullptr) {
-        this->current_player->place_bench_pokemon(this->selected_card);
+        _game->model().current_player().bench_pokemon_from_hand(this->selected_card->_model);
         this->selected_card = nullptr;
       }
     }
@@ -202,6 +204,13 @@ namespace open_pokemon_tcg::game::scenes {
     // Switch which user/player to control
     if (glfwGetKey(window, GLFW_KEY_U)) {
       _game->model().end_turn();
+
+      if (_game->model().winner() != nullptr) {
+        LOG_DEBUG("We have a winner!");
+        LOG_DEBUG("The winner is: " + _game->model().winner()->name());
+        return;
+      }
+
       this->current_player = (this->current_player == this->player1) ? this->player2 : player1;
       this->camera.set_transform((this->current_player == this->player1) ? this->camera1_transform : this->camera2_transform);
     }
@@ -220,15 +229,15 @@ namespace open_pokemon_tcg::game::scenes {
 
       if (this->selected_card != nullptr) {
         if (engine::geometry::ray_rectangle_intersection(ray, this->playmat->active_slot(current_side))) {
-          this->current_player->place_active_pokemon(this->selected_card);
-          this->selected_card = nullptr;
+          // this->current_player->place_active_pokemon(this->selected_card);
+          // this->selected_card = nullptr;
         }
       }
 
       this->selected_card = nullptr;
       float best_dist = 1e9;
 
-      for (auto &card : this->current_player->hand->cards) {
+      for (auto &card : this->current_player->hand->cards()) {
         auto hit = card->does_intersect(ray);
         if (hit != nullptr) {
           float dist = glm::distance(hit->point, this->camera.transform().position);

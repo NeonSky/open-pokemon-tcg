@@ -1,6 +1,7 @@
 #pragma once
 
 #include "card.hpp"
+#include "../model/discard_pile.hpp"
 
 #include "../../engine/geometry/transform.hpp"
 #include "../../engine/graphics/shader.hpp"
@@ -13,16 +14,21 @@ namespace open_pokemon_tcg::game::view {
 
   class DiscardPile {
   public:
-    DiscardPile(const engine::geometry::Transform& transform);
+    DiscardPile(model::DiscardPile &model, const engine::geometry::Transform& transform);
     ~DiscardPile();
 
     engine::geometry::Transform transform;
-    std::vector<Card*> cards;
 
     // Mutators
     void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader);
 
+    // Accessors
+    const std::vector<Card> cards() const { return _cards; };
+
   private:
     const float card_spacing = 0.004f;
+
+    model::DiscardPile &_model;
+    std::vector<Card> _cards;
   };
 }

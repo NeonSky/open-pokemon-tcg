@@ -24,11 +24,11 @@ const Player* Game::winner() const {
   return _winner;
 }
 
-const Player& Game::current_player() const {
+Player& Game::current_player() {
   return *_players[_current_player];
 }
 
-const Player& Game::next_player() const {
+Player& Game::next_player() {
   return *_players[(_current_player+1) % _players.size()];
 }
 
@@ -65,6 +65,11 @@ void Game::start_turn() {
 }
 
 void Game::end_turn() {
+  if (_players[_current_player]->won()) {
+    _winner = &current_player();
+    return;
+  }
+
   _current_player = (_current_player+1) % _players.size();
 
   start_turn();

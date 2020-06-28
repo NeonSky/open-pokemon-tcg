@@ -15,7 +15,7 @@ namespace open_pokemon_tcg::game::view {
 
   class Player {
   public:
-    Player(const model::Player &player, const open_pokemon_tcg::game::view::IPlaymat &playmat, open_pokemon_tcg::game::view::IPlaymat::Side playmat_side);
+    Player(model::Player &model, const open_pokemon_tcg::game::view::IPlaymat &playmat, open_pokemon_tcg::game::view::IPlaymat::Side playmat_side);
     ~Player();
 
     DeckPile *deck_pile;
@@ -31,14 +31,10 @@ namespace open_pokemon_tcg::game::view {
     void update();
     void render(const glm::mat4 &view_projection);
 
-    void mill();
-    void place_active_pokemon(Card *card);
-    void place_bench_pokemon(Card *card);
-
   private:
     static const int start_hand = 7;
 
-    const model::Player &_model;
+    model::Player &_model;
     engine::graphics::Shader *_shader; // TODO: remove
 
     Deck deck;

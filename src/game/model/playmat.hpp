@@ -2,6 +2,10 @@
 
 #include "card.hpp"
 #include "cards/pokemon_card.hpp"
+#include "deck_pile.hpp"
+#include "discard_pile.hpp"
+#include "bench.hpp"
+#include "prize_card_pool.hpp"
 
 #include <array>
 #include <vector>
@@ -9,13 +13,13 @@
 namespace open_pokemon_tcg::game::model {
 
   struct Playmat {
-    std::vector<ICard*> deck_pile;
-    std::vector<ICard*> discard_pile;
+    DeckPile *deck_pile = nullptr;
+    DiscardPile *discard_pile = nullptr;
     cards::PokemonCard* active_pokemon = nullptr;
     ICard* supporter_card = nullptr;
     ICard* stadium_card = nullptr;
-    std::array<ICard*, 5> bench_cards;
-    std::array<ICard*, 6> prize_cards;
+    Bench *bench = nullptr;
+    PrizeCardPool *prize_card_pool = nullptr;
   };
 
 }

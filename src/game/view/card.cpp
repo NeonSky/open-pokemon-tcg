@@ -12,9 +12,9 @@
 using namespace open_pokemon_tcg;
 using namespace open_pokemon_tcg::game::view;
 
-Card::Card(engine::geometry::Transform transform, model::ICard &model)
-  : transform(transform),
-    _model(model),
+Card::Card(game::model::ICard &model, engine::geometry::Transform transform)
+  : _model(model),
+    transform(transform),
     front_texture(engine::graphics::Texture("cache/cards/img/" + _model.id() + ".png")),
     back_texture(engine::graphics::Texture("img/cardback.png")) {
 
@@ -61,7 +61,7 @@ void Card::render(const glm::mat4 &view_projection_matrix, engine::graphics::Sha
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-engine::geometry::Intersection* Card::does_intersect(engine::geometry::Ray ray) {
+engine::geometry::Intersection* Card::does_intersect(engine::geometry::Ray ray) const {
   return engine::geometry::ray_rectangle_intersection(ray, engine::geometry::Rectangle(this->transform, this->width, this->height));
 }
 

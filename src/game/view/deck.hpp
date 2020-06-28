@@ -14,7 +14,7 @@ namespace open_pokemon_tcg::game::view {
     Deck(const game::model::Deck &model) {
       name = model.name;
       for (auto &card : model.cards)
-        cards.push_back(Card(engine::geometry::Transform(), *card));
+        cards.push_back(Card(*card, engine::geometry::Transform()));
     }
   };
 

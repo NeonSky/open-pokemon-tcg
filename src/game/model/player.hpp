@@ -3,6 +3,7 @@
 #include "pokemon_trainer.hpp"
 #include "playmat.hpp"
 #include "game_master.hpp"
+#include "hand.hpp"
 
 #include <string>
 #include <vector>
@@ -16,24 +17,30 @@ namespace open_pokemon_tcg::game::model {
     ~Player();
 
     // Mutators
+    void shuffle_deck_pile();
     void draw(unsigned int amount = 1) override;
+    void mill(unsigned int amount = 1);
     void place_active_pokemon(unsigned int hand_index) override;
     void activate_trainer_card(unsigned int hand_index);
+    void take_prize_card();
+    void bench_pokemon_from_hand(ICard& card);
 
     // Accessors
     bool lost() const;
+    bool won() const; // TODO: Maybe use event instead.
     std::string name() const;
-    const Playmat& playmat() const;
+    Playmat& playmat();
     const Deck& deck() const override;
-    const std::vector<ICard*>& hand() const;
+    Hand& hand();
 
   private:
     IGameMaster &_gm;
     Deck _deck;
     Playmat _playmat;
     std::string _name;
-    std::vector<ICard*> _hand;
+    Hand _hand;
     bool _lost;
+    bool _won;
   };
 
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "card.hpp"
+#include "../model/deck_pile.hpp"
 
 #include "../../engine/geometry/transform.hpp"
 #include "../../engine/graphics/shader.hpp"
@@ -13,22 +14,19 @@ namespace open_pokemon_tcg::game::view {
 
   class DeckPile {
   public:
-    DeckPile(engine::geometry::Transform transform, std::vector<Card*> cards);
+    DeckPile(engine::geometry::Transform transform, model::DeckPile &model);
     ~DeckPile();
 
     engine::geometry::Transform transform;
-    std::vector<Card*> cards;
 
     // Mutators
     void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader);
-    void shuffle();
-
-    // Hybrids
-    Card* draw();
-    std::vector<Card*> draw(unsigned int amount);
 
   private:
     const float card_spacing = 0.004f;
+
+    model::DeckPile& _model;
+    std::vector<Card> _cards;
 
     // Mutators
     void update_card_positions();

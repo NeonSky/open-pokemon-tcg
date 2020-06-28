@@ -23,8 +23,8 @@ namespace open_pokemon_tcg::game::model {
 
     // Accessors
     const Player* winner() const;
-    const Player& current_player() const;
-    const Player& next_player() const;
+    Player& current_player();
+    Player& next_player();
     unsigned int turn() const;
 
   private:
