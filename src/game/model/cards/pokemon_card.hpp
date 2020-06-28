@@ -35,9 +35,9 @@ namespace open_pokemon_tcg::game::model::cards {
     unsigned int max_hp() const override;
     unsigned int hp() const override;
 
-    std::string debug() override;
-    CardId id() override;
-    CardName name() override;
+    std::string debug() const override;
+    CardId id() const override;
+    CardName name() const override;
     const PokemonCardData& data() const;
 
   private:

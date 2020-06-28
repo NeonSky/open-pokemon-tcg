@@ -18,9 +18,9 @@ namespace open_pokemon_tcg::game::model::cards {
 
     // Accessors
     effects::ICardEffect& effect();
-    std::string debug() override;
-    CardId id() override;
-    CardName name() override;
+    std::string debug() const override;
+    CardId id() const override;
+    CardName name() const override;
     const TrainerCardData& data() const;
 
   private:

@@ -10,9 +10,9 @@ namespace open_pokemon_tcg::game::model::cards {
     EnergyCard(std::string id, std::string name, traits::EnergyType energy);
     ~EnergyCard();
 
-    std::string debug() override;
-    CardId id() override;
-    CardName name() override;
+    std::string debug() const override;
+    CardId id() const override;
+    CardName name() const override;
 
   private:
     std::string _id;

@@ -10,14 +10,14 @@ effects::ICardEffect& TrainerCard::effect() {
   return *_data.effect;
 }
 
-std::string TrainerCard::debug() {
+std::string TrainerCard::debug() const {
   return name() + " (" + id() + ")";
 }
 
-CardId TrainerCard::id() {
+CardId TrainerCard::id() const {
   return _data.id;
 }
-CardName TrainerCard::name() {
+CardName TrainerCard::name() const {
   return _data.name;
 }
 

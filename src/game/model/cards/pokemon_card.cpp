@@ -17,14 +17,14 @@ void PokemonCard::attack(unsigned int attack_index, effects::IHealthTarget &oppo
 unsigned int PokemonCard::max_hp() const { return _data.hp; }
 unsigned int PokemonCard::hp() const { return _hp; }
 
-std::string PokemonCard::debug() {
+std::string PokemonCard::debug() const {
   return name() + " (" + id() + ") with " + std::to_string(_data.hp) + " hp";
 }
 
-CardId PokemonCard::id() {
+CardId PokemonCard::id() const {
   return _data.id;
 }
-CardName PokemonCard::name() {
+CardName PokemonCard::name() const {
   return _data.name;
 }
 

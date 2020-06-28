@@ -7,14 +7,14 @@ EnergyCard::EnergyCard(std::string id, std::string name, traits::EnergyType ener
 EnergyCard::~EnergyCard() {}
 
 
-std::string EnergyCard::debug() {
+std::string EnergyCard::debug() const {
   return name() + " (" + id() + ")";
 }
 
-CardId EnergyCard::id() {
+CardId EnergyCard::id() const {
   return _id;
 }
 
-CardName EnergyCard::name() {
+CardName EnergyCard::name() const {
   return _name;
 }
