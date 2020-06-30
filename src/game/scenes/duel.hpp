@@ -181,14 +181,6 @@ namespace open_pokemon_tcg::game::scenes {
       this->selected_card = nullptr;
     }
 
-    // Active slot
-    if (glfwGetKey(window, GLFW_KEY_A)) {
-      if (this->selected_card != nullptr) {
-        // this->current_player->place_active_pokemon(this->selected_card);
-        // this->selected_card = nullptr;
-      }
-    }
-
     // Take prize card
     if (glfwGetKey(window, GLFW_KEY_L))
       _game->model().current_player().take_prize_card();
@@ -229,6 +221,7 @@ namespace open_pokemon_tcg::game::scenes {
 
       if (this->selected_card != nullptr) {
         if (engine::geometry::ray_rectangle_intersection(ray, this->playmat->active_slot(current_side))) {
+          _game->model().current_player().active_pokemon_from_hand(this->selected_card->_model);
           // this->current_player->place_active_pokemon(this->selected_card);
           // this->selected_card = nullptr;
         }

@@ -4,6 +4,8 @@
 #include "playmat.hpp"
 #include "game_master.hpp"
 #include "hand.hpp"
+#include "cards/pokemon_card.hpp"
+#include "cards/trainer_card.hpp"
 
 #include <string>
 #include <vector>
@@ -22,8 +24,13 @@ namespace open_pokemon_tcg::game::model {
     void mill(unsigned int amount = 1);
     void place_active_pokemon(unsigned int hand_index) override;
     void activate_trainer_card(unsigned int hand_index);
+    void active_pokemon_from_hand(ICard& card);
     void take_prize_card();
     void bench_pokemon_from_hand(ICard& card);
+
+    void on_update_active(std::function<void (cards::PokemonCard* card)> callback);
+    void on_update_supporter(std::function<void (cards::TrainerCard* card)> callback);
+    void on_update_stadium(std::function<void (cards::TrainerCard* card)> callback);
 
     // Accessors
     bool lost() const;
@@ -41,6 +48,10 @@ namespace open_pokemon_tcg::game::model {
     Hand _hand;
     bool _lost;
     bool _won;
+
+    engine::event::CallbackList<void (cards::PokemonCard* card)> _on_update_active;
+    engine::event::CallbackList<void (cards::TrainerCard* card)> _on_update_supporter;
+    engine::event::CallbackList<void (cards::TrainerCard* card)> _on_update_stadium;
   };
 
 }

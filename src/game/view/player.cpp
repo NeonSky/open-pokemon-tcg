@@ -48,6 +48,8 @@ Player::Player(model::Player &model, const open_pokemon_tcg::game::view::IPlayma
   this->active_pokemon = nullptr;
   this->supporter_card = nullptr;
   this->stadium_card   = nullptr;
+
+  _model.on_update_active(std::bind(&Player::on_update_active, this, std::placeholders::_1));
 }
 
 Player::~Player() {}
@@ -71,4 +73,25 @@ void Player::render(const glm::mat4 &view_projection) {
     this->supporter_card->render(view_projection, _shader);
   if (this->stadium_card != nullptr)
     this->stadium_card->render(view_projection, _shader);
+}
+
+void Player::on_update_active(model::cards::PokemonCard* card) {
+  if (active_pokemon != nullptr)
+    delete active_pokemon;
+
+  active_pokemon = new Card(*card, playmat->active_slot(this->playmat_side).transform());
+}
+
+void Player::on_update_suppoter(model::cards::TrainerCard* card) {
+  if (supporter_card != nullptr)
+    delete supporter_card;
+
+  supporter_card = new Card(*card, playmat->supporter_slot(this->playmat_side).transform());
+}
+
+void Player::on_update_stadium(model::cards::TrainerCard* card) {
+  if (stadium_card != nullptr)
+    delete stadium_card;
+
+  stadium_card = new Card(*card, playmat->stadium_slot(this->playmat_side).transform());
 }
