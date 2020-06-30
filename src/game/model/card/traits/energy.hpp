@@ -3,7 +3,7 @@
 #include <map>
 #include <vector>
 
-namespace open_pokemon_tcg::game::model::cards::traits {
+namespace open_pokemon_tcg::game::model {
 
   enum EnergyType {
     GRASS,

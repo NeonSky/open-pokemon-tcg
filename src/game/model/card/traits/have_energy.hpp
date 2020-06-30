@@ -2,7 +2,7 @@
 
 #include "energy.hpp"
 
-namespace open_pokemon_tcg::game::model::cards::traits {
+namespace open_pokemon_tcg::game::model {
 
   class IHaveEnergy {
   public:

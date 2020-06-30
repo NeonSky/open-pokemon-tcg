@@ -35,5 +35,5 @@ unsigned int Hand::find(ICard &card) const {
     if (&_cards[i].get() == &card)
       return i;
 
-  LOG_ERROR("Could not find card in hand: " + card.debug());
+  LOG_ERROR("Could not find card in hand: " + card.to_string());
 }

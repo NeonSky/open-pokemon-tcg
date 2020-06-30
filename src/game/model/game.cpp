@@ -49,11 +49,11 @@ void Game::attack(unsigned int attack_index) {
   if (_turn == 0 && _current_player == 0)
     LOG_ERROR("The first player can not attack on the first turn.");
 
-  effects::IHealthTarget *opponent = _players[(_current_player+1) % _players.size()]->playmat().active_pokemon;
+  IHealthTarget *opponent = _players[(_current_player+1) % _players.size()]->playmat().active_pokemon;
   _players[_current_player]->playmat().active_pokemon->attack(attack_index, *opponent);
 }
 
-void Game::activate(effects::ICardEffect& effect) {
+void Game::activate(ICardEffect& effect) {
   // TODO: Need to get the player's models here instead.
   effect.activate(*_players[_current_player], *_players[(_current_player+1) % _players.size()]);
 }

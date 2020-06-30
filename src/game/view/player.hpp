@@ -40,9 +40,9 @@ namespace open_pokemon_tcg::game::view {
     Deck deck;
     const open_pokemon_tcg::game::view::IPlaymat *playmat;
     IPlaymat::Side playmat_side;
-    void on_update_active(model::cards::PokemonCard* card);
-    void on_update_suppoter(model::cards::TrainerCard* card);
-    void on_update_stadium(model::cards::TrainerCard* card);
+    void on_update_active(model::PokemonCard* card);
+    void on_update_suppoter(model::TrainerCard* card);
+    void on_update_stadium(model::TrainerCard* card);
 
   };
 }

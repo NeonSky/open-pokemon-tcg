@@ -1,6 +1,6 @@
 #pragma once
 
-namespace open_pokemon_tcg::game::model::cards::traits {
+namespace open_pokemon_tcg::game::model {
 
   enum EvolutionStage {
     BASIC,

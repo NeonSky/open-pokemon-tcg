@@ -1,6 +1,6 @@
 #pragma once
 
-namespace open_pokemon_tcg::game::model::effects {
+namespace open_pokemon_tcg::game::model {
 
   class IEffectTarget {};
 

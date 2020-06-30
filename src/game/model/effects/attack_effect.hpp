@@ -2,7 +2,7 @@
 
 #include "effect_target.hpp"
 
-namespace open_pokemon_tcg::game::model::effects {
+namespace open_pokemon_tcg::game::model {
 
   class IAttackEffect {
   public:

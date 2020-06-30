@@ -2,7 +2,7 @@
 
 #include "../../../../engine/debug/logger.hpp"
 
-using namespace open_pokemon_tcg::game::model::cards::traits;
+using namespace open_pokemon_tcg::game::model;
 
 
 EnergyAmount::EnergyAmount() {}

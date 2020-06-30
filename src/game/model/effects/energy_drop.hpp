@@ -3,7 +3,7 @@
 #include "attack_effect.hpp"
 #include "../cards/traits/have_energy.hpp"
 
-namespace open_pokemon_tcg::game::model::effects {
+namespace open_pokemon_tcg::game::model {
 
   class EnergyDrop : public IAttackEffect {
   public:

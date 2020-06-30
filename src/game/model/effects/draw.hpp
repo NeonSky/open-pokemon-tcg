@@ -2,7 +2,7 @@
 
 #include "card_effect.hpp"
 
-namespace open_pokemon_tcg::game::model::effects {
+namespace open_pokemon_tcg::game::model {
 
   class Draw : public ICardEffect {
   public:

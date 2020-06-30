@@ -1,7 +1,7 @@
 #pragma once
 
 #include "card.hpp"
-#include "cards/pokemon_card.hpp"
+#include "card/pokemon_card.hpp"
 #include "deck_pile.hpp"
 #include "discard_pile.hpp"
 #include "bench.hpp"
@@ -15,7 +15,7 @@ namespace open_pokemon_tcg::game::model {
   struct Playmat {
     DeckPile *deck_pile = nullptr;
     DiscardPile *discard_pile = nullptr;
-    cards::PokemonCard* active_pokemon = nullptr;
+    PokemonCard* active_pokemon = nullptr;
     ICard* supporter_card = nullptr;
     ICard* stadium_card = nullptr;
     Bench *bench = nullptr;

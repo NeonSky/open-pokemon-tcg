@@ -2,7 +2,7 @@
 
 #include "../pokemon_trainer.hpp"
 
-namespace open_pokemon_tcg::game::model::effects {
+namespace open_pokemon_tcg::game::model {
 
   class ICardEffect {
   public:

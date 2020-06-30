@@ -1,18 +1,18 @@
 #include "attack.hpp"
 
-using namespace open_pokemon_tcg::game::model::cards::traits;
+using namespace open_pokemon_tcg::game::model;
 
 Attack::Attack() {} // FIXME: remove
 Attack::Attack(std::string name, unsigned int damage, EnergyAmount cost)
   : _name(name), _damage(damage), _cost(cost), _effect(nullptr) {}
 
-Attack::Attack(std::string name, unsigned int damage, EnergyAmount cost, effects::IAttackEffect &effect)
+Attack::Attack(std::string name, unsigned int damage, EnergyAmount cost, IAttackEffect &effect)
   : _name(name), _damage(damage), _cost(cost), _effect(&effect) {}
 
 Attack::~Attack() {}
 
 // Mutators
-void Attack::perform(effects::IHealthTarget &target) {
+void Attack::perform(IHealthTarget &target) {
   // NOTE: check cost requirement
 
   unsigned int modified_damage = _damage; // NOTE: Important to copy so the original damage is not modified by effects.

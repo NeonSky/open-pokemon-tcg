@@ -2,7 +2,7 @@
 
 #include "attack_effect.hpp"
 
-namespace open_pokemon_tcg::game::model::effects {
+namespace open_pokemon_tcg::game::model {
 
   class SelfDamage : public IAttackEffect {
   public:

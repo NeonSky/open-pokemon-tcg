@@ -1,16 +1,15 @@
 #include "trainer_card.hpp"
 
 using namespace open_pokemon_tcg::game::model;
-using namespace open_pokemon_tcg::game::model::cards;
 
 TrainerCard::TrainerCard(TrainerCardData data) : _data(data) {}
 TrainerCard::~TrainerCard() {}
 
-effects::ICardEffect& TrainerCard::effect() {
+ICardEffect& TrainerCard::effect() {
   return *_data.effect;
 }
 
-std::string TrainerCard::debug() const {
+std::string TrainerCard::to_string() const {
   return name() + " (" + id() + ")";
 }
 

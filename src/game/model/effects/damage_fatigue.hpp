@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-namespace open_pokemon_tcg::game::model::effects {
+namespace open_pokemon_tcg::game::model {
 
   class DamageFatigue : public IAttackEffect {
   public:

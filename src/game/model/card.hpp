@@ -9,7 +9,7 @@ namespace open_pokemon_tcg::game::model {
 
   class ICard {
   public:
-    virtual std::string debug() const = 0;
+    virtual std::string to_string() const = 0;
     virtual CardId id() const = 0;
     virtual CardName name() const = 0;
   };

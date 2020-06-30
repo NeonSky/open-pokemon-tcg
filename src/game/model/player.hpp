@@ -4,8 +4,8 @@
 #include "playmat.hpp"
 #include "game_master.hpp"
 #include "hand.hpp"
-#include "cards/pokemon_card.hpp"
-#include "cards/trainer_card.hpp"
+#include "card/pokemon_card.hpp"
+#include "card/trainer_card.hpp"
 
 #include <string>
 #include <vector>
@@ -28,9 +28,9 @@ namespace open_pokemon_tcg::game::model {
     void take_prize_card();
     void bench_pokemon_from_hand(ICard& card);
 
-    void on_update_active(std::function<void (cards::PokemonCard* card)> callback);
-    void on_update_supporter(std::function<void (cards::TrainerCard* card)> callback);
-    void on_update_stadium(std::function<void (cards::TrainerCard* card)> callback);
+    void on_update_active(std::function<void (PokemonCard* card)> callback);
+    void on_update_supporter(std::function<void (TrainerCard* card)> callback);
+    void on_update_stadium(std::function<void (TrainerCard* card)> callback);
 
     // Accessors
     bool lost() const;
@@ -49,9 +49,9 @@ namespace open_pokemon_tcg::game::model {
     bool _lost;
     bool _won;
 
-    engine::event::CallbackList<void (cards::PokemonCard* card)> _on_update_active;
-    engine::event::CallbackList<void (cards::TrainerCard* card)> _on_update_supporter;
-    engine::event::CallbackList<void (cards::TrainerCard* card)> _on_update_stadium;
+    engine::event::CallbackList<void (PokemonCard* card)> _on_update_active;
+    engine::event::CallbackList<void (TrainerCard* card)> _on_update_supporter;
+    engine::event::CallbackList<void (TrainerCard* card)> _on_update_stadium;
   };
 
 }

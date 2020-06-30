@@ -3,12 +3,12 @@
 #include "../card.hpp"
 #include "../effects/card_effect.hpp"
 
-namespace open_pokemon_tcg::game::model::cards {
+namespace open_pokemon_tcg::game::model {
 
   struct TrainerCardData {
     CardId id;
     CardName name;
-    effects::ICardEffect *effect;
+    ICardEffect *effect;
   };
 
   class TrainerCard : public ICard {
@@ -17,8 +17,8 @@ namespace open_pokemon_tcg::game::model::cards {
     ~TrainerCard();
 
     // Accessors
-    effects::ICardEffect& effect();
-    std::string debug() const override;
+    ICardEffect& effect();
+    std::string to_string() const override;
     CardId id() const override;
     CardName name() const override;
     const TrainerCardData& data() const;

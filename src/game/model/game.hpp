@@ -18,7 +18,7 @@ namespace open_pokemon_tcg::game::model {
     void place_active_pokemon(unsigned int hand_index);
     void evolve_pokemon();
     void attack(unsigned int attack_index);
-    void activate(effects::ICardEffect& effect) override;
+    void activate(ICardEffect& effect) override;
     void end_turn();
 
     // Accessors
