@@ -50,7 +50,6 @@ namespace open_pokemon_tcg::game::scenes {
     view::Player *player2;
 
     view::Game *_game;
-    view::CardPlaymat *_playmat;
 
     view::Card *selected_card;
     engine::graphics::Rectangle *debug_rect;
@@ -76,14 +75,14 @@ namespace open_pokemon_tcg::game::scenes {
 
     LOG_DEBUG("Loading decks...");
     data::PokemonTcgApi api;
-    std::array<model::Deck, 2> decks {
+    std::array<std::unique_ptr<model::Deck>, 2> decks {
       api.load_deck("Base"),
       api.load_deck("Base"),
     };
     LOG_DEBUG("Decks loaded.");
 
     std::array<std::string, 2> names {"Alice", "Bob"};
-    auto game_model = std::make_shared<model::Game>(decks, names);
+    std::shared_ptr<model::Game> game_model = std::make_shared<model::Game>(decks, names);
     _game = new view::Game(game_model, *this->playmat);
 
     this->player1 = _game->players()[0];
@@ -222,8 +221,7 @@ namespace open_pokemon_tcg::game::scenes {
       if (this->selected_card != nullptr) {
         if (engine::geometry::ray_rectangle_intersection(ray, this->playmat->active_slot(current_side))) {
           _game->model().current_player().active_pokemon_from_hand(this->selected_card->_model);
-          // this->current_player->place_active_pokemon(this->selected_card);
-          // this->selected_card = nullptr;
+          this->selected_card = nullptr;
         }
       }
 

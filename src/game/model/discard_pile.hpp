@@ -1,6 +1,6 @@
 #pragma once
 
-#include "card.hpp"
+#include "card/card.hpp"
 
 #include "../../engine/event/event.hpp"
 

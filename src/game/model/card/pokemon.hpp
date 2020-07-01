@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../card.hpp"
+#include "card.hpp"
 #include "../effects/effect_target.hpp"
 #include "traits/attack.hpp"
 #include "traits/energy.hpp"
@@ -38,6 +38,11 @@ namespace open_pokemon_tcg::game::model {
     std::string to_string() const override;
     CardId id() const override;
     CardName name() const override;
+
+    CardType card_type() const override {
+      return CardType::POKEMON;
+    }
+
     const PokemonCardData& data() const;
 
   private:

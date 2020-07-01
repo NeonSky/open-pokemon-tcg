@@ -9,9 +9,9 @@
 
 namespace open_pokemon_tcg::game::model {
 
-  class Game : IGameMaster {
+  class Game : public IGameMaster {
   public:
-    Game(std::array<Deck, 2> player_decks, std::array<std::string, 2> player_names);
+    Game(std::array<std::unique_ptr<Deck>, 2>& player_decks, std::array<std::string, 2> player_names);
     ~Game();
 
     // Mutators

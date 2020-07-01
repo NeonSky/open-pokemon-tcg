@@ -12,30 +12,30 @@ using namespace open_pokemon_tcg::game;
 using namespace open_pokemon_tcg::game::data;
 
 PokemonTcgApi::PokemonTcgApi() :
-  api_http_client(httplib::SSLClient("api.pokemontcg.io", 443)),
-  img_http_client(httplib::SSLClient("images.pokemontcg.io", 443)) {
+  _api_http_client(httplib::SSLClient("api.pokemontcg.io", 443)),
+  _img_http_client(httplib::SSLClient("images.pokemontcg.io", 443)) {
   std::filesystem::create_directories("res/cache/cards/data");
   std::filesystem::create_directories("res/cache/cards/img");
 }
 
 PokemonTcgApi::~PokemonTcgApi() {}
 
-model::Deck PokemonTcgApi::load_deck(std::string deckset_id, int deck_index) {
+std::unique_ptr<model::Deck> PokemonTcgApi::load_deck(std::string deckset_id, int deck_index) {
   std::ifstream file("res/decks/" + deckset_id + ".json");
   nlohmann::json data;
   file >> data;
 
-  model::Deck deck;
-  deck.name = data[deck_index]["name"].get<std::string>();
+  std::unique_ptr<model::Deck> deck = std::make_unique<model::Deck>();
+  deck->name = data[deck_index]["name"].get<std::string>();
 
   for (auto &card : data[deck_index]["cards"])
     for (int i = 0; i < card["count"]; i++)
-      deck.cards.push_back(load_card(card["id"].get<std::string>()));
+      deck->cards.push_back(load_card(card["id"].get<std::string>()));
 
   return deck;
 }
 
-model::ICard* PokemonTcgApi::load_card(std::string card_id) {
+std::unique_ptr<model::ICard> PokemonTcgApi::load_card(std::string card_id) {
   nlohmann::json data;
 
   // Load data
@@ -58,22 +58,9 @@ model::ICard* PokemonTcgApi::load_card(std::string card_id) {
   return parse_card_data(data["card"]);
 }
 
-model::ICard* PokemonTcgApi::parse_card_data(nlohmann::json data) const {
-  std::string supertype = data["supertype"].get<std::string>();
-
-  if (supertype == "Pokémon")
-    return parse_pokemon_card_data(data);
-  else if (supertype == "Trainer")
-    return parse_trainer_card_data(data);
-  else if (supertype == "Energy")
-    return parse_energy_card_data(data);
-
-  LOG_ERROR("Tried to load card with unknown supertype: " + supertype);
-}
-
 nlohmann::json PokemonTcgApi::download_card_data(std::string card_id, bool cache_result) {
   std::string url = "/v1/cards/" + card_id;
-  auto res = this->api_http_client.Get(url.c_str());
+  auto res = _api_http_client.Get(url.c_str());
 
   if (res == nullptr)
     LOG_ERROR("Fetching " + url + " resulted in a nullptr HTTP response.");
@@ -93,7 +80,7 @@ nlohmann::json PokemonTcgApi::download_card_data(std::string card_id, bool cache
 }
 
 void PokemonTcgApi::download_card_image(std::string card_id, std::string image_url) {
-  auto res = this->img_http_client.Get(image_url.c_str());
+  auto res = _img_http_client.Get(image_url.c_str());
 
   if (res == nullptr)
     LOG_ERROR("Fetching " + image_url + " resulted in a nullptr HTTP response.");
@@ -108,7 +95,34 @@ void PokemonTcgApi::download_card_image(std::string card_id, std::string image_u
   file.close();
 }
 
-model::PokemonCard* PokemonTcgApi::parse_pokemon_card_data(nlohmann::json data) const {
+std::unique_ptr<model::ICard> PokemonTcgApi::parse_card_data(nlohmann::json data) const {
+  std::string id = data["id"].get<std::string>();
+  std::string supertype = data["supertype"].get<std::string>();
+  std::string subtype = data["subtype"].get<std::string>();
+
+  if (supertype == "Pokémon") {
+    return parse_pokemon_card_data(data);
+  }
+  else if (supertype == "Trainer") {
+    if (subtype == "Item")
+      return parse_item_card_data(data);
+    if (subtype == "Supporter")
+      return parse_supporter_card_data(data);
+    if (subtype == "Stadium")
+      return parse_stadium_card_data(data);
+    else {
+      LOG_DEBUG(id + " had a uknown trainer subtype. Assuming item...");
+      return parse_item_card_data(data);
+    }
+  }
+  else if (supertype == "Energy") {
+    return parse_energy_card_data(data);
+  }
+
+  LOG_ERROR("Tried to load card (" + id + ") with unknown supertype (" + supertype + ") and (" + subtype + ") combination.");
+}
+
+std::unique_ptr<model::PokemonCard> PokemonTcgApi::parse_pokemon_card_data(nlohmann::json data) const {
   model::PokemonCardData card;
 
   card.id = data["id"];
@@ -153,19 +167,39 @@ model::PokemonCard* PokemonTcgApi::parse_pokemon_card_data(nlohmann::json data) 
     }
   }
 
-  return new model::PokemonCard(card);
+  return std::make_unique<model::PokemonCard>(card);
 }
 
-model::TrainerCard* PokemonTcgApi::parse_trainer_card_data(nlohmann::json data) const {
-  model::TrainerCardData card;
-  card.id = data["id"].get<std::string>();
-  card.name = data["name"].get<std::string>();
-  card.effect = new model::Draw(2);
-  return new model::TrainerCard(card);
+std::unique_ptr<model::IEnergyCard> PokemonTcgApi::parse_energy_card_data(nlohmann::json data) const {
+  model::CardId id = data["id"];
+  model::CardName name = data["name"];
+
+  if (data["subtype"] != "Basic")
+    LOG_ERROR("Only basic energy cards are supported right now.");
+
+  std::string energy_name = name.substr(0, name.length() - 7); // Remove " Energy" suffix
+  return std::make_unique<model::BasicEnergy>(id, name, to_energy_type(energy_name));
 }
 
-model::EnergyCard* PokemonTcgApi::parse_energy_card_data(nlohmann::json data) const {
-  return new model::EnergyCard(data["id"].get<std::string>(), data["name"].get<std::string>(), model::EnergyType::FIRE);
+std::unique_ptr<model::ItemCard> PokemonTcgApi::parse_item_card_data(nlohmann::json data) const {
+  model::CardId id = data["id"].get<std::string>();
+  model::CardName name = data["name"].get<std::string>();
+  std::unique_ptr<model::ICardEffect> effect = std::make_unique<model::Draw>(1);
+  return std::unique_ptr<model::ItemCard>(new model::ItemCard(id, name, std::move(effect)));
+}
+
+std::unique_ptr<model::SupporterCard> PokemonTcgApi::parse_supporter_card_data(nlohmann::json data) const {
+  model::CardId id = data["id"].get<std::string>();
+  model::CardName name = data["name"].get<std::string>();
+  std::unique_ptr<model::ICardEffect> effect = std::make_unique<model::Draw>(1);
+  return std::unique_ptr<model::SupporterCard>(new model::SupporterCard(id, name, std::move(effect)));
+}
+
+std::unique_ptr<model::StadiumCard> PokemonTcgApi::parse_stadium_card_data(nlohmann::json data) const {
+  model::CardId id = data["id"].get<std::string>();
+  model::CardName name = data["name"].get<std::string>();
+  std::unique_ptr<model::ICardEffect> effect = std::make_unique<model::Draw>(1);
+  return std::unique_ptr<model::StadiumCard>(new model::StadiumCard(id, name, std::move(effect)));
 }
 
 model::EnergyType PokemonTcgApi::to_energy_type(std::string name) const {

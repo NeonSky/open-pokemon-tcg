@@ -1,6 +1,7 @@
 #pragma once
 
-#include "card.hpp"
+#include "deck.hpp"
+#include "card/card.hpp"
 
 #include "../../engine/event/event.hpp"
 
@@ -12,7 +13,7 @@ namespace open_pokemon_tcg::game::model {
   class DeckPile {
   public:
     DeckPile();
-    DeckPile(std::vector<ICard*> cards);
+    DeckPile(Deck& deck);
     ~DeckPile();
 
     // Mutators
@@ -22,10 +23,10 @@ namespace open_pokemon_tcg::game::model {
 
     // Accessors
     unsigned int size() const;
-    const std::vector<ICard*>& cards() const;
+    const std::vector<std::reference_wrapper<ICard>>& cards() const;
 
   private:
-    std::vector<ICard*> _cards;
+    std::vector<std::reference_wrapper<ICard>> _cards;
 
     engine::event::CallbackList<void ()> _on_pop;
   };

@@ -41,7 +41,6 @@ Card::Card(game::model::ICard &model, engine::geometry::Transform transform)
 Card::~Card() {}
 
 void Card::render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) {
-
   shader->use();
 
   glm::mat4 front_matrix = this->transform.matrix();

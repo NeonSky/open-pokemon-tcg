@@ -1,7 +1,7 @@
 #pragma once
 
-#include "card.hpp"
-#include "card/pokemon_card.hpp"
+#include "card/card.hpp"
+#include "card/pokemon.hpp"
 #include "deck_pile.hpp"
 #include "discard_pile.hpp"
 #include "bench.hpp"

@@ -1,17 +1,21 @@
 #include "player.hpp"
 
-#include "card/trainer_card.hpp"
 #include "../../engine/debug/logger.hpp"
 
 #include <boost/lexical_cast.hpp>
 
 using namespace open_pokemon_tcg::game::model;
 
-Player::Player(IGameMaster &gm, Deck deck, Playmat &playmat, std::string name) : _gm(gm), _deck(deck), _playmat(playmat), _name(name) {
+Player::Player(IGameMaster& gm, std::unique_ptr<Deck>& deck, Playmat& playmat, std::string name)
+  : _gm(gm),
+    _deck(std::move(deck)),
+    _playmat(playmat),
+    _name(name) {
+
   _lost = false;
   _won = false;
 
-  _playmat.deck_pile = new DeckPile(_deck.cards);
+  _playmat.deck_pile = new DeckPile(*_deck);
   _playmat.deck_pile->shuffle();
 
   _playmat.discard_pile = new DiscardPile();
@@ -77,12 +81,14 @@ void Player::active_pokemon_from_hand(ICard& card) {
 }
 
 void Player::activate_trainer_card(unsigned int hand_index) {
-  try {
+  LOG_DEBUG(hand_index);
+  LOG_DEBUG("FIXME");
+  /*try {
     TrainerCard *card = (TrainerCard*) &_hand.cards()[hand_index];
     _gm.activate(card->effect());
   } catch (const std::exception& e) {
     LOG_ERROR(e.what());
-  }
+  }*/
 }
 
 void Player::take_prize_card() {
@@ -101,13 +107,14 @@ void Player::on_update_active(std::function<void (PokemonCard* card)> callback) 
   _on_update_active.append(callback);
 }
 
+/*
 void Player::on_update_supporter(std::function<void (TrainerCard* card)> callback) {
   _on_update_supporter.append(callback);
 }
 
 void Player::on_update_stadium(std::function<void (TrainerCard* card)> callback) {
   _on_update_stadium.append(callback);
-}
+}*/
 
 bool Player::lost() const {
   return _lost;
@@ -125,6 +132,10 @@ Playmat& Player::playmat() {
   return _playmat;
 }
 
-const Deck& Player::deck() const {return _deck;}
+const Deck& Player::deck() const {
+  return *_deck;
+}
 
-Hand& Player::hand() {return _hand;}
+Hand& Player::hand() {
+  return _hand;
+}

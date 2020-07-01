@@ -5,7 +5,7 @@
 #include "../../engine/graphics/shader.hpp"
 #include "../../engine/graphics/texture.hpp"
 
-#include "../model/card.hpp"
+#include "../model/card/card.hpp"
 
 #include <glad/glad.h>
 #include <glm/mat4x4.hpp>

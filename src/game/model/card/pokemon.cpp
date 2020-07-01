@@ -1,4 +1,4 @@
-#include "pokemon_card.hpp"
+#include "pokemon.hpp"
 
 using namespace open_pokemon_tcg::game::model;
 
@@ -16,15 +16,15 @@ void PokemonCard::attack(unsigned int attack_index, IHealthTarget &opponent) {
 unsigned int PokemonCard::max_hp() const { return _data.hp; }
 unsigned int PokemonCard::hp() const { return _hp; }
 
-std::string PokemonCard::to_string() const {
-  return name() + " (" + id() + ") with " + std::to_string(_data.hp) + " hp";
-}
-
 CardId PokemonCard::id() const {
   return _data.id;
 }
 CardName PokemonCard::name() const {
   return _data.name;
+}
+
+std::string PokemonCard::to_string() const {
+  return name() + " (" + id() + ") with " + std::to_string(_data.hp) + " hp";
 }
 
 const PokemonCardData& PokemonCard::data() const {

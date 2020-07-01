@@ -82,6 +82,7 @@ void Player::on_update_active(model::PokemonCard* card) {
   active_pokemon = new Card(*card, playmat->active_slot(this->playmat_side).transform());
 }
 
+/*
 void Player::on_update_suppoter(model::TrainerCard* card) {
   if (supporter_card != nullptr)
     delete supporter_card;
@@ -95,3 +96,4 @@ void Player::on_update_stadium(model::TrainerCard* card) {
 
   stadium_card = new Card(*card, playmat->stadium_slot(this->playmat_side).transform());
 }
+ */

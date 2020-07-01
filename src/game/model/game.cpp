@@ -4,14 +4,14 @@
 
 using namespace open_pokemon_tcg::game::model;
 
-Game::Game(std::array<Deck, 2> player_decks, std::array<std::string, 2> player_names) {
+Game::Game(std::array<std::unique_ptr<Deck>, 2>& player_decks, std::array<std::string, 2> player_names) {
   _winner = nullptr;
   _current_player = 0;
   _turn = 0;
 
   for (unsigned int i = 0; i < _players.size(); i++) {
     _playmats[i] = std::make_shared<Playmat>();
-    _players[i] = std::make_unique<Player>(Player(*this, player_decks[i], *_playmats[i], player_names[i]));
+    _players[i] = std::make_unique<Player>(*this, player_decks[i], *_playmats[i], player_names[i]);
     _players[i]->draw(7);
   }
 
