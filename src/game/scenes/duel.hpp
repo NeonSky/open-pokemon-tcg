@@ -174,9 +174,11 @@ namespace open_pokemon_tcg::game::scenes {
     ImGui::Begin("Player Controls");
 
     if (ImGui::Button("End Turn")) {
-      _game->model().end_turn();
-      this->current_player = (this->current_player == this->player1) ? this->player2 : player1; // TODO: Maybe move to view?
-      this->camera.set_transform((this->current_player == this->player1) ? this->camera1_transform : this->camera2_transform);
+      if (_game->model().winner() == nullptr) {
+        _game->model().end_turn();
+        this->current_player = (this->current_player == this->player1) ? this->player2 : player1; // TODO: Maybe move to view?
+        this->camera.set_transform((this->current_player == this->player1) ? this->camera1_transform : this->camera2_transform);
+      }
     }
 
     if (_selected_card != nullptr) {
@@ -244,7 +246,7 @@ namespace open_pokemon_tcg::game::scenes {
             if (index == -1)
               LOG_ERROR("Didn't figure out what bench slot was clicked on. This should never happen.");
 
-            _game->model().place_on_bench_slot_from_hand(_selected_card->_model, index);
+            _game->model().place_on_bench_from_hand(_selected_card->_model, index);
             _selected_card = nullptr;
           }
         }

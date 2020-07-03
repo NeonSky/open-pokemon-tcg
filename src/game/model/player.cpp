@@ -6,8 +6,8 @@
 
 using namespace open_pokemon_tcg::game::model;
 
-Player::Player(IGameMaster& gm, std::unique_ptr<Deck>& deck, Playmat& playmat, std::string name)
-  : _gm(gm),
+Player::Player(IPerformCardEffect& card_effect_performer, std::unique_ptr<Deck>& deck, Playmat& playmat, std::string name)
+  : _card_effect_performer(card_effect_performer),
     _deck(std::move(deck)),
     _playmat(playmat),
     _name(name) {

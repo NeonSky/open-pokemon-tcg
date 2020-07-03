@@ -2,7 +2,7 @@
 
 #include "pokemon_trainer.hpp"
 #include "playmat.hpp"
-#include "game_master.hpp"
+#include "iperform_card_effect.hpp"
 #include "hand.hpp"
 #include "card/pokemon.hpp"
 
@@ -14,7 +14,7 @@ namespace open_pokemon_tcg::game::model {
   // TODO: Switch these names to PokemonTrainer and IPlayer
   class Player : public IPokemonTrainer {
   public:
-    Player(IGameMaster& gm, std::unique_ptr<Deck>& deck, Playmat& playmat, std::string name);
+    Player(IPerformCardEffect& card_effect_performer, std::unique_ptr<Deck>& deck, Playmat& playmat, std::string name);
     ~Player();
 
     // Mutators
@@ -50,7 +50,7 @@ namespace open_pokemon_tcg::game::model {
     //engine::event::CallbackList<void (TrainerCard* card)> _on_update_supporter;
     //engine::event::CallbackList<void (TrainerCard* card)> _on_update_stadium;
 
-    IGameMaster &_gm;
+    IPerformCardEffect &_card_effect_performer;
     std::unique_ptr<Deck> _deck;
     Playmat _playmat;
     std::string _name;

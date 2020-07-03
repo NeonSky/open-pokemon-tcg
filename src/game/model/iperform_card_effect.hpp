@@ -4,9 +4,9 @@
 
 namespace open_pokemon_tcg::game::model {
 
-  class IGameMaster {
+  class IPerformCardEffect {
   public:
     // Mutators
-    virtual void activate(ICardEffect& effect) = 0;
+    virtual void perform(ICardEffect& effect) = 0;
   };
 }
