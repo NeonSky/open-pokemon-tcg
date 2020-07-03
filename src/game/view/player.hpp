@@ -2,7 +2,6 @@
 
 #include "bench.hpp"
 #include "card.hpp"
-#include "deck.hpp"
 #include "deck_pile.hpp"
 #include "discard_pile.hpp"
 #include "hand.hpp"
@@ -37,7 +36,6 @@ namespace open_pokemon_tcg::game::view {
     model::Player &_model;
     engine::graphics::Shader *_shader; // TODO: remove
 
-    Deck deck;
     const open_pokemon_tcg::game::view::IPlaymat *playmat;
     IPlaymat::Side playmat_side;
     void on_update_active(model::PokemonCard* card);

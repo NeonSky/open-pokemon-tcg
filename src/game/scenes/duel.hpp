@@ -5,7 +5,6 @@
 #include "../data/pokemon_tcg_api.hpp"
 #include "../view/card.hpp"
 #include "../view/card_playmat.hpp"
-#include "../view/deck.hpp"
 #include "../view/game.hpp"
 #include "../view/playmats/black_playmat.hpp"
 #include "../view/playmats/green_playmat.hpp"
@@ -81,7 +80,6 @@ namespace open_pokemon_tcg::game::scenes {
     };
     LOG_DEBUG("Decks loaded.");
 
-    // TODO: Investigate why this takes so long
     std::array<std::string, 2> names {"Alice", "Bob"};
     std::shared_ptr<model::Game> game_model = std::make_shared<model::Game>(decks, names);
     game_model->on_game_over([this]() {

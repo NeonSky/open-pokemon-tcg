@@ -8,10 +8,6 @@ namespace open_pokemon_tcg::engine::geometry {
 
   class Transform {
   public:
-    glm::vec3 position;
-    glm::vec3 rotation;
-    glm::vec3 scale;
-
     Transform();
     Transform(glm::vec3 position);
     Transform(glm::vec3 position, glm::vec3 rotation);
@@ -37,6 +33,10 @@ namespace open_pokemon_tcg::engine::geometry {
     float yaw() const { return rotation.y; };
     float pitch() const { return rotation.x; };
     float roll() const { return rotation.z; };
+
+    glm::vec3 position;
+    glm::vec3 rotation;
+    glm::vec3 scale;
 
   private:
     // Accessors

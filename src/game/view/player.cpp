@@ -13,15 +13,10 @@ using namespace open_pokemon_tcg::game::view;
 
 Player::Player(model::Player &model, const open_pokemon_tcg::game::view::IPlaymat &playmat, open_pokemon_tcg::game::view::IPlaymat::Side playmat_side)
   : _model(model),
-    deck(Deck(model.deck())),
     playmat(&playmat),
     playmat_side(playmat_side) {
 
   _shader = new engine::graphics::Shader("simple.vert", "simple.frag");
-
-  std::vector<Card*> cards(this->deck.cards.size());
-  for (unsigned int i = 0; i < cards.size(); i++)
-    cards[i] = &this->deck.cards[i];
 
   this->deck_pile = new DeckPile(playmat.deck_slot(this->playmat_side).transform(), *_model.playmat().deck_pile);
 
