@@ -21,6 +21,8 @@ namespace open_pokemon_tcg::game::model {
     void activate(ICardEffect& effect) override;
     void end_turn();
 
+    void on_game_over(std::function<void ()> callback);
+
     // Accessors
     const Player* winner() const;
     Player& current_player();
@@ -28,6 +30,9 @@ namespace open_pokemon_tcg::game::model {
     unsigned int turn() const;
 
   private:
+    engine::event::CallbackList<void ()> _on_game_over;
+    bool _is_game_over;
+
     const Player* _winner;
     std::array<std::unique_ptr<Player>, 2> _players;
     std::array<std::shared_ptr<Playmat>, 2> _playmats;

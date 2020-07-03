@@ -84,6 +84,11 @@ namespace open_pokemon_tcg::game::scenes {
     // TODO: Investigate why this takes so long
     std::array<std::string, 2> names {"Alice", "Bob"};
     std::shared_ptr<model::Game> game_model = std::make_shared<model::Game>(decks, names);
+    game_model->on_game_over([this]() {
+      LOG_DEBUG("We have a winner!");
+      LOG_DEBUG("The winner is: " + _game->model().winner()->name());
+    });
+
     _game = new view::Game(game_model, *this->playmat);
 
     this->player1 = _game->players()[0];
@@ -178,12 +183,6 @@ namespace open_pokemon_tcg::game::scenes {
       _game->model().end_turn();
       this->current_player = (this->current_player == this->player1) ? this->player2 : player1; // TODO: Maybe move to view?
       this->camera.set_transform((this->current_player == this->player1) ? this->camera1_transform : this->camera2_transform);
-
-      // if (_game->model().winner() != nullptr) {
-      //   LOG_DEBUG("We have a winner!");
-      //   LOG_DEBUG("The winner is: " + _game->model().winner()->name());
-      //   return;
-      // }
     }
 
     if (_selected_card != nullptr) {
@@ -217,20 +216,6 @@ namespace open_pokemon_tcg::game::scenes {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE))
       _selected_card = nullptr;
 
-    // Switch which user/player to control
-    if (glfwGetKey(window, GLFW_KEY_U)) {
-      _game->model().end_turn();
-
-      if (_game->model().winner() != nullptr) {
-        LOG_DEBUG("We have a winner!");
-        LOG_DEBUG("The winner is: " + _game->model().winner()->name());
-        return;
-      }
-
-      this->current_player = (this->current_player == this->player1) ? this->player2 : player1;
-      this->camera.set_transform((this->current_player == this->player1) ? this->camera1_transform : this->camera2_transform);
-    }
-
     focus_hovered_card = glfwGetKey(window, GLFW_KEY_F);
   }
 
@@ -250,9 +235,7 @@ namespace open_pokemon_tcg::game::scenes {
         }
       }
 
-      // _selected_card = nullptr;
       float best_dist = 1e9;
-
       for (auto &card : this->current_player->hand->cards()) {
         auto hit = card->does_intersect(ray);
         if (hit != nullptr) {

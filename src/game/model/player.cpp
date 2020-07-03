@@ -12,9 +12,6 @@ Player::Player(IGameMaster& gm, std::unique_ptr<Deck>& deck, Playmat& playmat, s
     _playmat(playmat),
     _name(name) {
 
-  _lost = false;
-  _won = false;
-
   _playmat.deck_pile = new DeckPile(*_deck);
   _playmat.deck_pile->shuffle();
 
@@ -37,7 +34,7 @@ Player::~Player() {}
 
 void Player::draw(unsigned int amount) {
   if (_playmat.deck_pile->size() < amount) {
-    _lost = true;
+    _on_lose();
     return;
   }
 
@@ -47,7 +44,7 @@ void Player::draw(unsigned int amount) {
 
 void Player::mill(unsigned int amount) {
   if (_playmat.deck_pile->size() < amount) {
-    _lost = true;
+    _on_lose();
     return;
   }
 
@@ -94,13 +91,21 @@ void Player::activate_trainer_card(unsigned int hand_index) {
 void Player::take_prize_card() {
   _hand.add(_playmat.prize_card_pool->take_any());
   if (_playmat.prize_card_pool->empty())
-    _won = true;
+    _on_win();
 }
 
 
 void Player::bench_pokemon_from_hand(ICard& card) {
   _hand.remove(_hand.find(card));
   _playmat.bench->place(card);
+}
+
+void Player::on_win(std::function<void ()> callback) {
+  _on_win.append(callback);
+}
+
+void Player::on_lose(std::function<void ()> callback) {
+  _on_lose.append(callback);
 }
 
 void Player::on_update_active(std::function<void (PokemonCard* card)> callback) {
@@ -115,14 +120,6 @@ void Player::on_update_supporter(std::function<void (TrainerCard* card)> callbac
 void Player::on_update_stadium(std::function<void (TrainerCard* card)> callback) {
   _on_update_stadium.append(callback);
 }*/
-
-bool Player::lost() const {
-  return _lost;
-}
-
-bool Player::won() const {
-  return _won;
-}
 
 std::string Player::name() const {
   return _name;

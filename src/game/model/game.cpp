@@ -5,6 +5,7 @@
 using namespace open_pokemon_tcg::game::model;
 
 Game::Game(std::array<std::unique_ptr<Deck>, 2>& player_decks, std::array<std::string, 2> player_names) {
+  _is_game_over = false;
   _winner = nullptr;
   _current_player = 0;
   _turn = 0;
@@ -14,6 +15,28 @@ Game::Game(std::array<std::unique_ptr<Deck>, 2>& player_decks, std::array<std::s
     _players[i] = std::make_unique<Player>(*this, player_decks[i], *_playmats[i], player_names[i]);
     _players[i]->draw(7);
   }
+
+  on_game_over([this]() { _is_game_over = true; });
+
+  _players[0]->on_win([this]() {
+    _winner = _players[0].get();
+    _on_game_over();
+  });
+
+  _players[1]->on_win([this]() {
+    _winner = _players[1].get();
+    _on_game_over();
+  });
+
+  _players[0]->on_lose([this]() {
+    _winner = _players[1].get();
+    _on_game_over();
+  });
+
+  _players[1]->on_lose([this]() {
+    _winner = _players[0].get();
+    _on_game_over();
+  });
 
   start_turn();
 }
@@ -60,18 +83,16 @@ void Game::activate(ICardEffect& effect) {
 
 void Game::start_turn() {
   _players[_current_player]->draw();
-  if (_players[_current_player]->lost())
-    _winner = &next_player();
+}
+
+void Game::on_game_over(std::function<void ()> callback) {
+  _on_game_over.append(callback);
 }
 
 void Game::end_turn() {
-  if (_players[_current_player]->won()) {
-    _winner = &current_player();
-    return;
-  }
+  if (_is_game_over) return;
 
   _current_player = (_current_player+1) % _players.size();
-
   start_turn();
 
   if (_current_player == 0)

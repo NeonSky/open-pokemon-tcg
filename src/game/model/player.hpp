@@ -27,13 +27,14 @@ namespace open_pokemon_tcg::game::model {
     void take_prize_card();
     void bench_pokemon_from_hand(ICard& card);
 
+    void on_win(std::function<void ()> callback);
+    void on_lose(std::function<void ()> callback);
+
     void on_update_active(std::function<void (PokemonCard* card)> callback);
     //void on_update_supporter(std::function<void (TrainerCard* card)> callback);
     //void on_update_stadium(std::function<void (TrainerCard* card)> callback);
 
     // Accessors
-    bool lost() const;
-    bool won() const; // TODO: Maybe use event instead.
     std::string name() const;
     const Deck& deck() const override;
     Playmat& playmat();
@@ -45,8 +46,9 @@ namespace open_pokemon_tcg::game::model {
     Playmat _playmat;
     std::string _name;
     Hand _hand;
-    bool _lost;
-    bool _won;
+
+    engine::event::CallbackList<void ()> _on_win;
+    engine::event::CallbackList<void ()> _on_lose;
 
     engine::event::CallbackList<void (PokemonCard* card)> _on_update_active;
     //engine::event::CallbackList<void (TrainerCard* card)> _on_update_supporter;
