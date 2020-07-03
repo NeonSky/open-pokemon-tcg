@@ -4,11 +4,11 @@
 
 using namespace open_pokemon_tcg::game::view;
 
-DiscardPile::DiscardPile(model::DiscardPile &model, const engine::geometry::Transform& transform)
-  : transform(transform),
-    _model(model) {
+DiscardPile::DiscardPile(const model::DiscardPile &model, const engine::geometry::Transform& transform)
+  : _model(model),
+    transform(transform) {
 
-  _model.listen_on_push([this](model::ICard& card) {
+  _model.on_push([this](model::ICard& card) {
     _cards.push_back(Card(card, engine::geometry::Transform()));
   });
 }

@@ -6,12 +6,15 @@
 
 using namespace open_pokemon_tcg::game::view;
 
-DeckPile::DeckPile(engine::geometry::Transform transform, model::DeckPile &model) : transform(transform), _model(model) {
+DeckPile::DeckPile(const model::DeckPile &model, engine::geometry::Transform transform)
+  : _model(model),
+    transform(transform) {
+
   for (auto card : _model.cards())
     _cards.push_back(Card(card, engine::geometry::Transform()));
   update_card_positions();
 
-  _model.listen_on_pop([this]() {
+  _model.on_pop([this]() {
     _cards.pop_back();
     update_card_positions();
   });

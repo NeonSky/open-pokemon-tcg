@@ -47,11 +47,11 @@ const Player* Game::winner() const {
   return _winner;
 }
 
-Player& Game::current_player() {
+const Player& Game::current_player() const {
   return *_players[_current_player];
 }
 
-Player& Game::next_player() {
+const Player& Game::next_player() const {
   return *_players[(_current_player+1) % _players.size()];
 }
 
@@ -59,8 +59,18 @@ unsigned int Game::turn() const {
   return _turn;
 }
 
-void Game::place_active_pokemon(unsigned int hand_index) {
-  _players[_current_player]->place_active_pokemon(hand_index);
+void Game::place_on_active_slot_from_hand(ICard& card) {
+  // TODO: Check if pokemon card.
+  // TODO: Get index of card.
+  _players[_current_player]->place_on_active_slot_from_hand(card);
+}
+
+void Game::place_on_bench_from_hand(ICard& card) {
+  _players[_current_player]->place_on_bench_from_hand(card);
+}
+
+void Game::place_on_bench_slot_from_hand(ICard& card, unsigned int slot_index) {
+  _players[_current_player]->place_on_bench_from_hand(card, slot_index);
 }
 
 void Game::evolve_pokemon() {
@@ -85,7 +95,7 @@ void Game::start_turn() {
   _players[_current_player]->draw();
 }
 
-void Game::on_game_over(std::function<void ()> callback) {
+void Game::on_game_over(std::function<void ()> callback) const {
   _on_game_over.append(callback);
 }
 

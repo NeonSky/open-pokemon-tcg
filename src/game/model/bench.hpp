@@ -19,16 +19,15 @@ namespace open_pokemon_tcg::game::model {
     void place(ICard &card, unsigned int index);
     ICard& take(unsigned int index);
 
-    void listen_on_place(std::function<void (ICard &card, unsigned int index)> callback);
-    void listen_on_take(std::function<void (unsigned int index)> callback);
-
     // Accessors
+    void on_place(std::function<void (ICard &card, unsigned int index)> callback) const;
+    void on_take(std::function<void (unsigned int index)> callback) const;
     const std::array<ICard*, 5> cards() const;
 
   private:
-    std::array<ICard*, 5> _cards;
+    mutable engine::event::CallbackList<void (ICard&, unsigned int)> _on_place;
+    mutable engine::event::CallbackList<void (unsigned int)> _on_take;
 
-    engine::event::CallbackList<void (ICard&, unsigned int)> _on_place;
-    engine::event::CallbackList<void (unsigned int)> _on_take;
+    std::array<ICard*, 5> _cards;
   };
 }

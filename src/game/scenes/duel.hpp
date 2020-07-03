@@ -4,7 +4,6 @@
 #include "../model/game.hpp"
 #include "../data/pokemon_tcg_api.hpp"
 #include "../view/card.hpp"
-#include "../view/card_playmat.hpp"
 #include "../view/game.hpp"
 #include "../view/playmats/black_playmat.hpp"
 #include "../view/playmats/green_playmat.hpp"
@@ -65,9 +64,6 @@ namespace open_pokemon_tcg::game::scenes {
     window->add_on_key_callback(std::bind(&Duel::on_key, this, std::placeholders::_1));
     window->add_on_mouse_click_callback(std::bind(&Duel::on_mouse_click, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
     this->highlight_shader = new engine::graphics::Shader("simple.vert", "highlight.frag");
-
-
-    view::CardPlaymat playmat(std::make_unique<view::playmats::BlackPlaymat>());
 
     this->playmat = new view::playmats::BlackPlaymat();
     this->debug_rect = new engine::graphics::Rectangle(engine::geometry::Rectangle(engine::geometry::Transform()));
@@ -188,11 +184,11 @@ namespace open_pokemon_tcg::game::scenes {
 
       ImGui::Text("Selected Card Options");
       if (ImGui::Button("Place on active slot")) {
-        _game->model().current_player().active_pokemon_from_hand(_selected_card->_model);
+        _game->model().place_on_active_slot_from_hand(_selected_card->_model);
         _selected_card = nullptr;
       }
       if (ImGui::Button("Place on bench")) {
-        _game->model().current_player().bench_pokemon_from_hand(_selected_card->_model);
+        _game->model().place_on_bench_from_hand(_selected_card->_model);
         _selected_card = nullptr;
       }
 
@@ -201,12 +197,12 @@ namespace open_pokemon_tcg::game::scenes {
     ImGui::End();
 
     ImGui::Begin("Debug Controls");
-    if (ImGui::Button("Draw Card"))
-      _game->model().current_player().draw();
-    if (ImGui::Button("Mill Card"))
-      _game->model().current_player().mill();
-    if (ImGui::Button("Take Prize Card"))
-      _game->model().current_player().take_prize_card();
+    // if (ImGui::Button("Draw Card"))
+    //   _game->model().current_player().draw();
+    // if (ImGui::Button("Mill Card"))
+    //   _game->model().current_player().mill();
+    // if (ImGui::Button("Take Prize Card"))
+    //   _game->model().current_player().take_prize_card();
     ImGui::End();
   }
 
@@ -228,8 +224,32 @@ namespace open_pokemon_tcg::game::scenes {
 
       if (_selected_card != nullptr) {
         if (engine::geometry::ray_rectangle_intersection(ray, this->playmat->active_slot(current_side))) {
-          _game->model().current_player().active_pokemon_from_hand(_selected_card->_model);
+          _game->model().place_on_active_slot_from_hand(_selected_card->_model);
           _selected_card = nullptr;
+          return;
+        }
+
+        auto slots = playmat->bench_slots(current_side);
+        for (auto &slot : slots) {
+          if (engine::geometry::ray_rectangle_intersection(ray, slot)) {
+
+            int index = -1;
+            for (unsigned int i = 0; i < slots.size(); i++) {
+              if (&slot == &slots[i]) {
+                index = i;
+                break;
+              }
+            }
+
+            if (index == -1)
+              LOG_ERROR("Didn't figure out what bench slot was clicked on. This should never happen.");
+
+            _game->model().place_on_bench_slot_from_hand(_selected_card->_model, index);
+            _selected_card = nullptr;
+          }
+        }
+
+        if (engine::geometry::ray_rectangle_intersection(ray, this->playmat->active_slot(current_side))) {
         }
       }
 

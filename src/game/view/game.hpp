@@ -1,8 +1,7 @@
 #include "player.hpp"
-#include "card_playmat.hpp"
+#include "playmat.hpp"
 
 #include "../model/game.hpp"
-#include "playmat.hpp"
 
 #include <glm/mat4x4.hpp>
 

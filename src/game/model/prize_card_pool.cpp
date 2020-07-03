@@ -34,7 +34,7 @@ ICard& PrizeCardPool::take(unsigned int index) {
   return *card;
 }
 
-void PrizeCardPool::listen_on_take(std::function<void (unsigned int)> callback) {
+void PrizeCardPool::on_take(std::function<void (unsigned int)> callback) const {
   _on_take.append(callback);
 }
 

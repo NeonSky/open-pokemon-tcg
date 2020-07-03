@@ -9,7 +9,7 @@ namespace open_pokemon_tcg::game::view {
 
   class Hand {
   public:
-    Hand(model::Hand& model, engine::geometry::Transform transform);
+    Hand(const model::Hand& model, engine::geometry::Transform transform);
     ~Hand();
 
     // Mutators
@@ -25,7 +25,7 @@ namespace open_pokemon_tcg::game::view {
   private:
     const float _max_width = 7.0f; // TODO: maybe base on camera
 
-    model::Hand& _model;
+    const model::Hand& _model;
     engine::geometry::Transform _transform;
     std::vector<Card*> _cards;
   };

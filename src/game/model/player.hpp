@@ -21,38 +21,41 @@ namespace open_pokemon_tcg::game::model {
     void shuffle_deck_pile();
     void draw(unsigned int amount = 1) override;
     void mill(unsigned int amount = 1);
+    void place_on_active_slot_from_hand(ICard& card);
+    void place_on_bench_from_hand(ICard& card);
+    void place_on_bench_from_hand(ICard& card, unsigned int slot_index);
+
     void place_active_pokemon(unsigned int hand_index) override;
     void activate_trainer_card(unsigned int hand_index);
-    void active_pokemon_from_hand(ICard& card);
     void take_prize_card();
     void bench_pokemon_from_hand(ICard& card);
 
     void on_win(std::function<void ()> callback);
     void on_lose(std::function<void ()> callback);
 
-    void on_update_active(std::function<void (PokemonCard* card)> callback);
+    // Accessors
+    void on_update_active(std::function<void (PokemonCard* card)> callback) const;
     //void on_update_supporter(std::function<void (TrainerCard* card)> callback);
     //void on_update_stadium(std::function<void (TrainerCard* card)> callback);
 
-    // Accessors
     std::string name() const;
     const Deck& deck() const override;
-    Playmat& playmat();
-    Hand& hand();
+    const Playmat& playmat() const;
+    const Hand& hand() const;
 
   private:
+    mutable engine::event::CallbackList<void ()> _on_win;
+    mutable engine::event::CallbackList<void ()> _on_lose;
+    mutable engine::event::CallbackList<void (PokemonCard* card)> _on_update_active;
+    //engine::event::CallbackList<void (TrainerCard* card)> _on_update_supporter;
+    //engine::event::CallbackList<void (TrainerCard* card)> _on_update_stadium;
+
     IGameMaster &_gm;
     std::unique_ptr<Deck> _deck;
     Playmat _playmat;
     std::string _name;
     Hand _hand;
 
-    engine::event::CallbackList<void ()> _on_win;
-    engine::event::CallbackList<void ()> _on_lose;
-
-    engine::event::CallbackList<void (PokemonCard* card)> _on_update_active;
-    //engine::event::CallbackList<void (TrainerCard* card)> _on_update_supporter;
-    //engine::event::CallbackList<void (TrainerCard* card)> _on_update_stadium;
   };
 
 }

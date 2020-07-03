@@ -17,15 +17,15 @@ namespace open_pokemon_tcg::game::model {
     // Mutators
     ICard& take_any();
     ICard& take(unsigned int index);
-    void listen_on_take(std::function<void (unsigned int index)> callback);
 
     // Accessors
+    void on_take(std::function<void (unsigned int index)> callback) const;
     bool empty() const;
     const std::array<ICard*, 6> cards() const;
 
   private:
-    std::array<ICard*, 6> _cards;
+    mutable engine::event::CallbackList<void (unsigned int)> _on_take;
 
-    engine::event::CallbackList<void (unsigned int)> _on_take;
+    std::array<ICard*, 6> _cards;
   };
 }

@@ -18,16 +18,16 @@ namespace open_pokemon_tcg::game::model {
 
     // Mutators
     ICard& pop();
-    void listen_on_pop(std::function<void ()> callback);
     void shuffle();
 
     // Accessors
+    void on_pop(std::function<void ()> callback) const;
     unsigned int size() const;
     const std::vector<std::reference_wrapper<ICard>>& cards() const;
 
   private:
-    std::vector<std::reference_wrapper<ICard>> _cards;
+    mutable engine::event::CallbackList<void ()> _on_pop;
 
-    engine::event::CallbackList<void ()> _on_pop;
+    std::vector<std::reference_wrapper<ICard>> _cards;
   };
 }

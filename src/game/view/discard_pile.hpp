@@ -14,10 +14,8 @@ namespace open_pokemon_tcg::game::view {
 
   class DiscardPile {
   public:
-    DiscardPile(model::DiscardPile &model, const engine::geometry::Transform& transform);
+    DiscardPile(const model::DiscardPile &model, const engine::geometry::Transform& transform);
     ~DiscardPile();
-
-    engine::geometry::Transform transform;
 
     // Mutators
     void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader);
@@ -28,7 +26,8 @@ namespace open_pokemon_tcg::game::view {
   private:
     const float card_spacing = 0.004f;
 
-    model::DiscardPile &_model;
+    const model::DiscardPile &_model;
+    engine::geometry::Transform transform;
     std::vector<Card> _cards;
   };
 }

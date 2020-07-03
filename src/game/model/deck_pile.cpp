@@ -20,7 +20,7 @@ ICard& DeckPile::pop() {
   return card;
 }
 
-void DeckPile::listen_on_pop(std::function<void ()> callback) {
+void DeckPile::on_pop(std::function<void ()> callback) const {
   _on_pop.append(callback);
 }
 

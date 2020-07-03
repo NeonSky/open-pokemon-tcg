@@ -18,11 +18,11 @@ void Hand::remove(int index) {
   _on_remove(index);
 }
 
-void Hand::listen_on_add(std::function<void (ICard& card)> callback) {
+void Hand::listen_on_add(std::function<void (ICard& card)> callback) const {
   _on_add.append(callback);
 }
 
-void Hand::listen_on_remove(std::function<void (int index)> callback) {
+void Hand::listen_on_remove(std::function<void (int index)> callback) const {
   _on_remove.append(callback);
 }
 

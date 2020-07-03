@@ -7,7 +7,10 @@
 using namespace open_pokemon_tcg::game::view;
 
 
-Hand::Hand(model::Hand& model, engine::geometry::Transform transform) : _model(model), _transform(transform) {
+Hand::Hand(const model::Hand& model, engine::geometry::Transform transform)
+  : _model(model),
+    _transform(transform) {
+
   for (auto card : _model.cards())
     _cards.push_back(new Card(card, engine::geometry::Transform()));
   update();

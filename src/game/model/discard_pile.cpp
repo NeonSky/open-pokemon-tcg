@@ -12,7 +12,7 @@ void DiscardPile::push(ICard& card) {
   _on_push(card);
 }
 
-void DiscardPile::listen_on_push(std::function<void (ICard&)> callback) {
+void DiscardPile::on_push(std::function<void (ICard&)> callback) const {
   _on_push.append(callback);
 }
 

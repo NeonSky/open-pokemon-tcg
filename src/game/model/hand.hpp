@@ -18,18 +18,18 @@ namespace open_pokemon_tcg::game::model {
     // Mutators
     void add(ICard& card);
     void remove(int index);
-    void listen_on_add(std::function<void (ICard& card)> callback);
-    void listen_on_remove(std::function<void (int index)> callback);
 
     // Accessors
+    void listen_on_add(std::function<void (ICard& card)> callback) const;
+    void listen_on_remove(std::function<void (int index)> callback) const;
     unsigned int size() const;
     const std::vector<std::reference_wrapper<ICard>>& cards() const;
     unsigned int find(ICard &card) const;
 
   private:
-    std::vector<std::reference_wrapper<ICard>> _cards;
+    mutable engine::event::CallbackList<void (ICard& card)> _on_add;
+    mutable engine::event::CallbackList<void (int index)> _on_remove;
 
-    engine::event::CallbackList<void (ICard& card)> _on_add;
-    engine::event::CallbackList<void (int index)> _on_remove;
+    std::vector<std::reference_wrapper<ICard>> _cards;
   };
 }

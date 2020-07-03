@@ -42,11 +42,11 @@ ICard& Bench::take(unsigned int index) {
   return *card;
 }
 
-void Bench::listen_on_place(std::function<void (ICard &card, unsigned int index)> callback) {
+void Bench::on_place(std::function<void (ICard &card, unsigned int index)> callback) const {
   _on_place.append(callback);
 }
 
-void Bench::listen_on_take(std::function<void (unsigned int)> callback) {
+void Bench::on_take(std::function<void (unsigned int)> callback) const {
   _on_take.append(callback);
 }
 

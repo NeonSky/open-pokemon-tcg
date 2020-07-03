@@ -14,23 +14,24 @@ namespace open_pokemon_tcg::game::model {
     Game(std::array<std::unique_ptr<Deck>, 2>& player_decks, std::array<std::string, 2> player_names);
     ~Game();
 
-    // Mutators
-    void place_active_pokemon(unsigned int hand_index);
+    // Player controls
+    void place_on_active_slot_from_hand(ICard& card);
+    void place_on_bench_from_hand(ICard& card);
+    void place_on_bench_slot_from_hand(ICard& card, unsigned int slot_index);
     void evolve_pokemon();
     void attack(unsigned int attack_index);
     void activate(ICardEffect& effect) override;
     void end_turn();
 
-    void on_game_over(std::function<void ()> callback);
-
     // Accessors
-    const Player* winner() const;
-    Player& current_player();
-    Player& next_player();
+    void on_game_over(std::function<void ()> callback) const;
     unsigned int turn() const;
+    const Player* winner() const;
+    const Player& current_player() const;
+    const Player& next_player() const;
 
   private:
-    engine::event::CallbackList<void ()> _on_game_over;
+    mutable engine::event::CallbackList<void ()> _on_game_over;
     bool _is_game_over;
 
     const Player* _winner;

@@ -64,7 +64,8 @@ void Player::place_active_pokemon(unsigned int hand_index) {
 }
 
 
-void Player::active_pokemon_from_hand(ICard& card) {
+void Player::place_on_active_slot_from_hand(ICard& card) {
+  // TODO: Move this logic to Game
   if (_playmat.active_pokemon != nullptr)
     LOG_ERROR("Can not place an active pokemon when there already is one.");
 
@@ -75,6 +76,24 @@ void Player::active_pokemon_from_hand(ICard& card) {
   _hand.remove(_hand.find(card));
   _playmat.active_pokemon = pokemon_card;
   _on_update_active(_playmat.active_pokemon);
+}
+
+void Player::place_on_bench_from_hand(ICard& card) {
+  PokemonCard* pokemon_card = dynamic_cast<PokemonCard*>(&card);
+  if (pokemon_card == nullptr)
+    LOG_ERROR("Card must be a pokemon card.")
+
+  _hand.remove(_hand.find(card));
+  _playmat.bench->place(*pokemon_card);
+}
+
+void Player::place_on_bench_from_hand(ICard& card, unsigned int slot_index) {
+  PokemonCard* pokemon_card = dynamic_cast<PokemonCard*>(&card);
+  if (pokemon_card == nullptr)
+    LOG_ERROR("Card must be a pokemon card.")
+
+  _hand.remove(_hand.find(card));
+  _playmat.bench->place(*pokemon_card, slot_index);
 }
 
 void Player::activate_trainer_card(unsigned int hand_index) {
@@ -108,16 +127,16 @@ void Player::on_lose(std::function<void ()> callback) {
   _on_lose.append(callback);
 }
 
-void Player::on_update_active(std::function<void (PokemonCard* card)> callback) {
+void Player::on_update_active(std::function<void (PokemonCard* card)> callback) const {
   _on_update_active.append(callback);
 }
 
 /*
-void Player::on_update_supporter(std::function<void (TrainerCard* card)> callback) {
+void Player::on_update_supporter(std::function<void (TrainerCard* card)> callback) const {
   _on_update_supporter.append(callback);
 }
 
-void Player::on_update_stadium(std::function<void (TrainerCard* card)> callback) {
+void Player::on_update_stadium(std::function<void (TrainerCard* card)> callback) const {
   _on_update_stadium.append(callback);
 }*/
 
@@ -125,14 +144,14 @@ std::string Player::name() const {
   return _name;
 }
 
-Playmat& Player::playmat() {
-  return _playmat;
-}
-
 const Deck& Player::deck() const {
   return *_deck;
 }
 
-Hand& Player::hand() {
+const Playmat& Player::playmat() const {
+  return _playmat;
+}
+
+const Hand& Player::hand() const {
   return _hand;
 }
