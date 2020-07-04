@@ -7,10 +7,10 @@ Draw::Draw(unsigned int amount)
 
 Draw::~Draw() = default;
 
-void Draw::activate(IOperatePlayerSide &self, [[maybe_unused]] IOperatePlayerSide &opponent) {
+void Draw::activate(Player &self, [[maybe_unused]] Player &opponent) {
   self.draw(_amount);
 }
 
-bool Draw::can_activate(IOperatePlayerSide &self, [[maybe_unused]] IOperatePlayerSide &opponent) {
+bool Draw::can_activate(Player &self, [[maybe_unused]] Player &opponent) {
   return self.deck().cards.size() >= _amount;
 }
