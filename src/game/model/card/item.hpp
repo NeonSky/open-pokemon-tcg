@@ -18,6 +18,8 @@ namespace open_pokemon_tcg::game::model {
     CardType card_type() const override;
     std::string to_string() const override;
 
+    ICardEffect& effect();
+
   private:
     CardId _id;
     CardId _name;

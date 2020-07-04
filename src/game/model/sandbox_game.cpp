@@ -1,4 +1,5 @@
 #include "sandbox_game.hpp"
+#include "card/item.hpp"
 
 #include "../../engine/debug/logger.hpp"
 
@@ -11,7 +12,7 @@ SandboxGame::SandboxGame(std::array<std::unique_ptr<Deck>, 2>& player_decks, std
 
   for (unsigned int i = 0; i < _players.size(); i++) {
     _playmats[i] = std::make_shared<Playmat>();
-    _players[i] = std::make_unique<Player>(*this, player_decks[i], *_playmats[i], player_names[i]);
+    _players[i] = std::make_unique<Player>(player_decks[i], *_playmats[i], player_names[i]);
   }
 
   _players[0]->on_win([this]() {
@@ -52,6 +53,19 @@ void SandboxGame::place_on_bench_from_hand(ICard& card) {
 
 void SandboxGame::place_on_bench_from_hand(ICard& card, unsigned int slot_index) {
   _players[_current_player]->place_on_bench_from_hand(card, slot_index);
+}
+
+void SandboxGame::activate_trainer_card(ICard& card) {
+  ItemCard* item_card = dynamic_cast<ItemCard*>(&card);
+  if (item_card == nullptr)
+    LOG_ERROR("Card must be an item card.");
+
+  ICardEffect& effect = item_card->effect();
+  if (!effect.can_activate(*_players[_current_player], *_players[_next_player()]))
+    LOG_ERROR("Can't activate this card's effect.");
+
+  _players[_current_player]->discard(card);
+  item_card->effect().activate(*_players[_current_player], *_players[_next_player()]);
 }
 
 void SandboxGame::draw(unsigned int amount) {

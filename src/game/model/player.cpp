@@ -6,9 +6,8 @@
 
 using namespace open_pokemon_tcg::game::model;
 
-Player::Player(IPerformCardEffect& card_effect_performer, std::unique_ptr<Deck>& deck, Playmat& playmat, std::string name)
-  : _card_effect_performer(card_effect_performer),
-    _deck(std::move(deck)),
+Player::Player(std::unique_ptr<Deck>& deck, Playmat& playmat, std::string name)
+  : _deck(std::move(deck)),
     _playmat(playmat),
     _name(name) {
 
@@ -52,6 +51,11 @@ void Player::mill(unsigned int amount) {
     _playmat.discard_pile->push(_playmat.deck_pile->pop());
 }
 
+void Player::discard(ICard& card) {
+  _playmat.discard_pile->push(card);
+  _hand.remove(_hand.find(card));
+}
+
 void Player::place_active_pokemon(unsigned int hand_index) {
   if (hand_index >= _hand.size())
     LOG_ERROR("Hand size is " + std::to_string(_hand.size()) + ", so could not use card at index " + std::to_string(hand_index));
@@ -71,7 +75,7 @@ void Player::place_on_active_slot_from_hand(ICard& card) {
 
   PokemonCard* pokemon_card = dynamic_cast<PokemonCard*>(&card);
   if (pokemon_card == nullptr)
-    LOG_ERROR("Card must be a pokemon card.")
+    LOG_ERROR("Card must be a pokemon card.");
 
   _hand.remove(_hand.find(card));
   _playmat.active_pokemon = pokemon_card;
@@ -81,7 +85,7 @@ void Player::place_on_active_slot_from_hand(ICard& card) {
 void Player::place_on_bench_from_hand(ICard& card) {
   PokemonCard* pokemon_card = dynamic_cast<PokemonCard*>(&card);
   if (pokemon_card == nullptr)
-    LOG_ERROR("Card must be a pokemon card.")
+    LOG_ERROR("Card must be a pokemon card.");
 
   _hand.remove(_hand.find(card));
   _playmat.bench->place(*pokemon_card);
@@ -90,7 +94,7 @@ void Player::place_on_bench_from_hand(ICard& card) {
 void Player::place_on_bench_from_hand(ICard& card, unsigned int slot_index) {
   PokemonCard* pokemon_card = dynamic_cast<PokemonCard*>(&card);
   if (pokemon_card == nullptr)
-    LOG_ERROR("Card must be a pokemon card.")
+    LOG_ERROR("Card must be a pokemon card.");
 
   _hand.remove(_hand.find(card));
   _playmat.bench->place(*pokemon_card, slot_index);

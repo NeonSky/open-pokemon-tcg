@@ -1,8 +1,7 @@
 #pragma once
 
-#include "pokemon_trainer.hpp"
+#include "ioperate_player_side.hpp"
 #include "playmat.hpp"
-#include "iperform_card_effect.hpp"
 #include "hand.hpp"
 #include "card/pokemon.hpp"
 
@@ -11,16 +10,16 @@
 
 namespace open_pokemon_tcg::game::model {
 
-  // TODO: Switch these names to PokemonTrainer and IPlayer
-  class Player : public IPokemonTrainer {
+  class Player : public IOperatePlayerSide {
   public:
-    Player(IPerformCardEffect& card_effect_performer, std::unique_ptr<Deck>& deck, Playmat& playmat, std::string name);
+    Player(std::unique_ptr<Deck>& deck, Playmat& playmat, std::string name);
     ~Player();
 
     // Mutators
     void shuffle_deck_pile();
     void draw(unsigned int amount = 1) override;
     void mill(unsigned int amount = 1);
+    void discard(ICard& card);
     void place_on_active_slot_from_hand(ICard& card);
     void place_on_bench_from_hand(ICard& card);
     void place_on_bench_from_hand(ICard& card, unsigned int slot_index);
@@ -50,7 +49,6 @@ namespace open_pokemon_tcg::game::model {
     //engine::event::CallbackList<void (TrainerCard* card)> _on_update_supporter;
     //engine::event::CallbackList<void (TrainerCard* card)> _on_update_stadium;
 
-    IPerformCardEffect &_card_effect_performer;
     std::unique_ptr<Deck> _deck;
     Playmat _playmat;
     std::string _name;

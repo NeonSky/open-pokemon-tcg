@@ -23,3 +23,7 @@ CardType ItemCard::card_type() const {
 std::string ItemCard::to_string() const {
   return name() + " (" + id() + ")";
 }
+
+ICardEffect& ItemCard::effect() {
+  return *_effect;
+}

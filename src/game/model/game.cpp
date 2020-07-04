@@ -30,6 +30,10 @@ void Game::place_on_bench_from_hand(ICard& card, unsigned int slot_index) {
   _sandbox_game->place_on_bench_from_hand(card, slot_index);
 }
 
+void Game::activate_trainer_card(ICard& card) {
+  _sandbox_game->activate_trainer_card(card);
+}
+
 void Game::evolve_pokemon() {
   if (_sandbox_game->_turn == 0)
     LOG_ERROR("Not allowed to evolve pokemons on the first turn of the game.");

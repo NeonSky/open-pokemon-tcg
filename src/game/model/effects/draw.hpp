@@ -10,24 +10,13 @@ namespace open_pokemon_tcg::game::model {
     ~Draw();
 
     // Mutators
-    void activate(IPokemonTrainer &self, IPokemonTrainer &opponent) override;
+    void activate(IOperatePlayerSide &self, IOperatePlayerSide &opponent) override;
 
     // Accessors
-    bool can_activate(IPokemonTrainer &self, IPokemonTrainer &opponent) override;
+    bool can_activate(IOperatePlayerSide &self, IOperatePlayerSide &opponent) override;
 
   private:
     unsigned int _amount;
   };
-
-  Draw::Draw(unsigned int amount) : _amount(amount){}
-  Draw::~Draw() {}
-
-  void Draw::activate(IPokemonTrainer &self, [[maybe_unused]] IPokemonTrainer &opponent) {
-    self.draw(_amount);
-  }
-
-  bool Draw::can_activate(IPokemonTrainer &self, [[maybe_unused]] IPokemonTrainer &opponent) {
-    return self.deck().cards.size() >= _amount;
-  }
 
 }

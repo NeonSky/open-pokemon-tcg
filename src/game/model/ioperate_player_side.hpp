@@ -4,7 +4,7 @@
 
 namespace open_pokemon_tcg::game::model {
 
-  class IPokemonTrainer {
+  class IOperatePlayerSide {
   public:
     // Mutators
     virtual void draw(unsigned int amount = 1) = 0;

@@ -193,6 +193,10 @@ namespace open_pokemon_tcg::game::scenes {
         _game->model().place_on_bench_from_hand(_selected_card->_model);
         _selected_card = nullptr;
       }
+      if (ImGui::Button("Activate card")) {
+        _game->model().activate_trainer_card(_selected_card->_model);
+        _selected_card = nullptr;
+      }
 
       ImGui::Separator();
     }
