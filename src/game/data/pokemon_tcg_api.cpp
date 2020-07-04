@@ -1,4 +1,5 @@
 #include "pokemon_tcg_api.hpp"
+#include "effect_db.hpp"
 
 #include "../model/effects/draw.hpp"
 
@@ -184,22 +185,19 @@ std::unique_ptr<model::IEnergyCard> PokemonTcgApi::parse_energy_card_data(nlohma
 std::unique_ptr<model::ItemCard> PokemonTcgApi::parse_item_card_data(nlohmann::json data) const {
   model::CardId id = data["id"].get<std::string>();
   model::CardName name = data["name"].get<std::string>();
-  std::unique_ptr<model::ICardEffect> effect = std::make_unique<model::Draw>(1);
-  return std::unique_ptr<model::ItemCard>(new model::ItemCard(id, name, std::move(effect)));
+  return std::unique_ptr<model::ItemCard>(new model::ItemCard(id, name, CardEffectDB::load(id)));
 }
 
 std::unique_ptr<model::SupporterCard> PokemonTcgApi::parse_supporter_card_data(nlohmann::json data) const {
   model::CardId id = data["id"].get<std::string>();
   model::CardName name = data["name"].get<std::string>();
-  std::unique_ptr<model::ICardEffect> effect = std::make_unique<model::Draw>(1);
-  return std::unique_ptr<model::SupporterCard>(new model::SupporterCard(id, name, std::move(effect)));
+  return std::unique_ptr<model::SupporterCard>(new model::SupporterCard(id, name, CardEffectDB::load(id)));
 }
 
 std::unique_ptr<model::StadiumCard> PokemonTcgApi::parse_stadium_card_data(nlohmann::json data) const {
   model::CardId id = data["id"].get<std::string>();
   model::CardName name = data["name"].get<std::string>();
-  std::unique_ptr<model::ICardEffect> effect = std::make_unique<model::Draw>(1);
-  return std::unique_ptr<model::StadiumCard>(new model::StadiumCard(id, name, std::move(effect)));
+  return std::unique_ptr<model::StadiumCard>(new model::StadiumCard(id, name, CardEffectDB::load(id)));
 }
 
 model::EnergyType PokemonTcgApi::to_energy_type(std::string name) const {
