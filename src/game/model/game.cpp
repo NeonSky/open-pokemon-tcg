@@ -14,24 +14,28 @@ Game::Game(std::array<std::unique_ptr<Deck>, 2>& player_decks, std::array<std::s
 Game::~Game() {}
 
 // Mutators
-void Game::place_on_active_slot_from_hand(ICard& card) {
+void Game::place_on_active_slot_from_hand(const ICard& card) {
   // TODO: Check if pokemon card.
   // TODO: Get index of card.
   _sandbox_game->place_on_active_slot_from_hand(card);
 }
 
-void Game::place_on_bench_from_hand(ICard& card) {
+void Game::place_on_bench_from_hand(const ICard& card) {
   // TODO: Check if pokemon card.
   _sandbox_game->place_on_bench_from_hand(card);
 }
 
-void Game::place_on_bench_from_hand(ICard& card, unsigned int slot_index) {
+void Game::place_on_bench_from_hand(const ICard& card, unsigned int slot_index) {
   // TODO: Check if pokemon card.
   _sandbox_game->place_on_bench_from_hand(card, slot_index);
 }
 
-void Game::activate_trainer_card(ICard& card) {
+void Game::activate_trainer_card(const ICard& card) {
   _sandbox_game->activate_trainer_card(card);
+}
+
+void Game::attach_to_active_pokemon(const ICard& card) {
+  _sandbox_game->attach_to_active_pokemon(card);
 }
 
 void Game::evolve_pokemon() {

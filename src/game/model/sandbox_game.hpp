@@ -20,11 +20,12 @@ namespace open_pokemon_tcg::game::model {
     // Mutators
     void perform(ICardEffect& effect);
 
-    void place_on_active_slot_from_hand(ICard& card);
-    void place_on_bench_from_hand(ICard& card);
-    void place_on_bench_from_hand(ICard& card, unsigned int slot_index);
-    void activate_trainer_card(ICard& card);
+    void place_on_active_slot_from_hand(const ICard& card);
+    void place_on_bench_from_hand(const ICard& card);
+    void place_on_bench_from_hand(const ICard& card, unsigned int slot_index);
+    void activate_trainer_card(const ICard& card);
 
+    void attach_to_active_pokemon(const ICard& card);
     void draw(unsigned int amount = 1);
     void mill(unsigned int amount = 1);
     void attack(unsigned int attack_index);

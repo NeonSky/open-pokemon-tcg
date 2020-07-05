@@ -230,7 +230,12 @@ namespace open_pokemon_tcg::game::scenes {
 
       if (_selected_card != nullptr) {
         if (engine::geometry::ray_rectangle_intersection(ray, this->playmat->active_slot(current_side))) {
-          _game->model().place_on_active_slot_from_hand(_selected_card->_model);
+
+          if (_game->model().current_player().playmat().active_pokemon == nullptr)
+            _game->model().place_on_active_slot_from_hand(_selected_card->_model);
+          else
+            _game->model().attach_to_active_pokemon(_selected_card->_model);
+
           _selected_card = nullptr;
           return;
         }

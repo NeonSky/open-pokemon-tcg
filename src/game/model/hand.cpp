@@ -18,6 +18,12 @@ void Hand::remove(int index) {
   _on_remove(index);
 }
 
+ICard& Hand::take(int index) {
+  ICard& card = _cards[index];
+  remove(index);
+  return card;
+}
+
 void Hand::listen_on_add(std::function<void (ICard& card)> callback) const {
   _on_add.append(callback);
 }
@@ -30,7 +36,7 @@ unsigned int Hand::size() const {return _cards.size(); }
 
 const std::vector<std::reference_wrapper<ICard>>& Hand::cards() const { return _cards; }
 
-unsigned int Hand::find(ICard &card) const {
+unsigned int Hand::find(const ICard &card) const {
   for (unsigned int i = 0; i < _cards.size(); i++)
     if (&_cards[i].get() == &card)
       return i;

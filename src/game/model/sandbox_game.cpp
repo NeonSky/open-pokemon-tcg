@@ -1,5 +1,6 @@
 #include "sandbox_game.hpp"
 #include "card/item.hpp"
+#include "card/basic_energy.hpp"
 
 #include "../../engine/debug/logger.hpp"
 
@@ -43,29 +44,46 @@ void SandboxGame::perform(ICardEffect& effect) {
   effect.activate(*_players[_current_player], *_players[_next_player()]);
 }
 
-void SandboxGame::place_on_active_slot_from_hand(ICard& card) {
+void SandboxGame::place_on_active_slot_from_hand(const ICard& card) {
   _players[_current_player]->place_on_active_slot_from_hand(card);
 }
 
-void SandboxGame::place_on_bench_from_hand(ICard& card) {
+void SandboxGame::place_on_bench_from_hand(const ICard& card) {
   _players[_current_player]->place_on_bench_from_hand(card);
 }
 
-void SandboxGame::place_on_bench_from_hand(ICard& card, unsigned int slot_index) {
+void SandboxGame::place_on_bench_from_hand(const ICard& card, unsigned int slot_index) {
   _players[_current_player]->place_on_bench_from_hand(card, slot_index);
 }
 
-void SandboxGame::activate_trainer_card(ICard& card) {
-  ItemCard* item_card = dynamic_cast<ItemCard*>(&card);
+void SandboxGame::activate_trainer_card(const ICard& card) {
+  const ItemCard* item_card = dynamic_cast<const ItemCard*>(&card);
   if (item_card == nullptr)
     LOG_ERROR("Card must be an item card.");
 
   ICardEffect& effect = item_card->effect();
+
+  // TODO: Follow required_targets instructions from effect
+  const PokemonCard& opponent_active = *_players[_next_player()]->playmat().active_pokemon;
+  std::vector<std::reference_wrapper<const ICard>> targets;
+  targets.push_back(opponent_active);
+  targets.push_back(opponent_active.attached_energy()[0]);
+  effect.set_targets(targets);
+  ///////////////
+
   if (!effect.can_activate(*_players[_current_player], *_players[_next_player()]))
     LOG_ERROR("Can't activate this card's effect.");
 
   _players[_current_player]->discard(card);
   item_card->effect().activate(*_players[_current_player], *_players[_next_player()]);
+}
+
+void SandboxGame::attach_to_active_pokemon(const ICard& card) {
+  const BasicEnergy* energy_card = dynamic_cast<const BasicEnergy*>(&card);
+  if (energy_card == nullptr)
+    LOG_ERROR("Card must be an energy card.");
+
+  _players[_current_player]->attach_to_active_from_hand(*energy_card);
 }
 
 void SandboxGame::draw(unsigned int amount) {
