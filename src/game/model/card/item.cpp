@@ -16,10 +16,6 @@ CardName ItemCard::name() const {
   return _name;
 }
 
-CardType ItemCard::card_type() const {
-  return CardType::ITEM;
-}
-
 std::string ItemCard::to_string() const {
   return name() + " (" + id() + ")";
 }

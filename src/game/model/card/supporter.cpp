@@ -16,10 +16,6 @@ CardName SupporterCard::name() const {
   return _name;
 }
 
-CardType SupporterCard::card_type() const {
-  return CardType::SUPPORTER;
-}
-
 std::string SupporterCard::to_string() const {
   return name() + " (" + id() + ")";
 }

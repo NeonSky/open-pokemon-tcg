@@ -16,10 +16,6 @@ CardName StadiumCard::name() const {
   return _name;
 }
 
-CardType StadiumCard::card_type() const {
-  return CardType::STADIUM;
-}
-
 std::string StadiumCard::to_string() const {
   return name() + " (" + id() + ")";
 }

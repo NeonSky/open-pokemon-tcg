@@ -17,10 +17,6 @@ CardName BasicEnergy::name() const {
   return _name;
 }
 
-CardType BasicEnergy::card_type() const {
-  return CardType::ENERGY;
-}
-
 std::string BasicEnergy::to_string() const {
   return name() + " (" + id() + ")";
 }

@@ -12,7 +12,6 @@ namespace open_pokemon_tcg::game::model {
 
     CardId id() const override;
     CardName name() const override;
-    CardType card_type() const override;
     std::string to_string() const override;
     bool is_basic() const override;
 

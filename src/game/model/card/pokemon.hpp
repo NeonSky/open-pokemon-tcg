@@ -39,10 +39,6 @@ namespace open_pokemon_tcg::game::model {
     CardId id() const override;
     CardName name() const override;
 
-    CardType card_type() const override {
-      return CardType::POKEMON;
-    }
-
     const PokemonCardData& data() const;
 
   private:
