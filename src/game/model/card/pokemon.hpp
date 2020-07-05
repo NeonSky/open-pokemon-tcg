@@ -38,8 +38,8 @@ namespace open_pokemon_tcg::game::model {
     void take_damage(unsigned int amount) override;
     void attack(unsigned int attack_index, IHealthTarget &opponent);
     void attach_energy(BasicEnergy energy_card);
-    void detach_energy(unsigned int index);
-    void detach_energy(const BasicEnergy& energy_card);
+    BasicEnergy& detach_energy(unsigned int index);
+    BasicEnergy& detach_energy(const BasicEnergy& energy_card);
 
     // Accessors
     void on_energy_attached(std::function<void (const BasicEnergy& energy_card)> callback) const;

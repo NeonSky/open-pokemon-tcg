@@ -25,18 +25,17 @@ void PokemonCard::attach_energy(BasicEnergy energy_card) {
   _on_energy_attached(energy_card);
 }
 
-void PokemonCard::detach_energy(unsigned int index) {
+BasicEnergy& PokemonCard::detach_energy(unsigned int index) {
+  BasicEnergy& energy = _attached_energy[index];
   _attached_energy.erase(_attached_energy.begin() + index);
   _on_energy_detached(index);
+  return energy;
 }
 
-void PokemonCard::detach_energy(const BasicEnergy& energy_card) {
-  for (unsigned int i = 0; i < _attached_energy.size(); i++) {
-    if (&energy_card == &_attached_energy[i]) {
-      detach_energy(i);
-      return;
-    }
-  }
+BasicEnergy& PokemonCard::detach_energy(const BasicEnergy& energy_card) {
+  for (unsigned int i = 0; i < _attached_energy.size(); i++)
+    if (&energy_card == &_attached_energy[i])
+      return detach_energy(i);
 
   LOG_ERROR("Did not find energy card to detach.");
 }
