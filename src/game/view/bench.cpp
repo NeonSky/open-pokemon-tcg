@@ -4,9 +4,13 @@
 
 using namespace open_pokemon_tcg::game::view;
 
-Bench::Bench(model::Bench &model, std::array<engine::geometry::Rectangle, 5> slots) : _model(model), _slots(slots), _cards{} {
-  _model.on_place([this](model::ICard& card, unsigned int index) {
-    _cards[index] = new Card(card, _slots[index].transform());
+Bench::Bench(model::Bench &model, std::array<engine::geometry::Rectangle, 5> slots)
+  : _model(model),
+    _slots(slots),
+    _cards{} {
+
+  _model.on_place([this](model::PokemonCard& card, unsigned int index) {
+    _cards[index] = new PokemonCard(card, _slots[index].transform());
   });
 
   _model.on_take([this](unsigned int index) {
@@ -17,7 +21,7 @@ Bench::Bench(model::Bench &model, std::array<engine::geometry::Rectangle, 5> slo
 Bench::~Bench() {}
 
 void Bench::render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader) {
-  for (Card* c : _cards)
+  for (auto& c : _cards)
     if (c != nullptr)
       c->render(view_projection_matrix, shader);
 }

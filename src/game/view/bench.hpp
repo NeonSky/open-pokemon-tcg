@@ -1,6 +1,6 @@
 #pragma once
 
-#include "card.hpp"
+#include "pokemon_card.hpp"
 #include "../model/bench.hpp"
 #include "../../engine/geometry/rectangle.hpp"
 
@@ -19,7 +19,7 @@ namespace open_pokemon_tcg::game::view {
   private:
     model::Bench& _model;
     std::array<engine::geometry::Rectangle, 5> _slots;
-    std::array<Card*, 5> _cards;
+    std::array<PokemonCard*, 5> _cards;
   };
 
 }
