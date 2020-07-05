@@ -1,10 +1,17 @@
 #pragma once
 
 #include "card.hpp"
-#include "../effects/effect_target.hpp"
+#include "basic_energy.hpp"
 #include "traits/attack.hpp"
 #include "traits/energy.hpp"
 #include "traits/pokemon_evolution_stage.hpp"
+
+#include "../effects/effect_target.hpp"
+
+#include "../../../engine/event/event.hpp"
+
+#include <functional>
+#include <vector>
 
 namespace open_pokemon_tcg::game::model {
 
@@ -30,8 +37,14 @@ namespace open_pokemon_tcg::game::model {
     // Mutators
     void take_damage(unsigned int amount) override;
     void attack(unsigned int attack_index, IHealthTarget &opponent);
+    void attach_energy(BasicEnergy energy_card);
+    void detach_energy(unsigned int index);
+    void detach_energy(const BasicEnergy& energy_card);
 
     // Accessors
+    void on_energy_attached(std::function<void (const BasicEnergy& energy_card)> callback) const;
+    void on_energy_detached(std::function<void (unsigned int index)> callback) const;
+
     unsigned int max_hp() const override;
     unsigned int hp() const override;
 
@@ -40,10 +53,15 @@ namespace open_pokemon_tcg::game::model {
     CardName name() const override;
 
     const PokemonCardData& data() const;
+    const std::vector<BasicEnergy>& attached_energy() const;
 
   private:
+    mutable engine::event::CallbackList<void (const BasicEnergy& energy_card)> _on_energy_attached;
+    mutable engine::event::CallbackList<void (unsigned int index)> _on_energy_detached;
+
     PokemonCardData _data;
     int _hp;
+    std::vector<BasicEnergy> _attached_energy;
 
   };
 
