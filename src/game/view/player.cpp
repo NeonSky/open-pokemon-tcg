@@ -74,7 +74,7 @@ void Player::on_update_active(model::PokemonCard* card) {
   if (active_pokemon != nullptr)
     delete active_pokemon;
 
-  active_pokemon = new Card(*card, playmat->active_slot(this->playmat_side).transform());
+  active_pokemon = new PokemonCard(*card, playmat->active_slot(this->playmat_side).transform());
 }
 
 /*

@@ -12,7 +12,7 @@
 using namespace open_pokemon_tcg;
 using namespace open_pokemon_tcg::game::view;
 
-Card::Card(game::model::ICard &model, engine::geometry::Transform transform)
+Card::Card(const game::model::ICard &model, engine::geometry::Transform transform)
   : _model(model),
     transform(transform),
     front_texture(engine::graphics::Texture("cache/cards/img/" + _model.id() + ".png")),

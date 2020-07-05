@@ -2,6 +2,7 @@
 
 #include "bench.hpp"
 #include "card.hpp"
+#include "pokemon_card.hpp"
 #include "deck_pile.hpp"
 #include "discard_pile.hpp"
 #include "hand.hpp"
@@ -20,7 +21,7 @@ namespace open_pokemon_tcg::game::view {
     DeckPile *deck_pile;
     DiscardPile *discard_pile;
     Hand *hand;
-    Card *active_pokemon;
+    PokemonCard *active_pokemon;
     Card *supporter_card;
     Card *stadium_card;
     Bench *bench;

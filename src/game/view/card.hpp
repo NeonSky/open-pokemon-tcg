@@ -15,17 +15,16 @@
 namespace open_pokemon_tcg::game::view {
   class Card {
   public:
-    Card(game::model::ICard &model, engine::geometry::Transform transform);
+    Card(const game::model::ICard &model, engine::geometry::Transform transform);
     ~Card();
 
-    game::model::ICard &_model;
+    const game::model::ICard &_model;
     engine::geometry::Transform transform;
 
     // Mutators
     void render(const glm::mat4 &view_projection_matrix, engine::graphics::Shader *shader);
 
     // Accessors
-    glm::mat4 model_matrix() const;
     engine::geometry::Intersection* does_intersect(engine::geometry::Ray ray) const;
     const engine::graphics::Texture& texture() const { return this->front_texture; }
 
