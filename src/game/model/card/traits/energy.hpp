@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <string>
 #include <vector>
 
 namespace open_pokemon_tcg::game::model {
@@ -34,6 +35,7 @@ namespace open_pokemon_tcg::game::model {
     unsigned int operator[](EnergyType energy);
     bool contains(EnergyType energy);
     bool contains(EnergyAmount energy);
+    operator std::string() const;
 
   private:
     std::map<EnergyType, unsigned int> _energy;

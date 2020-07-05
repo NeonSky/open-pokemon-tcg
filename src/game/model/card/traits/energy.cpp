@@ -51,3 +51,10 @@ bool EnergyAmount::contains(EnergyAmount energy) {
       return false;
   return true;
 }
+
+EnergyAmount::operator std::string() const {
+  std::string s = "";
+  for (auto &e : _energy)
+    s += "(" + std::to_string(e.first) + "," + std::to_string(e.second) + ") ";
+  return s;
+}
