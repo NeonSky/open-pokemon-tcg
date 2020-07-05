@@ -26,6 +26,7 @@ namespace open_pokemon_tcg::game::model {
     void activate_trainer_card(const ICard& card);
 
     void attach_to_active_pokemon(const ICard& card);
+    void attach_to_bench_pokemon(const ICard& card, unsigned int slot_index);
     void draw(unsigned int amount = 1);
     void mill(unsigned int amount = 1);
     void attack(unsigned int attack_index);

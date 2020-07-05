@@ -86,6 +86,14 @@ void SandboxGame::attach_to_active_pokemon(const ICard& card) {
   _players[_current_player]->attach_to_active_from_hand(*energy_card);
 }
 
+void SandboxGame::attach_to_bench_pokemon(const ICard& card, unsigned int slot_index) {
+  const BasicEnergy* energy_card = dynamic_cast<const BasicEnergy*>(&card);
+  if (energy_card == nullptr)
+    LOG_ERROR("Card must be an energy card.");
+
+  _players[_current_player]->attach_to_bench_slot_from_hand(*energy_card, slot_index);
+}
+
 void SandboxGame::draw(unsigned int amount) {
   _players[_current_player]->draw(amount);
 }

@@ -27,10 +27,11 @@ namespace open_pokemon_tcg::game::model {
     void place_active_pokemon(unsigned int hand_index);
     void activate_trainer_card(unsigned int hand_index);
     void take_prize_card();
-    void bench_pokemon_from_hand(const ICard& card);
 
     void attach_to_active_from_hand(const BasicEnergy& energy_card);
-    void remove_energy_from_active(const BasicEnergy& energy_card);
+    void attach_to_bench_slot_from_hand(const BasicEnergy& energy_card, unsigned int slot_index);
+    void detach_energy_from(const PokemonCard& pokemon_card, const BasicEnergy& energy_card);
+    void detach_energy_from_active(const BasicEnergy& energy_card);
 
     void on_win(std::function<void ()> callback) const;
     void on_lose(std::function<void ()> callback) const;

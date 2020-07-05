@@ -112,12 +112,6 @@ void Player::take_prize_card() {
     _on_win();
 }
 
-
-void Player::bench_pokemon_from_hand(const ICard& card) {
-  ICard& c = _hand.take(_hand.find(card));
-  _playmat.bench->place(c);
-}
-
 void Player::attach_to_active_from_hand(const BasicEnergy& energy_card) {
   if (_playmat.active_pokemon == nullptr)
     LOG_ERROR("There is no active pokemon to attach energy to.");
@@ -126,8 +120,23 @@ void Player::attach_to_active_from_hand(const BasicEnergy& energy_card) {
   _playmat.active_pokemon->attach_energy(energy_card);
 }
 
-void Player::remove_energy_from_active(const BasicEnergy& energy_card) {
-  _playmat.active_pokemon->detach_energy(energy_card);
+void Player::attach_to_bench_slot_from_hand(const BasicEnergy& energy_card, unsigned int slot_index) {
+  if (_playmat.bench->cards()[slot_index] == nullptr)
+    LOG_ERROR("There is no benched pokemon on this slot to attach energy to.");
+
+  _hand.remove(_hand.find(energy_card));
+  _playmat.bench->attach_energy_to(energy_card, slot_index);
+}
+
+void Player::detach_energy_from(const PokemonCard& pokemon_card, const BasicEnergy& energy_card) {
+  if (&pokemon_card == _playmat.active_pokemon)
+    detach_energy_from_active(energy_card);
+  else
+    _playmat.discard_pile->push(_playmat.bench->detach_energy_from(pokemon_card, energy_card));
+}
+
+void Player::detach_energy_from_active(const BasicEnergy& energy_card) {
+  _playmat.discard_pile->push(_playmat.active_pokemon->detach_energy(energy_card));
 }
 
 void Player::on_win(std::function<void ()> callback) const {

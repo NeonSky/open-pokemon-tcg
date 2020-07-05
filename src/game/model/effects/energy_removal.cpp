@@ -28,7 +28,7 @@ void EnergyRemoval::set_targets(std::vector<std::reference_wrapper<const ICard>>
 }
 
 void EnergyRemoval::activate([[maybe_unused]] Player &self, Player &opponent) {
-  opponent.remove_energy_from_active(*_energy_target);
+  opponent.detach_energy_from(*_pokemon_target, *_energy_target);
 }
 
 std::vector<CardEffectTarget> EnergyRemoval::required_targets() const {

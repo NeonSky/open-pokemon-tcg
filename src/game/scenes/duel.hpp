@@ -255,7 +255,11 @@ namespace open_pokemon_tcg::game::scenes {
             if (index == -1)
               LOG_ERROR("Didn't figure out what bench slot was clicked on. This should never happen.");
 
-            _game->model().place_on_bench_from_hand(_selected_card->_model, index);
+            if (_game->model().current_player().playmat().bench->cards()[index] == nullptr)
+              _game->model().place_on_bench_from_hand(_selected_card->_model, index);
+            else
+              _game->model().attach_to_bench_pokemon(_selected_card->_model, index);
+
             _selected_card = nullptr;
           }
         }

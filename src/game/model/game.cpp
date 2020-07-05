@@ -38,6 +38,10 @@ void Game::attach_to_active_pokemon(const ICard& card) {
   _sandbox_game->attach_to_active_pokemon(card);
 }
 
+void Game::attach_to_bench_pokemon(const ICard& card, unsigned int slot_index) {
+  _sandbox_game->attach_to_bench_pokemon(card, slot_index);
+}
+
 void Game::evolve_pokemon() {
   if (_sandbox_game->_turn == 0)
     LOG_ERROR("Not allowed to evolve pokemons on the first turn of the game.");
