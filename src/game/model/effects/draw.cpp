@@ -11,6 +11,6 @@ void Draw::activate(Player &self, [[maybe_unused]] Player &opponent) {
   self.draw(_amount);
 }
 
-bool Draw::can_activate(Player &self, [[maybe_unused]] Player &opponent) {
+bool Draw::can_activate(Player &self, [[maybe_unused]] Player &opponent) const {
   return self.deck().cards.size() >= _amount;
 }

@@ -13,7 +13,7 @@ namespace open_pokemon_tcg::game::model {
     void activate(Player &self, Player &opponent) override;
 
     // Accessors
-    bool can_activate(Player &self, Player &opponent) override;
+    bool can_activate(Player &self, Player &opponent) const override;
 
   private:
     unsigned int _amount;

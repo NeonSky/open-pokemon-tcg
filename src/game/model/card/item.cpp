@@ -20,6 +20,6 @@ std::string ItemCard::to_string() const {
   return name() + " (" + id() + ")";
 }
 
-ICardEffect& ItemCard::effect() {
+ICardEffect& ItemCard::effect() const {
   return *_effect;
 }

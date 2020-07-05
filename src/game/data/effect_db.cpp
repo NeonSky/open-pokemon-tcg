@@ -1,6 +1,7 @@
 #include "effect_db.hpp"
 
 #include "../model/effects/draw.hpp"
+#include "../model/effects/energy_removal.hpp"
 
 #include "../../engine/debug/logger.hpp"
 
@@ -12,9 +13,9 @@ std::unique_ptr<model::ICardEffect> CardEffectDB::load(model::CardId id) {
   if (id == "base1-91") {
     return std::make_unique<model::Draw>(2);
   }
-  // else if (id == "base1-92") {
-  //   return std::make_unique<model::RemoveEnergy>(1, opponent);
-  // }
+  else if (id == "base1-92") {
+    return std::make_unique<model::EnergyRemoval>();
+  }
   // else if (id == "base1-95") {
   //   return std::make_unique<model::BenchSwitch>();
   // }

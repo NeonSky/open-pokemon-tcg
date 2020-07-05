@@ -17,12 +17,12 @@ namespace open_pokemon_tcg::game::model {
     CardName name() const override;
     std::string to_string() const override;
 
-    ICardEffect& effect();
+    ICardEffect& effect() const;
 
   private:
     CardId _id;
     CardId _name;
-    std::unique_ptr<ICardEffect> _effect;
+    mutable std::unique_ptr<ICardEffect> _effect;
 
   };
 
