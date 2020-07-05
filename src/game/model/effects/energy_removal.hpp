@@ -6,7 +6,7 @@ namespace open_pokemon_tcg::game::model {
 
   class EnergyRemoval : public ICardEffect {
   public:
-    EnergyRemoval();
+    EnergyRemoval(CardEffectTarget pokemon_scope);
     ~EnergyRemoval();
 
     // Mutators
@@ -18,6 +18,7 @@ namespace open_pokemon_tcg::game::model {
     bool can_activate(Player &self, Player &opponent) const override;
 
   private:
+    CardEffectTarget _pokemon_scope;
     const PokemonCard* _pokemon_target;
     const BasicEnergy* _energy_target;
   };

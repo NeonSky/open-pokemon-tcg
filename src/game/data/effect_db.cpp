@@ -1,5 +1,6 @@
 #include "effect_db.hpp"
 
+#include "../model/effects/card_effect.hpp"
 #include "../model/effects/draw.hpp"
 #include "../model/effects/energy_removal.hpp"
 
@@ -14,7 +15,7 @@ std::unique_ptr<model::ICardEffect> CardEffectDB::load(model::CardId id) {
     return std::make_unique<model::Draw>(2);
   }
   else if (id == "base1-92") {
-    return std::make_unique<model::EnergyRemoval>();
+    return std::make_unique<model::EnergyRemoval>(model::CardEffectTarget::ENEMY_POKEMON);
   }
   // else if (id == "base1-95") {
   //   return std::make_unique<model::BenchSwitch>();

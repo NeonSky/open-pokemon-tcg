@@ -4,7 +4,9 @@
 
 using namespace open_pokemon_tcg::game::model;
 
-EnergyRemoval::EnergyRemoval() {
+EnergyRemoval::EnergyRemoval(CardEffectTarget pokemon_scope)
+  : _pokemon_scope(pokemon_scope) {
+
   _pokemon_target = nullptr;
   _energy_target = nullptr;
 }
@@ -31,7 +33,7 @@ void EnergyRemoval::activate([[maybe_unused]] Player &self, Player &opponent) {
 
 std::vector<CardEffectTarget> EnergyRemoval::required_targets() const {
   return {
-      CardEffectTarget::ENEMY_POKEMON,
+      _pokemon_scope,
       CardEffectTarget::ENERGY_FROM_PREVIOUS_POKEMON,
   };
 }
