@@ -20,7 +20,7 @@ void PokemonCard::attack(unsigned int attack_index, IHealthTarget &opponent) {
   _data.attacks[attack_index].perform(opponent);
 }
 
-void PokemonCard::attach_energy(BasicEnergy energy_card) {
+void PokemonCard::attach_energy(BasicEnergy& energy_card) {
   _attached_energy.push_back(energy_card);
   _on_energy_attached(energy_card);
 }
@@ -34,7 +34,7 @@ BasicEnergy& PokemonCard::detach_energy(unsigned int index) {
 
 BasicEnergy& PokemonCard::detach_energy(const BasicEnergy& energy_card) {
   for (unsigned int i = 0; i < _attached_energy.size(); i++)
-    if (&energy_card == &_attached_energy[i])
+    if (&energy_card == &_attached_energy[i].get())
       return detach_energy(i);
 
   LOG_ERROR("Did not find energy card to detach.");
@@ -66,6 +66,6 @@ const PokemonCardData& PokemonCard::data() const {
   return _data;
 }
 
-const std::vector<BasicEnergy>& PokemonCard::attached_energy() const {
+const std::vector<std::reference_wrapper<BasicEnergy>>& PokemonCard::attached_energy() const {
   return _attached_energy;
 }

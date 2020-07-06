@@ -25,7 +25,6 @@ namespace open_pokemon_tcg::game::model {
     void place_on_bench_from_hand(const ICard& card, unsigned int slot_index);
 
     void place_active_pokemon(unsigned int hand_index);
-    void activate_trainer_card(unsigned int hand_index);
     void take_prize_card();
 
     void attach_to_active_from_hand(const BasicEnergy& energy_card);

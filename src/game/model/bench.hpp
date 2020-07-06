@@ -19,7 +19,7 @@ namespace open_pokemon_tcg::game::model {
     void place(PokemonCard &card, unsigned int index);
     PokemonCard& take(unsigned int index);
 
-    void attach_energy_to(const BasicEnergy& energy_card, unsigned int slot_index);
+    void attach_energy_to(BasicEnergy& energy_card, unsigned int slot_index);
     BasicEnergy& detach_energy_from(const PokemonCard& pokemon_card, const BasicEnergy& energy_card);
 
     // Accessors

@@ -43,7 +43,7 @@ PokemonCard& Bench::take(unsigned int index) {
   return *card;
 }
 
-void Bench::attach_energy_to(const BasicEnergy& energy_card, unsigned int slot_index) {
+void Bench::attach_energy_to(BasicEnergy& energy_card, unsigned int slot_index) {
   if (_cards[slot_index] == nullptr)
     LOG_ERROR("There is no pokemon on this slot.");
 

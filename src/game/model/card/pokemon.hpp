@@ -36,8 +36,8 @@ namespace open_pokemon_tcg::game::model {
 
     // Mutators
     void take_damage(unsigned int amount) override;
-    void attack(unsigned int attack_index, IHealthTarget &opponent);
-    void attach_energy(BasicEnergy energy_card);
+    void attack(unsigned int attack_index, IHealthTarget& opponent);
+    void attach_energy(BasicEnergy& energy_card);
     BasicEnergy& detach_energy(unsigned int index);
     BasicEnergy& detach_energy(const BasicEnergy& energy_card);
 
@@ -53,7 +53,7 @@ namespace open_pokemon_tcg::game::model {
     CardName name() const override;
 
     const PokemonCardData& data() const;
-    const std::vector<BasicEnergy>& attached_energy() const;
+    const std::vector<std::reference_wrapper<BasicEnergy>>& attached_energy() const;
 
   private:
     mutable engine::event::CallbackList<void (const BasicEnergy& energy_card)> _on_energy_attached;
@@ -61,7 +61,7 @@ namespace open_pokemon_tcg::game::model {
 
     PokemonCardData _data;
     int _hp;
-    std::vector<BasicEnergy> _attached_energy;
+    std::vector<std::reference_wrapper<BasicEnergy>> _attached_energy;
 
   };
 
