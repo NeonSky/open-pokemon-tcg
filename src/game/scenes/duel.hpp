@@ -106,6 +106,7 @@ namespace open_pokemon_tcg::game::scenes {
       _game->model().activate_trainer_card(_selected_card->_model, _activated_effect_targets);
       _activated_effect = nullptr;
       _activated_effect_targets.clear();
+      _selected_card = nullptr;
     }
 
     this->player1->update();
@@ -274,6 +275,26 @@ namespace open_pokemon_tcg::game::scenes {
               }
               i++;
             }
+          }
+        }
+        else if (next_target == model::CardEffectTarget::ENEMY_BENCH_POKEMON) {
+          int i = 0;
+          for (auto& slot : playmat->bench_slots(opponent_side)) {
+            if (_game->model().next_player().playmat().bench->cards()[i] != nullptr && engine::geometry::ray_rectangle_intersection(ray, slot)) {
+              _activated_effect_targets.push_back(*_game->model().next_player().playmat().bench->cards()[i]);
+              break;
+            }
+            i++;
+          }
+        }
+        else if (next_target == model::CardEffectTarget::FRIENDLY_BENCH_POKEMON) {
+          int i = 0;
+          for (auto& slot : playmat->bench_slots(current_side)) {
+            if (_game->model().current_player().playmat().bench->cards()[i] != nullptr && engine::geometry::ray_rectangle_intersection(ray, slot)) {
+              _activated_effect_targets.push_back(*_game->model().current_player().playmat().bench->cards()[i]);
+              break;
+            }
+            i++;
           }
         }
         else if (next_target == model::CardEffectTarget::ENERGY_FROM_PREVIOUS_POKEMON) {

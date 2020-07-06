@@ -69,3 +69,11 @@ void Bench::on_take(std::function<void (unsigned int)> callback) const {
 const std::array<PokemonCard*, 5> Bench::cards() const {
   return _cards;
 }
+
+unsigned int Bench::find(const PokemonCard& card) const {
+  for (unsigned int i = 0; i < _cards.size(); i++)
+    if (&card == _cards[i])
+      return i;
+
+  LOG_ERROR("Could not find card on bench: " + card.to_string());
+}

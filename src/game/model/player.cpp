@@ -63,9 +63,18 @@ void Player::place_active_pokemon(unsigned int hand_index) {
     LOG_ERROR("Can not place active pokemon when there already is one.");
 
   _playmat.active_pokemon = (PokemonCard*) &_hand.cards()[hand_index];
+  _on_update_active(_playmat.active_pokemon);
   _hand.remove(hand_index);
 }
 
+void Player::switch_active(const PokemonCard& pokemon_card) {
+  unsigned int bench_index = _playmat.bench->find(pokemon_card);
+  PokemonCard& card = _playmat.bench->take(bench_index);
+  _playmat.bench->place(*_playmat.active_pokemon, bench_index);
+
+  _playmat.active_pokemon = &card;
+  _on_update_active(_playmat.active_pokemon);
+}
 
 void Player::place_on_active_slot_from_hand(const ICard& card) {
   if (_playmat.active_pokemon != nullptr)

@@ -15,6 +15,8 @@ namespace open_pokemon_tcg::game::model {
     ENERGY_FROM_PREVIOUS_POKEMON,
     ENEMY_ENERGY,
     FRIENDLY_ENERGY,
+    FRIENDLY_BENCH_POKEMON,
+    ENEMY_BENCH_POKEMON,
   };
 
   class ICardEffect {

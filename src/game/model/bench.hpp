@@ -25,7 +25,9 @@ namespace open_pokemon_tcg::game::model {
     // Accessors
     void on_place(std::function<void (PokemonCard &card, unsigned int index)> callback) const;
     void on_take(std::function<void (unsigned int index)> callback) const;
+
     const std::array<PokemonCard*, 5> cards() const;
+    unsigned int find(const PokemonCard& card) const;
 
   private:
     mutable engine::event::CallbackList<void (PokemonCard&, unsigned int)> _on_place;
