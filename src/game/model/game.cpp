@@ -30,8 +30,8 @@ void Game::place_on_bench_from_hand(const ICard& card, unsigned int slot_index) 
   _sandbox_game->place_on_bench_from_hand(card, slot_index);
 }
 
-void Game::activate_trainer_card(const ICard& card) {
-  _sandbox_game->activate_trainer_card(card);
+void Game::activate_trainer_card(const ICard& card, std::vector<std::reference_wrapper<const ICard>> targets) {
+  _sandbox_game->activate_trainer_card(card, targets);
 }
 
 void Game::attach_to_active_pokemon(const ICard& card) {
@@ -52,11 +52,6 @@ void Game::attack(unsigned int attack_index) {
     LOG_ERROR("The first player can not attack on the first turn.");
 
   _sandbox_game->attack(attack_index);
-}
-
-void Game::perform(ICardEffect& effect) {
-  // TODO: Check if ok/legal.
-  _sandbox_game->perform(effect);
 }
 
 void Game::end_turn() {

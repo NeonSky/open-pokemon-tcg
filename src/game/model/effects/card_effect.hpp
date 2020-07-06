@@ -20,12 +20,11 @@ namespace open_pokemon_tcg::game::model {
   class ICardEffect {
   public:
     // Mutators
-    virtual void set_targets([[maybe_unused]] std::vector<std::reference_wrapper<const ICard>> targets) {}
-    virtual void activate(Player &self, Player &opponent) = 0;
+    virtual void activate(Player &self, Player &opponent, std::vector<std::reference_wrapper<const ICard>> targets) = 0;
 
     // Accessors
     virtual std::vector<CardEffectTarget> required_targets() const { return {}; }
-    virtual bool can_activate(Player &self, Player &opponent) const = 0; // TODO: struct as response with reason.
+    virtual bool can_activate([[maybe_unused]] Player &self, [[maybe_unused]] Player &opponent) const { return true; }; // TODO: struct as response with reason.
   };
 
 }

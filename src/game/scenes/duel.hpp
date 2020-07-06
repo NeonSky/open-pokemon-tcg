@@ -2,6 +2,7 @@
 
 #include "debug_camera.hpp"
 #include "../model/game.hpp"
+#include "../model/effects/card_effect.hpp"
 #include "../data/pokemon_tcg_api.hpp"
 #include "../view/card.hpp"
 #include "../view/game.hpp"
@@ -44,10 +45,13 @@ namespace open_pokemon_tcg::game::scenes {
     view::IPlaymat *playmat;
 
     view::Player *current_player;
+    view::Player *next_player;
     view::Player *player1;
     view::Player *player2;
 
     view::Game *_game;
+    const model::ICardEffect* _activated_effect;
+    std::vector<std::reference_wrapper<const model::ICard>> _activated_effect_targets;
 
     view::Card *_selected_card;
     engine::graphics::Rectangle *debug_rect;
@@ -60,6 +64,7 @@ namespace open_pokemon_tcg::game::scenes {
 
   Duel::Duel(engine::gui::Window* window) : camera(DebugCamera(window, this->camera1_transform)) {
     _selected_card = nullptr;
+    _activated_effect = nullptr;
 
     window->add_on_key_callback(std::bind(&Duel::on_key, this, std::placeholders::_1));
     window->add_on_mouse_click_callback(std::bind(&Duel::on_mouse_click, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
@@ -88,6 +93,7 @@ namespace open_pokemon_tcg::game::scenes {
     this->player1 = _game->players()[0];
     this->player2 = _game->players()[1];
     this->current_player = this->player1;
+    this->next_player = this->player2;
 
     LOG_DEBUG("Scene loaded.");
   }
@@ -95,6 +101,13 @@ namespace open_pokemon_tcg::game::scenes {
   Duel::~Duel() {}
 
   void Duel::update() {
+    if (_activated_effect != nullptr && _activated_effect_targets.size() == _activated_effect->required_targets().size()) {
+      LOG_DEBUG("Targets fulfilled! Activating card effect...");
+      _game->model().activate_trainer_card(_selected_card->_model, _activated_effect_targets);
+      _activated_effect = nullptr;
+      _activated_effect_targets.clear();
+    }
+
     this->player1->update();
     this->player2->update();
   }
@@ -176,7 +189,7 @@ namespace open_pokemon_tcg::game::scenes {
     if (ImGui::Button("End Turn")) {
       if (_game->model().winner() == nullptr) {
         _game->model().end_turn();
-        this->current_player = (this->current_player == this->player1) ? this->player2 : player1; // TODO: Maybe move to view?
+        std::swap(current_player, next_player);
         this->camera.set_transform((this->current_player == this->player1) ? this->camera1_transform : this->camera2_transform);
       }
     }
@@ -194,8 +207,19 @@ namespace open_pokemon_tcg::game::scenes {
         _selected_card = nullptr;
       }
       if (ImGui::Button("Activate card")) {
-        _game->model().activate_trainer_card(_selected_card->_model);
-        _selected_card = nullptr;
+
+        _activated_effect = &(dynamic_cast<const model::ItemCard*>(&_selected_card->_model)->effect());
+        if (_activated_effect == nullptr)
+          LOG_WARNING("Card must be an item card.");
+
+        if (_activated_effect->required_targets().size() == 0) {
+          _game->model().activate_trainer_card(_selected_card->_model, {});
+          _selected_card = nullptr;
+          _activated_effect = nullptr;
+        }
+        else {
+          _activated_effect_targets.clear();
+        }
       }
 
       ImGui::Separator();
@@ -227,6 +251,64 @@ namespace open_pokemon_tcg::game::scenes {
       ray.direction = glm::normalize(this->camera.mouse_ray());
 
       view::IPlaymat::Side current_side = (this->current_player == this->player1) ? view::IPlaymat::Side::PLAYER1 : view::IPlaymat::Side::PLAYER2;
+      view::IPlaymat::Side opponent_side = (this->current_player == this->player1) ? view::IPlaymat::Side::PLAYER2 : view::IPlaymat::Side::PLAYER1;
+
+      if (_activated_effect != nullptr && _activated_effect_targets.size() < _activated_effect->required_targets().size()) {
+
+        int i = _activated_effect_targets.size();
+        auto next_target = _activated_effect->required_targets()[i];
+
+        if (next_target == model::CardEffectTarget::ENEMY_POKEMON) {
+
+          // Check active
+          if (_game->model().next_player().playmat().active_pokemon != nullptr && engine::geometry::ray_rectangle_intersection(ray, this->playmat->active_slot(opponent_side)))
+            _activated_effect_targets.push_back(*_game->model().next_player().playmat().active_pokemon);
+
+          // Check bench
+          else {
+            int i = 0;
+            for (auto& slot : playmat->bench_slots(opponent_side)) {
+              if (_game->model().next_player().playmat().bench->cards()[i] != nullptr && engine::geometry::ray_rectangle_intersection(ray, slot)) {
+                _activated_effect_targets.push_back(*_game->model().next_player().playmat().bench->cards()[i]);
+                break;
+              }
+              i++;
+            }
+          }
+        }
+        else if (next_target == model::CardEffectTarget::ENERGY_FROM_PREVIOUS_POKEMON) {
+
+          auto prev = _activated_effect_targets[i-1];
+
+          // Check active
+          if (&prev.get() == _game->model().next_player().playmat().active_pokemon) {
+            for (auto& energy_view : next_player->active_pokemon->energy_views()) {
+              if (engine::geometry::ray_rectangle_intersection(ray, energy_view->shape())) {
+                _activated_effect_targets.push_back(energy_view->_model);
+                break;
+              }
+            }
+          }
+
+          // // Check bench
+          else {
+            int i = 0;
+            for (auto& pokemon : _game->model().next_player().playmat().bench->cards()) {
+              if (&prev.get() == pokemon) {
+                for (auto& energy_view : next_player->bench->cards()[i]->energy_views()) {
+                  if (engine::geometry::ray_rectangle_intersection(ray, energy_view->shape())) {
+                    _activated_effect_targets.push_back(energy_view->_model);
+                    break;
+                  }
+                }
+              }
+              i++;
+            }
+          }
+        }
+
+        return;
+      }
 
       if (_selected_card != nullptr) {
         if (engine::geometry::ray_rectangle_intersection(ray, this->playmat->active_slot(current_side))) {

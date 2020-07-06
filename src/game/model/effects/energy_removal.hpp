@@ -10,17 +10,14 @@ namespace open_pokemon_tcg::game::model {
     ~EnergyRemoval();
 
     // Mutators
-    void set_targets(std::vector<std::reference_wrapper<const ICard>> targets) override;
-    void activate(Player &self, Player &opponent) override;
+    void activate(Player &self, Player &opponent, std::vector<std::reference_wrapper<const ICard>> targets) override;
 
     // Accessors
     std::vector<CardEffectTarget> required_targets() const override;
-    bool can_activate(Player &self, Player &opponent) const override;
 
   private:
     CardEffectTarget _pokemon_scope;
-    const PokemonCard* _pokemon_target;
-    const BasicEnergy* _energy_target;
+
   };
 
 }

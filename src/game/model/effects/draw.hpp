@@ -10,7 +10,7 @@ namespace open_pokemon_tcg::game::model {
     ~Draw();
 
     // Mutators
-    void activate(Player &self, Player &opponent) override;
+    void activate(Player &self, Player &opponent, std::vector<std::reference_wrapper<const ICard>> targets) override;
 
     // Accessors
     bool can_activate(Player &self, Player &opponent) const override;

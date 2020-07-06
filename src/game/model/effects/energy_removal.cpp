@@ -5,30 +5,20 @@
 using namespace open_pokemon_tcg::game::model;
 
 EnergyRemoval::EnergyRemoval(CardEffectTarget pokemon_scope)
-  : _pokemon_scope(pokemon_scope) {
-
-  _pokemon_target = nullptr;
-  _energy_target = nullptr;
-}
+  : _pokemon_scope(pokemon_scope) {}
 
 EnergyRemoval::~EnergyRemoval() = default;
 
-// TODO: Move into activate() and remove this function
-void EnergyRemoval::set_targets(std::vector<std::reference_wrapper<const ICard>> targets) {
-  const PokemonCard* pokemon = dynamic_cast<const PokemonCard*>(&targets[0].get());
-  if (pokemon == nullptr)
+void EnergyRemoval::activate([[maybe_unused]] Player &self, Player &opponent, std::vector<std::reference_wrapper<const ICard>> targets) {
+  const PokemonCard* pokemon_target = dynamic_cast<const PokemonCard*>(&targets[0].get());
+  if (pokemon_target == nullptr)
     LOG_ERROR("Card must be a pokemon card.");
 
-  const BasicEnergy* energy = dynamic_cast<const BasicEnergy*>(&targets[1].get());
-  if (energy == nullptr)
+  const BasicEnergy* energy_target = dynamic_cast<const BasicEnergy*>(&targets[1].get());
+  if (energy_target == nullptr)
     LOG_ERROR("Card must be a pokemon card.");
 
-  _pokemon_target = pokemon;
-  _energy_target = energy;
-}
-
-void EnergyRemoval::activate([[maybe_unused]] Player &self, Player &opponent) {
-  opponent.detach_energy_from(*_pokemon_target, *_energy_target);
+  opponent.detach_energy_from(*pokemon_target, *energy_target);
 }
 
 std::vector<CardEffectTarget> EnergyRemoval::required_targets() const {
@@ -36,8 +26,4 @@ std::vector<CardEffectTarget> EnergyRemoval::required_targets() const {
       _pokemon_scope,
       CardEffectTarget::ENERGY_FROM_PREVIOUS_POKEMON,
   };
-}
-
-bool EnergyRemoval::can_activate([[maybe_unused]] Player &self, [[maybe_unused]] Player &opponent) const {
-  return _pokemon_target != nullptr && _energy_target != nullptr;
 }
