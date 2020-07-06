@@ -26,7 +26,8 @@ namespace open_pokemon_tcg::game::view {
 
     // Accessors
     engine::geometry::Intersection* does_intersect(engine::geometry::Ray ray) const;
-    const engine::graphics::Texture& texture() const { return this->front_texture; }
+    const engine::graphics::Texture& texture() const;
+    engine::geometry::Rectangle shape() const;
 
   private:
     static constexpr float width = 1.0f;
@@ -38,7 +39,5 @@ namespace open_pokemon_tcg::game::view {
 
     // Accessors
     GLuint create_vao(const std::vector<float> positions, const std::vector<float> uv_coords) const;
-    engine::geometry::Rectangle shape() const;
-    engine::geometry::Rectangle raw_shape() const;
   };
 }

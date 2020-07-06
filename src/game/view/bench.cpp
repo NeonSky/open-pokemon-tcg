@@ -25,3 +25,7 @@ void Bench::render(const glm::mat4 &view_projection_matrix, engine::graphics::Sh
     if (c != nullptr)
       c->render(view_projection_matrix, shader);
 }
+
+const std::array<PokemonCard*, 5> Bench::cards() const {
+  return _cards;
+}

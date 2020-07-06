@@ -16,6 +16,9 @@ namespace open_pokemon_tcg::game::view {
     // Mutators
     void render(const glm::mat4& view_projection_matrix, engine::graphics::Shader* shader);
 
+    // Accessors
+    const std::array<PokemonCard*, 5> cards() const;
+
   private:
     model::Bench& _model;
     std::array<engine::geometry::Rectangle, 5> _slots;
