@@ -16,6 +16,7 @@ namespace open_pokemon_tcg::game::view {
     glm::mat4 model_matrix() const;
     engine::geometry::Intersection* does_intersect(engine::geometry::Ray ray) const;
     const engine::graphics::Texture& texture() const;
+    const std::vector<Card*> energy_views() const;
 
   private:
     game::model::PokemonCard& _model;

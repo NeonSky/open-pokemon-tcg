@@ -1,5 +1,7 @@
 #include "pokemon_card.hpp"
 
+#include "../../engine/debug/logger.hpp"
+
 using namespace open_pokemon_tcg;
 using namespace open_pokemon_tcg::game::view;
 
@@ -39,6 +41,10 @@ engine::geometry::Intersection* PokemonCard::does_intersect(engine::geometry::Ra
 
 const engine::graphics::Texture& PokemonCard::texture() const {
   return _pokemon_view.texture();
+}
+
+const std::vector<Card*> PokemonCard::energy_views() const {
+  return _energy_views;
 }
 
 // Privates
