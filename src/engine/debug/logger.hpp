@@ -5,6 +5,9 @@
 #include <glad/glad.h>
 #include <stdexcept>
 
+#include <sstream>
+#include <string>
+
 #define LOG_TRACE(...)    SPDLOG_TRACE(__VA_ARGS__)
 #define LOG_DEBUG(...)    SPDLOG_DEBUG(__VA_ARGS__)
 #define LOG_INFO(...)     SPDLOG_INFO(__VA_ARGS__)
@@ -15,6 +18,12 @@
 bool checkGLError(const char* file, int line);
 
 #define CHECK_GL_ERROR() { checkGLError(__FILE__, __LINE__); }
+
+inline std::string ADDRESS(const void* ptr) {
+  std::stringstream ss;
+  ss << ptr;
+  return ss.str();
+}
 
 namespace open_pokemon_tcg::engine::debug {
 
