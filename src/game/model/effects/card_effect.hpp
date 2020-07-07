@@ -1,23 +1,12 @@
 #pragma once
 
+#include "card_effect_target.hpp"
 #include "../player.hpp"
 #include "../card/card.hpp"
 
 #include <vector>
 
 namespace open_pokemon_tcg::game::model {
-
-  enum CardEffectTarget {
-    POKEMON,
-    ENEMY_POKEMON,
-    FRIENDLY_POKEMON,
-    ENERGY,
-    ENERGY_FROM_PREVIOUS_POKEMON,
-    ENEMY_ENERGY,
-    FRIENDLY_ENERGY,
-    FRIENDLY_BENCH_POKEMON,
-    ENEMY_BENCH_POKEMON,
-  };
 
   class ICardEffect {
   public:
