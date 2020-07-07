@@ -52,6 +52,7 @@ void Game::attack(unsigned int attack_index) {
     LOG_ERROR("The first player can not attack on the first turn.");
 
   _sandbox_game->attack(attack_index);
+  start_turn();
 }
 
 void Game::end_turn() {

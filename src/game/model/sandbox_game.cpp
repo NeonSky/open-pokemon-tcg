@@ -35,6 +35,16 @@ SandboxGame::SandboxGame(std::array<std::unique_ptr<Deck>, 2>& player_decks, std
     _winner = _players[0].get();
     _on_game_over();
   });
+
+  _players[0]->on_update_active([this](PokemonCard* card) {
+    if (card == nullptr)
+      _players[1]->take_prize_card();
+  });
+
+  _players[1]->on_update_active([this](PokemonCard* card) {
+    if (card == nullptr)
+      _players[0]->take_prize_card();
+  });
 }
 
 SandboxGame::~SandboxGame() {}
@@ -66,7 +76,9 @@ void SandboxGame::attack(unsigned int attack_index) {
   }
 
   _players[_next_player()]->apply_attack_damage(instance_damage, _players[_current_player]->playmat().active_pokemon->data().energy_type);
-  end_turn();
+
+  if (_winner == nullptr)
+    end_turn();
 }
 
 void SandboxGame::activate_trainer_card(const ICard& card, std::vector<std::reference_wrapper<const ICard>> targets) {
