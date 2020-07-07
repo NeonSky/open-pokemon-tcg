@@ -1,5 +1,7 @@
 # OpenPokemonTCG
 
+![Screenshot](res/screenshots/scr.png)
+
 ## Build
 
 ```
