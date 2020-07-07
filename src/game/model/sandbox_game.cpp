@@ -52,6 +52,23 @@ void SandboxGame::place_on_bench_from_hand(const ICard& card, unsigned int slot_
   _players[_current_player]->place_on_bench_from_hand(card, slot_index);
 }
 
+void SandboxGame::attack(unsigned int attack_index) {
+  const PokemonCard& active = *_players[_current_player]->playmat().active_pokemon;
+  const Attack* attack = active.data().attacks[attack_index];
+  IAttackEffect* attack_effect = attack->effect();
+
+  unsigned int instance_damage = attack->damage();
+  if (attack_effect != nullptr) {
+    if (attack_effect->required_targets().size() > 0)
+      LOG_ERROR("Required targets for attack effects is not supported yet.");
+
+    attack_effect->activate(*_players[_current_player], *_players[_next_player()], {}, instance_damage);
+  }
+
+  _players[_next_player()]->apply_attack_damage(instance_damage, _players[_current_player]->playmat().active_pokemon->data().energy_type);
+  end_turn();
+}
+
 void SandboxGame::activate_trainer_card(const ICard& card, std::vector<std::reference_wrapper<const ICard>> targets) {
   const ItemCard* item_card = dynamic_cast<const ItemCard*>(&card);
   if (item_card == nullptr)
@@ -88,18 +105,6 @@ void SandboxGame::draw(unsigned int amount) {
 
 void SandboxGame::mill(unsigned int amount) {
   _players[_current_player]->mill(amount);
-}
-
-void SandboxGame::attack(unsigned int attack_index) {
-  PokemonCard* my_active = _players[_current_player]->playmat().active_pokemon;
-  if (my_active == nullptr)
-    LOG_ERROR("There is no active pokemon to attack with.");
-
-  IHealthTarget *opponent = _players[(_current_player+1) % _players.size()]->playmat().active_pokemon;
-  if (opponent == nullptr)
-    LOG_ERROR("The opponent has no active pokemon to attack.");
-
-  my_active->attack(attack_index, *opponent);
 }
 
 // Accessors

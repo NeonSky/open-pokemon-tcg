@@ -6,8 +6,6 @@
 #include "traits/energy.hpp"
 #include "traits/pokemon_evolution_stage.hpp"
 
-#include "../effects/effect_target.hpp"
-
 #include "../../../engine/event/event.hpp"
 
 #include <functional>
@@ -26,18 +24,17 @@ namespace open_pokemon_tcg::game::model {
     int hp;
     EnergyType energy_type;
     EnergyAmount retreat_cost;
-    std::vector<Attack> attacks;
+    std::vector<Attack*> attacks;
   };
 
-  class PokemonCard : public ICard, public IHealthTarget {
+  class PokemonCard : public ICard {
   public:
     PokemonCard(PokemonCardData data);
     ~PokemonCard();
 
     // Mutators
-    void take_damage(unsigned int amount) override;
+    void take_damage(unsigned int amount, EnergyType type);
     void heal(unsigned int amount);
-    void attack(unsigned int attack_index, IHealthTarget& opponent);
     void attach_energy(BasicEnergy& energy_card);
 
     BasicEnergy& detach_energy(unsigned int index);
@@ -47,12 +44,12 @@ namespace open_pokemon_tcg::game::model {
     void on_energy_attached(std::function<void (const BasicEnergy& energy_card)> callback) const;
     void on_energy_detached(std::function<void (unsigned int index)> callback) const;
 
-    unsigned int max_hp() const override;
-    unsigned int hp() const override;
-
     std::string to_string() const override;
     CardId id() const override;
     CardName name() const override;
+
+    unsigned int max_hp() const;
+    unsigned int hp() const;
 
     const PokemonCardData& data() const;
     const std::vector<std::reference_wrapper<BasicEnergy>>& attached_energy() const;

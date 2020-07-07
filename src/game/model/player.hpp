@@ -32,6 +32,7 @@ namespace open_pokemon_tcg::game::model {
     void detach_energy_from(const PokemonCard& pokemon_card, const BasicEnergy& energy_card);
     void detach_energy_from_active(const BasicEnergy& energy_card);
 
+    void apply_attack_damage(unsigned int amount, EnergyType type);
     void heal_pokemon(const PokemonCard& pokemon_card, unsigned int amount);
 
     void take_prize_card();

@@ -18,8 +18,8 @@ namespace open_pokemon_tcg::game::model {
     void attach_to_active_pokemon(const ICard& card);
     void attach_to_bench_pokemon(const ICard& card, unsigned int slot_index);
     void evolve_pokemon();
-    void attack(unsigned int attack_index);
 
+    void attack(unsigned int attack_index);
     void end_turn();
 
     // Accessors

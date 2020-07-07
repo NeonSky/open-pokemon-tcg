@@ -12,16 +12,12 @@ PokemonCard::PokemonCard(PokemonCardData data)
 
 PokemonCard::~PokemonCard() = default;
 
-void PokemonCard::take_damage(unsigned int amount) {
-  _data.hp = std::max(0, _data.hp - (int)amount);
+void PokemonCard::take_damage(unsigned int amount, [[maybe_unused]] EnergyType type) {
+  _hp = std::max(0, _hp - (int)amount);
 }
 
 void PokemonCard::heal(unsigned int amount) {
-  _data.hp = std::max(_data.hp, _hp + (int)amount);
-}
-
-void PokemonCard::attack(unsigned int attack_index, IHealthTarget &opponent) {
-  _data.attacks[attack_index].perform(opponent);
+  _hp = std::min(_data.hp, _hp + (int)amount);
 }
 
 void PokemonCard::attach_energy(BasicEnergy& energy_card) {

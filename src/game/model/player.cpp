@@ -137,6 +137,16 @@ void Player::detach_energy_from_active(const BasicEnergy& energy_card) {
   _playmat.discard_pile->push(_playmat.active_pokemon->detach_energy(energy_card));
 }
 
+void Player::apply_attack_damage(unsigned int amount, EnergyType type) {
+  _playmat.active_pokemon->take_damage(amount, type);
+
+  if (_playmat.active_pokemon->hp() == 0) {
+    _playmat.discard_pile->push(*_playmat.active_pokemon);
+    _playmat.active_pokemon = nullptr;
+    _on_update_active(nullptr);
+  }
+}
+
 void Player::heal_pokemon(const PokemonCard& pokemon_card, unsigned int amount) {
   if (&pokemon_card == _playmat.active_pokemon)
     _playmat.active_pokemon->heal(amount);

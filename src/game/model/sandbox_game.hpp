@@ -27,12 +27,13 @@ namespace open_pokemon_tcg::game::model {
     void attach_to_bench_pokemon(const ICard& card, unsigned int slot_index);
     void draw(unsigned int amount = 1);
     void mill(unsigned int amount = 1);
-    void attack(unsigned int attack_index);
 
+    void attack(unsigned int attack_index);
     void end_turn();
 
     // Accessors
     void on_game_over(std::function<void ()> callback) const;
+    // void on_turn_ended(std::function<void ()> callback) const; // TODO
 
     unsigned int turn() const;
     const Player* winner() const;

@@ -26,7 +26,7 @@ namespace open_pokemon_tcg::game::view {
     void update_transforms();
 
   public:
-    engine::geometry::Transform transform; // FIXME
+    engine::geometry::Transform transform; // FIXME. Maybe a pub ref function?
 
   };
 }

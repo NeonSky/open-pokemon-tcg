@@ -153,18 +153,20 @@ std::unique_ptr<model::PokemonCard> PokemonTcgApi::parse_pokemon_card_data(nlohm
   for (auto &cost : data["retreatCost"])
     card.retreat_cost += to_energy_type(cost);
 
-  card.attacks.resize(data["attacks"].size());
-  for (unsigned int i = 0; i < card.attacks.size(); i++) {
+  for (unsigned int i = 0; i < data["attacks"].size(); i++) {
     auto attack = data["attacks"][i];
 
-    if (attack["text"] == "") {
+    if (attack["text"] == "") { // NOTE: This means that there is no attack effect.
+
       model::EnergyAmount cost;
       for (auto &e : attack["cost"])
         cost += to_energy_type(e);
 
-      // card.attacks[i] = new model::Attack(attack["name"].get<std::string>(), attack["damage"].get<int>(), cost);
+      card.attacks.push_back(new model::Attack(attack["name"].get<std::string>(), std::stoi(attack["damage"].get<std::string>()), cost));
+
     } else {
-      // TODO: look up in effect db
+      LOG_DEBUG("Attack effects are not supported yet.");
+      // TODO: look up attack effect in db
     }
   }
 

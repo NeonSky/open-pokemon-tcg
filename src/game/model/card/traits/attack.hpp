@@ -3,19 +3,20 @@
 #include "energy.hpp"
 #include "../../effects/attack_effect.hpp"
 
+#include <memory>
 #include <string>
 
 namespace open_pokemon_tcg::game::model {
 
+  class PokemonCard;
+
   class Attack {
   public:
-    Attack();
     Attack(std::string name, unsigned int damage, EnergyAmount cost);
-    Attack(std::string name, unsigned int damage, EnergyAmount cost, IAttackEffect &effect);
-    ~Attack();
+    Attack(std::string name, unsigned int damage, EnergyAmount cost, std::unique_ptr<IAttackEffect> effect);
 
     // Mutators
-    void perform(IHealthTarget &target);
+    IAttackEffect* effect() const;
 
     // Accessors
     std::string name() const;
@@ -26,7 +27,7 @@ namespace open_pokemon_tcg::game::model {
     std::string _name;
     unsigned int _damage;
     EnergyAmount _cost;
-    IAttackEffect *_effect;
+    std::unique_ptr<IAttackEffect> _effect;
   };
 
 }

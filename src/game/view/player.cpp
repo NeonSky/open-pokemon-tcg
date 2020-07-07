@@ -71,10 +71,13 @@ void Player::render(const glm::mat4 &view_projection) {
 }
 
 void Player::on_update_active(model::PokemonCard* card) {
-  if (active_pokemon != nullptr)
+  if (active_pokemon != nullptr) {
     delete active_pokemon;
+    active_pokemon = nullptr;
+  }
 
-  active_pokemon = new PokemonCard(*card, playmat->active_slot(this->playmat_side).transform());
+  if (card != nullptr)
+    active_pokemon = new PokemonCard(*card, playmat->active_slot(this->playmat_side).transform());
 }
 
 /*
