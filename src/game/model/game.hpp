@@ -19,7 +19,7 @@ namespace open_pokemon_tcg::game::model {
     void attach_to_bench_pokemon(const ICard& card, unsigned int slot_index);
     void evolve_pokemon();
 
-    void attack(unsigned int attack_index);
+    bool attack(unsigned int attack_index);
     void end_turn();
 
     // Accessors

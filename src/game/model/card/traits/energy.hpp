@@ -35,6 +35,7 @@ namespace open_pokemon_tcg::game::model {
     unsigned int operator[](EnergyType energy);
     bool contains(EnergyType energy);
     bool contains(EnergyAmount energy);
+    bool covers_cost(EnergyAmount cost);
     operator std::string() const;
 
   private:

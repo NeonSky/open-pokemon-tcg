@@ -69,3 +69,10 @@ const PokemonCardData& PokemonCard::data() const {
 const std::vector<std::reference_wrapper<BasicEnergy>>& PokemonCard::attached_energy() const {
   return _attached_energy;
 }
+
+bool PokemonCard::can_use_attack(unsigned int attack_index) const {
+  EnergyAmount energy_pool;
+  for (auto& e : _attached_energy)
+    energy_pool += e.get().energy_type();
+  return energy_pool.covers_cost(_data.attacks[attack_index]->cost());
+}

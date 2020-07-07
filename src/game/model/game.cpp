@@ -47,12 +47,18 @@ void Game::evolve_pokemon() {
     LOG_ERROR("Not allowed to evolve pokemons on the first turn of the game.");
 }
 
-void Game::attack(unsigned int attack_index) {
+bool Game::attack(unsigned int attack_index) {
   if (_sandbox_game->_turn == 0 && _sandbox_game->_current_player == 0)
     LOG_ERROR("The first player can not attack on the first turn.");
 
+  if (!current_player().playmat().active_pokemon->can_use_attack(attack_index)) {
+    LOG_WARNING("Not enough energy to use attack.");
+    return false;
+  }
+
   _sandbox_game->attack(attack_index);
   start_turn();
+  return true;
 }
 
 void Game::end_turn() {

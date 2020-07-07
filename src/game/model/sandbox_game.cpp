@@ -64,6 +64,12 @@ void SandboxGame::place_on_bench_from_hand(const ICard& card, unsigned int slot_
 
 void SandboxGame::attack(unsigned int attack_index) {
   const PokemonCard& active = *_players[_current_player]->playmat().active_pokemon;
+
+  if (!active.can_use_attack(attack_index)) {
+    LOG_WARNING("Not enough energy to use attack.");
+    return;
+  }
+
   const Attack* attack = active.data().attacks[attack_index];
   IAttackEffect* attack_effect = attack->effect();
 

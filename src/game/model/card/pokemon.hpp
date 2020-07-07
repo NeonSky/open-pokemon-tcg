@@ -53,6 +53,7 @@ namespace open_pokemon_tcg::game::model {
 
     const PokemonCardData& data() const;
     const std::vector<std::reference_wrapper<BasicEnergy>>& attached_energy() const;
+    bool can_use_attack(unsigned int attack_index) const;
 
   private:
     mutable engine::event::CallbackList<void (const BasicEnergy& energy_card)> _on_energy_attached;

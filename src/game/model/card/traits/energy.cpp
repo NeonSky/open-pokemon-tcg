@@ -52,6 +52,28 @@ bool EnergyAmount::contains(EnergyAmount energy) {
   return true;
 }
 
+bool EnergyAmount::covers_cost(EnergyAmount cost) {
+  unsigned int tot1 = 0;
+  for (auto &e : _energy)
+    tot1 += e.second;
+
+  unsigned int tot2 = 0;
+  for (auto &e : cost._energy)
+    tot2 += e.second;
+
+  // Disregarding color, we still need enough energy in amount.
+  if (tot1 < tot2)
+    return false;
+
+  // Check that all colored energy is satisfied.
+  for (auto &e : cost._energy)
+    if (e.first != EnergyType::COLORLESS)
+      if (_energy[e.first] < e.second)
+        return false;
+
+  return true;
+}
+
 EnergyAmount::operator std::string() const {
   std::string s = "";
   for (auto &e : _energy)

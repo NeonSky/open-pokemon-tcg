@@ -196,16 +196,18 @@ namespace open_pokemon_tcg::game::scenes {
 
 
     if (ImGui::Button("Attack 1")) {
-      _game->model().attack(0);
-      _selected_card = nullptr;
-      std::swap(current_player, next_player);
-      this->camera.set_transform((this->current_player == this->player1) ? this->camera1_transform : this->camera2_transform);
+      if (_game->model().attack(0)) {
+        _selected_card = nullptr;
+        std::swap(current_player, next_player);
+        this->camera.set_transform((this->current_player == this->player1) ? this->camera1_transform : this->camera2_transform);
+      }
     }
     if (ImGui::Button("Attack 2")) {
-      _game->model().attack(1);
-      _selected_card = nullptr;
-      std::swap(current_player, next_player);
-      this->camera.set_transform((this->current_player == this->player1) ? this->camera1_transform : this->camera2_transform);
+      if (_game->model().attack(1)) {
+        _selected_card = nullptr;
+        std::swap(current_player, next_player);
+        this->camera.set_transform((this->current_player == this->player1) ? this->camera1_transform : this->camera2_transform);
+      }
     }
     if (ImGui::Button("End Turn")) {
       if (_game->model().winner() == nullptr) {
