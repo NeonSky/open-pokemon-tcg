@@ -32,6 +32,8 @@ namespace open_pokemon_tcg::game::model {
     void detach_energy_from(const PokemonCard& pokemon_card, const BasicEnergy& energy_card);
     void detach_energy_from_active(const BasicEnergy& energy_card);
 
+    void heal_pokemon(const PokemonCard& pokemon_card, unsigned int amount);
+
     void take_prize_card();
     void on_win(std::function<void ()> callback) const;
     void on_lose(std::function<void ()> callback) const;
@@ -53,7 +55,6 @@ namespace open_pokemon_tcg::game::model {
     Playmat _playmat;
     std::string _name;
     Hand _hand;
-
   };
 
 }

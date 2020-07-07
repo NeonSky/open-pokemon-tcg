@@ -16,6 +16,10 @@ void PokemonCard::take_damage(unsigned int amount) {
   _data.hp = std::max(0, _data.hp - (int)amount);
 }
 
+void PokemonCard::heal(unsigned int amount) {
+  _data.hp = std::max(_data.hp, _hp + (int)amount);
+}
+
 void PokemonCard::attack(unsigned int attack_index, IHealthTarget &opponent) {
   _data.attacks[attack_index].perform(opponent);
 }

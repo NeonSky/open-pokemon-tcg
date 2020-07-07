@@ -112,7 +112,7 @@ std::unique_ptr<model::ICard> PokemonTcgApi::parse_card_data(nlohmann::json data
     if (subtype == "Stadium")
       return parse_stadium_card_data(data);
     else {
-      LOG_DEBUG(id + " had a uknown trainer subtype. Assuming item...");
+      // LOG_DEBUG(id + " had a uknown trainer subtype. Assuming item...");
       return parse_item_card_data(data);
     }
   }

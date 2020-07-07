@@ -36,8 +36,10 @@ namespace open_pokemon_tcg::game::model {
 
     // Mutators
     void take_damage(unsigned int amount) override;
+    void heal(unsigned int amount);
     void attack(unsigned int attack_index, IHealthTarget& opponent);
     void attach_energy(BasicEnergy& energy_card);
+
     BasicEnergy& detach_energy(unsigned int index);
     BasicEnergy& detach_energy(const BasicEnergy& energy_card);
 

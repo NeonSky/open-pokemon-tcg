@@ -137,6 +137,13 @@ void Player::detach_energy_from_active(const BasicEnergy& energy_card) {
   _playmat.discard_pile->push(_playmat.active_pokemon->detach_energy(energy_card));
 }
 
+void Player::heal_pokemon(const PokemonCard& pokemon_card, unsigned int amount) {
+  if (&pokemon_card == _playmat.active_pokemon)
+    _playmat.active_pokemon->heal(amount);
+  else
+    _playmat.bench->heal_pokemon(pokemon_card, amount);
+}
+
 void Player::on_win(std::function<void ()> callback) const {
   _on_win.append(callback);
 }

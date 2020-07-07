@@ -213,6 +213,8 @@ namespace open_pokemon_tcg::game::scenes {
         if (_activated_effect == nullptr)
           LOG_WARNING("Card must be an item card.");
 
+        LOG_DEBUG("Activated card effect");
+
         if (_activated_effect->required_targets().size() == 0) {
           _game->model().activate_trainer_card(_selected_card->_model, {});
           _selected_card = nullptr;
@@ -238,8 +240,10 @@ namespace open_pokemon_tcg::game::scenes {
   }
 
   void Duel::on_key(GLFWwindow* window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
       _selected_card = nullptr;
+      _activated_effect = nullptr;
+    }
 
     focus_hovered_card = glfwGetKey(window, GLFW_KEY_F);
   }
@@ -258,6 +262,7 @@ namespace open_pokemon_tcg::game::scenes {
 
         int i = _activated_effect_targets.size();
         auto next_target = _activated_effect->required_targets()[i];
+        LOG_DEBUG("Next target: " + std::to_string(next_target));
 
         if (next_target == model::CardEffectTarget::ENEMY_POKEMON) {
 
@@ -271,6 +276,24 @@ namespace open_pokemon_tcg::game::scenes {
             for (auto& slot : playmat->bench_slots(opponent_side)) {
               if (_game->model().next_player().playmat().bench->cards()[i] != nullptr && engine::geometry::ray_rectangle_intersection(ray, slot)) {
                 _activated_effect_targets.push_back(*_game->model().next_player().playmat().bench->cards()[i]);
+                break;
+              }
+              i++;
+            }
+          }
+        }
+        else if (next_target == model::CardEffectTarget::FRIENDLY_POKEMON) {
+
+          // Check active
+          if (_game->model().current_player().playmat().active_pokemon != nullptr && engine::geometry::ray_rectangle_intersection(ray, this->playmat->active_slot(current_side)))
+            _activated_effect_targets.push_back(*_game->model().current_player().playmat().active_pokemon);
+
+          // Check bench
+          else {
+            int i = 0;
+            for (auto& slot : playmat->bench_slots(current_side)) {
+              if (_game->model().current_player().playmat().bench->cards()[i] != nullptr && engine::geometry::ray_rectangle_intersection(ray, slot)) {
+                _activated_effect_targets.push_back(*_game->model().current_player().playmat().bench->cards()[i]);
                 break;
               }
               i++;

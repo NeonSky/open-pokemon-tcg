@@ -19,6 +19,7 @@ namespace open_pokemon_tcg::game::model {
     void place(PokemonCard &card, unsigned int index);
     PokemonCard& take(unsigned int index);
 
+    void heal_pokemon(const PokemonCard& pokemon_card, unsigned int amount);
     void attach_energy_to(BasicEnergy& energy_card, unsigned int slot_index);
     BasicEnergy& detach_energy_from(const PokemonCard& pokemon_card, const BasicEnergy& energy_card);
 
@@ -26,7 +27,7 @@ namespace open_pokemon_tcg::game::model {
     void on_place(std::function<void (PokemonCard &card, unsigned int index)> callback) const;
     void on_take(std::function<void (unsigned int index)> callback) const;
 
-    const std::array<PokemonCard*, 5> cards() const;
+    const std::array<const PokemonCard*, 5> cards() const;
     unsigned int find(const PokemonCard& card) const;
 
   private:

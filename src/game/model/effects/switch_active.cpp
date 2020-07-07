@@ -9,7 +9,7 @@ SwitchActive::SwitchActive(CardEffectTarget scope)
 
 SwitchActive::~SwitchActive() = default;
 
-void SwitchActive::activate([[maybe_unused]] Player &self, Player &opponent, std::vector<std::reference_wrapper<const ICard>> targets) {
+void SwitchActive::activate(Player &self, Player &opponent, std::vector<std::reference_wrapper<const ICard>> targets) {
   const PokemonCard* pokemon_target = dynamic_cast<const PokemonCard*>(&targets[0].get());
   if (pokemon_target == nullptr)
     LOG_ERROR("Card must be a pokemon card.");

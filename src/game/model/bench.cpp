@@ -43,6 +43,14 @@ PokemonCard& Bench::take(unsigned int index) {
   return *card;
 }
 
+void Bench::heal_pokemon(const PokemonCard& pokemon_card, unsigned int amount) {
+  unsigned int index = find(pokemon_card);
+  if (_cards[index] == nullptr)
+    LOG_ERROR("There is no pokemon on this slot.");
+
+  _cards[index]->heal(amount);
+}
+
 void Bench::attach_energy_to(BasicEnergy& energy_card, unsigned int slot_index) {
   if (_cards[slot_index] == nullptr)
     LOG_ERROR("There is no pokemon on this slot.");
@@ -66,8 +74,11 @@ void Bench::on_take(std::function<void (unsigned int)> callback) const {
   _on_take.append(callback);
 }
 
-const std::array<PokemonCard*, 5> Bench::cards() const {
-  return _cards;
+const std::array<const PokemonCard*, 5> Bench::cards() const {
+  std::array<const PokemonCard*, 5> cx;
+  for (unsigned int i = 0; i < cx.size(); i++)
+    cx[i] = _cards[i];
+  return cx;
 }
 
 unsigned int Bench::find(const PokemonCard& card) const {
